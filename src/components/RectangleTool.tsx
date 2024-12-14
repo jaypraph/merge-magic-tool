@@ -12,7 +12,11 @@ interface Rectangle {
   end: Coordinates;
 }
 
-export const RectangleTool = () => {
+interface RectangleToolProps {
+  containerRef: React.RefObject<HTMLDivElement>;
+}
+
+export const RectangleTool = ({ containerRef }: RectangleToolProps) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [rectangle, setRectangle] = useState<Rectangle | null>(null);
 
@@ -43,59 +47,47 @@ export const RectangleTool = () => {
   };
 
   return (
-    <div className="space-y-4">
+    <>
       <Button 
         variant="outline" 
-        className="absolute top-4 left-4"
+        className="absolute top-4 left-4 z-10"
         onClick={() => setRectangle(null)}
       >
         <Square className="h-4 w-4 mr-2" />
         Rectangle Tool
       </Button>
 
-      <div
-        className="relative w-full h-[500px] border border-slate-700 rounded-lg bg-slate-900"
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-      >
-        {rectangle && (
-          <div
-            className="absolute border-2 border-blue-500"
-            style={{
-              left: Math.min(rectangle.start.x, rectangle.end.x),
-              top: Math.min(rectangle.start.y, rectangle.end.y),
-              width: Math.abs(rectangle.end.x - rectangle.start.x),
-              height: Math.abs(rectangle.end.y - rectangle.start.y),
-            }}
-          >
-            {/* Top-left coordinates */}
-            <span className="absolute top-0 left-0 -translate-y-6 text-xs text-slate-300">
-              ({Math.round(Math.min(rectangle.start.x, rectangle.end.x))}, 
-              {Math.round(Math.min(rectangle.start.y, rectangle.end.y))})
-            </span>
-            
-            {/* Top-right coordinates */}
-            <span className="absolute top-0 right-0 -translate-y-6 text-xs text-slate-300">
-              ({Math.round(Math.max(rectangle.start.x, rectangle.end.x))}, 
-              {Math.round(Math.min(rectangle.start.y, rectangle.end.y))})
-            </span>
-            
-            {/* Bottom-left coordinates */}
-            <span className="absolute bottom-0 left-0 translate-y-6 text-xs text-slate-300">
-              ({Math.round(Math.min(rectangle.start.x, rectangle.end.x))}, 
-              {Math.round(Math.max(rectangle.start.y, rectangle.end.y))})
-            </span>
-            
-            {/* Bottom-right coordinates */}
-            <span className="absolute bottom-0 right-0 translate-y-6 text-xs text-slate-300">
-              ({Math.round(Math.max(rectangle.start.x, rectangle.end.x))}, 
-              {Math.round(Math.max(rectangle.start.y, rectangle.end.y))})
-            </span>
-          </div>
-        )}
-      </div>
-    </div>
+      {rectangle && (
+        <div
+          className="absolute border-2 border-blue-500 pointer-events-none"
+          style={{
+            left: Math.min(rectangle.start.x, rectangle.end.x),
+            top: Math.min(rectangle.start.y, rectangle.end.y),
+            width: Math.abs(rectangle.end.x - rectangle.start.x),
+            height: Math.abs(rectangle.end.y - rectangle.start.y),
+          }}
+        >
+          <span className="absolute top-0 left-0 -translate-y-6 text-xs text-slate-300">
+            ({Math.round(Math.min(rectangle.start.x, rectangle.end.x))}, 
+            {Math.round(Math.min(rectangle.start.y, rectangle.end.y))})
+          </span>
+          
+          <span className="absolute top-0 right-0 -translate-y-6 text-xs text-slate-300">
+            ({Math.round(Math.max(rectangle.start.x, rectangle.end.x))}, 
+            {Math.round(Math.min(rectangle.start.y, rectangle.end.y))})
+          </span>
+          
+          <span className="absolute bottom-0 left-0 translate-y-6 text-xs text-slate-300">
+            ({Math.round(Math.min(rectangle.start.x, rectangle.end.x))}, 
+            {Math.round(Math.max(rectangle.start.y, rectangle.end.y))})
+          </span>
+          
+          <span className="absolute bottom-0 right-0 translate-y-6 text-xs text-slate-300">
+            ({Math.round(Math.max(rectangle.start.x, rectangle.end.x))}, 
+            {Math.round(Math.max(rectangle.start.y, rectangle.end.y))})
+          </span>
+        </div>
+      )}
+    </>
   );
 };

@@ -78,6 +78,7 @@ export const ImageEditor = () => {
           value={image1}
           onChange={setImage1}
           label="First Image"
+          showRectangleTool={true}
         />
         <ImageUpload
           value={image2}

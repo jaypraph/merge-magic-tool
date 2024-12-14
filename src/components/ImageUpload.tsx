@@ -1,15 +1,24 @@
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { useDropzone } from "react-dropzone";
 import { cn } from "@/lib/utils";
 import { Upload } from "lucide-react";
+import { RectangleTool } from "./RectangleTool";
 
 interface ImageUploadProps {
   value: string;
   onChange: (value: string) => void;
   label: string;
+  showRectangleTool?: boolean;
 }
 
-export const ImageUpload = ({ value, onChange, label }: ImageUploadProps) => {
+export const ImageUpload = ({ 
+  value, 
+  onChange, 
+  label,
+  showRectangleTool = false 
+}: ImageUploadProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
@@ -32,19 +41,47 @@ export const ImageUpload = ({ value, onChange, label }: ImageUploadProps) => {
     maxFiles: 1,
   });
 
+  const handleMouseEvents = showRectangleTool ? {
+    onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (rect) {
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        // Handle mouse down event
+      }
+    },
+    onMouseMove: (e: React.MouseEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (rect) {
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        // Handle mouse move event
+      }
+    },
+    onMouseUp: (e: React.MouseEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      // Handle mouse up event
+    }
+  } : {};
+
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold">{label}</h2>
       <div
         {...getRootProps()}
+        ref={containerRef}
         className={cn(
-          "border-2 border-dashed rounded-lg p-4 transition-colors cursor-pointer",
+          "relative border-2 border-dashed rounded-lg p-4 transition-colors cursor-pointer",
           isDragActive
             ? "border-blue-500 bg-blue-500/10"
             : "border-slate-700 hover:border-blue-500/50"
         )}
+        {...handleMouseEvents}
       >
         <input {...getInputProps()} />
+        {showRectangleTool && <RectangleTool containerRef={containerRef} />}
         {value ? (
           <img
             src={value}
