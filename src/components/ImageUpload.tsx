@@ -68,6 +68,7 @@ export const ImageUpload = ({
 
   return (
     <div className="space-y-4">
+      {showRectangleTool && <RectangleTool containerRef={containerRef} />}
       <h2 className="text-xl font-semibold">{label}</h2>
       <div
         {...getRootProps()}
@@ -81,7 +82,6 @@ export const ImageUpload = ({
         {...handleMouseEvents}
       >
         <input {...getInputProps()} />
-        {showRectangleTool && <RectangleTool containerRef={containerRef} />}
         {value ? (
           <img
             src={value}
