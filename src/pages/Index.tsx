@@ -3,10 +3,11 @@ import { TopMenuBar } from "@/components/TopMenuBar";
 import { PngToJpgConverter } from "@/components/PngToJpgConverter";
 import { ImageResizer } from "@/components/ImageResizer";
 import { DpiConverter } from "@/components/DpiConverter";
+import { WatermarkComponent } from "@/components/WatermarkComponent";
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Upload, Play } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import JSZip from 'jszip';
 import { changeDpiDataUrl } from "changedpi";
 
@@ -171,6 +172,7 @@ const Index = () => {
         {activeFeature === "jpg" && <PngToJpgConverter />}
         {activeFeature === "resize" && <ImageResizer />}
         {activeFeature === "dpi" && <DpiConverter />}
+        {activeFeature === "wm" && <WatermarkComponent />}
       </div>
     </div>
   );
