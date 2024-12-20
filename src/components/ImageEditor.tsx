@@ -27,11 +27,9 @@ export const ImageEditor = () => {
       const img1 = await loadImage(image1);
       const img2 = await loadImage(image2);
 
-      // Set canvas size to fit both images side by side
       canvas.width = img1.width + img2.width;
       canvas.height = Math.max(img1.height, img2.height);
 
-      // Draw images
       ctx?.drawImage(img1, 0, 0);
       ctx?.drawImage(img2, img1.width, 0);
 
@@ -78,7 +76,6 @@ export const ImageEditor = () => {
           value={image1}
           onChange={setImage1}
           label="First Image"
-          showRectangleTool={true}
         />
         <ImageUpload
           value={image2}
