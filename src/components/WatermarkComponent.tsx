@@ -33,7 +33,7 @@ export const WatermarkComponent = () => {
       
       // Add the text watermark
       if (ctx) {
-        ctx.font = "180px Arial"; // Decreased from 360px (÷2)
+        ctx.font = "180px Arial"; // Keep text size as is
         ctx.fillStyle = "rgba(255, 255, 255, 0.4)"; // White with 40% opacity
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
@@ -60,8 +60,8 @@ export const WatermarkComponent = () => {
         // Load and draw the logo watermark
         const logoImg = new Image();
         logoImg.onload = () => {
-          // Calculate logo size (30% of the image width)
-          const logoWidth = canvas.width * 0.3;
+          // Calculate logo size (reduced to 10% of the image width)
+          const logoWidth = canvas.width * 0.1;
           const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
           
           // Draw logo in top-left corner with minimal padding
