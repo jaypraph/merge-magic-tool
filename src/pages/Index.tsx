@@ -16,7 +16,7 @@ const Index = () => {
               "absolute top-0 left-0 w-12 h-12 text-xl font-bold transition-all duration-200",
               isPressed 
                 ? "bg-slate-800 text-white transform translate-y-[2px]" 
-                : "bg-slate-800 text-white shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none"
+                : "bg-slate-800 text-white shadow-[0_4px_0_0_rgba(0,0,0,0.5)]"
             )}
           >
             R
