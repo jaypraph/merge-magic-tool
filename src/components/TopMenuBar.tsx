@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Merge, FileImage, Maximize2, Gauge } from "lucide-react";
+import { Merge, FileImage, Maximize2, Gauge, Wrench } from "lucide-react";
 
 interface TopMenuBarProps {
   activeFeature: string;
@@ -22,6 +22,10 @@ export const TopMenuBar = ({ activeFeature, onFeatureSelect }: TopMenuBarProps) 
 
   const handleDpiClick = () => {
     onFeatureSelect(activeFeature === "dpi" ? "" : "dpi");
+  };
+
+  const handleWmClick = () => {
+    onFeatureSelect(activeFeature === "wm" ? "" : "wm");
   };
 
   return (
@@ -63,6 +67,18 @@ export const TopMenuBar = ({ activeFeature, onFeatureSelect }: TopMenuBarProps) 
           >
             <Gauge className="mr-2 h-5 w-5" />
             DPI
+          </Button>
+          <Button
+            onClick={handleWmClick}
+            className={cn(
+              "w-28 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white mr-2",
+              activeFeature === "wm"
+                ? "transform translate-y-[2px]"
+                : "shadow-[0_4px_0_0_rgba(0,0,0,0.5)]"
+            )}
+          >
+            <Wrench className="mr-2 h-5 w-5" />
+            WM
           </Button>
           <Button
             onClick={handleMockupClick}
