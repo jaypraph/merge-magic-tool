@@ -3,9 +3,19 @@ import { useCallback, useEffect, useRef, useState } from "react";
 interface DrawingCanvasProps {
   image: string;
   rectangleMode: boolean;
+  onCoordinatesChange?: (coordinates: {
+    topLeft: string;
+    topRight: string;
+    bottomLeft: string;
+    bottomRight: string;
+  }) => void;
 }
 
-export const DrawingCanvas = ({ image, rectangleMode }: DrawingCanvasProps) => {
+export const DrawingCanvas = ({ 
+  image, 
+  rectangleMode,
+  onCoordinatesChange 
+}: DrawingCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
@@ -55,7 +65,7 @@ export const DrawingCanvas = ({ image, rectangleMode }: DrawingCanvasProps) => {
     width: number,
     height: number
   ) => {
-    ctx.font = '12px Arial';
+    ctx.font = '16px Arial';
     ctx.fillStyle = '#000000';
     
     // Top-left coordinates
@@ -100,15 +110,31 @@ export const DrawingCanvas = ({ image, rectangleMode }: DrawingCanvasProps) => {
       ctx.rect(rectX, rectY, rectWidth, rectHeight);
       ctx.stroke();
       
-      // Draw coordinates at each corner
       drawCoordinates(ctx, rectX, rectY, rectWidth, rectHeight);
     };
     img.src = image;
   }, [isDrawing, rectangleMode, startPos, image, getMousePos, drawCoordinates]);
 
-  const handleMouseUp = useCallback(() => {
+  const handleMouseUp = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (isDrawing && rectangleMode) {
+      const currentPos = getMousePos(e);
+      const width = currentPos.x - startPos.x;
+      const height = currentPos.y - startPos.y;
+      
+      const rectX = Math.min(startPos.x, currentPos.x);
+      const rectY = Math.min(startPos.y, currentPos.y);
+      const rectWidth = Math.abs(width);
+      const rectHeight = Math.abs(height);
+      
+      onCoordinatesChange?.({
+        topLeft: `(${rectX},${rectY})`,
+        topRight: `(${rectX + rectWidth},${rectY})`,
+        bottomLeft: `(${rectX},${rectY + rectHeight})`,
+        bottomRight: `(${rectX + rectWidth},${rectY + rectHeight})`
+      });
+    }
     setIsDrawing(false);
-  }, []);
+  }, [isDrawing, rectangleMode, getMousePos, startPos, onCoordinatesChange]);
 
   return (
     <canvas
