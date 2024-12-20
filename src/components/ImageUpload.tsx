@@ -42,35 +42,10 @@ export const ImageUpload = ({
     noClick: showRectangleTool, // Disable click-to-upload when rectangle tool is active
   });
 
-  const handleMouseEvents = showRectangleTool ? {
-    onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      const rect = containerRef.current?.getBoundingClientRect();
-      if (rect) {
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        // Handle mouse down event
-      }
-    },
-    onMouseMove: (e: React.MouseEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      const rect = containerRef.current?.getBoundingClientRect();
-      if (rect) {
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        // Handle mouse move event
-      }
-    },
-    onMouseUp: (e: React.MouseEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      // Handle mouse up event
-    }
-  } : {};
-
   return (
     <div className="space-y-4">
-      {showRectangleTool && <RectangleTool containerRef={containerRef} />}
       <h2 className="text-xl font-semibold">{label}</h2>
+      {showRectangleTool && <RectangleTool containerRef={containerRef} />}
       <div
         {...getRootProps()}
         ref={containerRef}
@@ -81,7 +56,6 @@ export const ImageUpload = ({
             : "border-slate-700 hover:border-blue-500/50",
           showRectangleTool ? "cursor-crosshair" : "cursor-pointer"
         )}
-        {...handleMouseEvents}
       >
         <input {...getInputProps()} />
         {value ? (

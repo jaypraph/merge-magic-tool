@@ -21,7 +21,8 @@ export const RectangleTool = ({ containerRef }: RectangleToolProps) => {
   const [rectangle, setRectangle] = useState<Rectangle | null>(null);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     setIsDrawing(true);
@@ -32,8 +33,8 @@ export const RectangleTool = ({ containerRef }: RectangleToolProps) => {
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isDrawing || !rectangle) return;
-    const rect = e.currentTarget.getBoundingClientRect();
+    if (!isDrawing || !rectangle || !containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     
@@ -81,6 +82,9 @@ export const RectangleTool = ({ containerRef }: RectangleToolProps) => {
             width: Math.abs(rectangle.end.x - rectangle.start.x),
             height: Math.abs(rectangle.end.y - rectangle.start.y),
           }}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
         >
           <span className="absolute top-0 left-0 -translate-y-6 text-xs text-black">
             ({Math.round(Math.min(rectangle.start.x, rectangle.end.x))}, 
