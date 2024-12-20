@@ -21,6 +21,22 @@ const Index = () => {
           >
             R
           </Button>
+          
+          <div className="relative w-full h-[200px] mt-16">
+            <div className="absolute inset-0 border border-black">
+              {/* Top-left coordinates */}
+              <span className="absolute -top-6 -left-6 text-sm text-black">0,0</span>
+              
+              {/* Top-right coordinates */}
+              <span className="absolute -top-6 -right-6 text-sm text-black">100,0</span>
+              
+              {/* Bottom-left coordinates */}
+              <span className="absolute -bottom-6 -left-6 text-sm text-black">0,100</span>
+              
+              {/* Bottom-right coordinates */}
+              <span className="absolute -bottom-6 -right-6 text-sm text-black">100,100</span>
+            </div>
+          </div>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-center mb-8">Image Merger</h1>
         <ImageEditor />
