@@ -57,8 +57,12 @@ export const DrawingCanvas = ({
     width: number,
     height: number
   ) => {
-    ctx.font = '48px Arial'; // Increased from 16px to 48px (300% larger)
+    ctx.font = '48px Arial';
     ctx.fillStyle = '#000000';
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+    ctx.shadowBlur = 4;
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
     
     // Top-left coordinates
     ctx.fillText(`(${x},${y})`, x - 15, y - 15);
@@ -71,6 +75,12 @@ export const DrawingCanvas = ({
     
     // Bottom-right coordinates
     ctx.fillText(`(${x + width},${y + height})`, x + width + 15, y + height + 45);
+
+    // Reset shadow settings to prevent affecting other drawings
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
   }, []);
 
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
