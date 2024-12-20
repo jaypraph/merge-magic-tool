@@ -39,6 +39,7 @@ export const ImageUpload = ({
       "image/*": [".png", ".jpg", ".jpeg", ".gif"],
     },
     maxFiles: 1,
+    noClick: showRectangleTool, // Disable click-to-upload when rectangle tool is active
   });
 
   const handleMouseEvents = showRectangleTool ? {
@@ -74,10 +75,11 @@ export const ImageUpload = ({
         {...getRootProps()}
         ref={containerRef}
         className={cn(
-          "relative border-2 border-dashed rounded-lg p-4 transition-colors cursor-pointer",
+          "relative border-2 border-dashed rounded-lg p-4 transition-colors",
           isDragActive
             ? "border-blue-500 bg-blue-500/10"
-            : "border-slate-700 hover:border-blue-500/50"
+            : "border-slate-700 hover:border-blue-500/50",
+          showRectangleTool ? "cursor-crosshair" : "cursor-pointer"
         )}
         {...handleMouseEvents}
       >
