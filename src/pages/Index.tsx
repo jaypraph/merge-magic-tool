@@ -2,6 +2,7 @@ import { ImageEditor } from "@/components/ImageEditor";
 import { TopMenuBar } from "@/components/TopMenuBar";
 import { PngToJpgConverter } from "@/components/PngToJpgConverter";
 import { ImageResizer } from "@/components/ImageResizer";
+import { DpiConverter } from "@/components/DpiConverter";
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Upload, Play } from "lucide-react";
@@ -165,6 +166,7 @@ const Index = () => {
         )}
         {activeFeature === "jpg" && <PngToJpgConverter />}
         {activeFeature === "resize" && <ImageResizer />}
+        {activeFeature === "dpi" && <DpiConverter />}
       </div>
     </div>
   );
