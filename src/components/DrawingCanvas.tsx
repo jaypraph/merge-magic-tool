@@ -10,6 +10,7 @@ export const DrawingCanvas = ({ image, rectangleMode }: DrawingCanvasProps) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
 
+  // Effect to handle initial image load and rectangle mode changes
   useEffect(() => {
     if (image) {
       const canvas = canvasRef.current;
@@ -24,7 +25,7 @@ export const DrawingCanvas = ({ image, rectangleMode }: DrawingCanvasProps) => {
         img.src = image;
       }
     }
-  }, [image]);
+  }, [image, rectangleMode]); // Added rectangleMode as dependency to clear rectangle when disabled
 
   const getMousePos = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
