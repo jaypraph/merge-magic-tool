@@ -10,7 +10,6 @@ export const DrawingCanvas = ({ image, rectangleMode }: DrawingCanvasProps) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
 
-  // Effect to handle initial image load and rectangle mode changes
   useEffect(() => {
     if (image) {
       const canvas = canvasRef.current;
@@ -25,7 +24,7 @@ export const DrawingCanvas = ({ image, rectangleMode }: DrawingCanvasProps) => {
         img.src = image;
       }
     }
-  }, [image, rectangleMode]); // Added rectangleMode as dependency to clear rectangle when disabled
+  }, [image, rectangleMode]);
 
   const getMousePos = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
@@ -36,8 +35,8 @@ export const DrawingCanvas = ({ image, rectangleMode }: DrawingCanvasProps) => {
     const scaleY = canvas.height / rect.height;
     
     return {
-      x: (e.clientX - rect.left) * scaleX,
-      y: (e.clientY - rect.top) * scaleY
+      x: Math.round((e.clientX - rect.left) * scaleX),
+      y: Math.round((e.clientY - rect.top) * scaleY)
     };
   }, []);
 
@@ -48,6 +47,29 @@ export const DrawingCanvas = ({ image, rectangleMode }: DrawingCanvasProps) => {
     setIsDrawing(true);
     setStartPos(pos);
   }, [rectangleMode, getMousePos]);
+
+  const drawCoordinates = useCallback((
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    width: number,
+    height: number
+  ) => {
+    ctx.font = '12px Arial';
+    ctx.fillStyle = '#000000';
+    
+    // Top-left coordinates
+    ctx.fillText(`(${x},${y})`, x - 5, y - 5);
+    
+    // Top-right coordinates
+    ctx.fillText(`(${x + width},${y})`, x + width + 5, y - 5);
+    
+    // Bottom-left coordinates
+    ctx.fillText(`(${x},${y + height})`, x - 5, y + height + 15);
+    
+    // Bottom-right coordinates
+    ctx.fillText(`(${x + width},${y + height})`, x + width + 5, y + height + 15);
+  }, []);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!isDrawing || !rectangleMode) return;
@@ -67,22 +89,22 @@ export const DrawingCanvas = ({ image, rectangleMode }: DrawingCanvasProps) => {
       ctx.lineWidth = 2;
       ctx.beginPath();
       
-      // Calculate width and height ensuring they can be negative
-      // This allows drawing in any direction while keeping cursor at top-left
       const width = currentPos.x - startPos.x;
       const height = currentPos.y - startPos.y;
       
-      // Draw rectangle starting from the initial cursor position
-      ctx.rect(
-        Math.min(startPos.x, currentPos.x),
-        Math.min(startPos.y, currentPos.y),
-        Math.abs(width),
-        Math.abs(height)
-      );
+      const rectX = Math.min(startPos.x, currentPos.x);
+      const rectY = Math.min(startPos.y, currentPos.y);
+      const rectWidth = Math.abs(width);
+      const rectHeight = Math.abs(height);
+      
+      ctx.rect(rectX, rectY, rectWidth, rectHeight);
       ctx.stroke();
+      
+      // Draw coordinates at each corner
+      drawCoordinates(ctx, rectX, rectY, rectWidth, rectHeight);
     };
     img.src = image;
-  }, [isDrawing, rectangleMode, startPos, image, getMousePos]);
+  }, [isDrawing, rectangleMode, startPos, image, getMousePos, drawCoordinates]);
 
   const handleMouseUp = useCallback(() => {
     setIsDrawing(false);
