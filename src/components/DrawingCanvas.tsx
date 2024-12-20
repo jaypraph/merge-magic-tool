@@ -66,12 +66,17 @@ export const DrawingCanvas = ({ image, rectangleMode }: DrawingCanvasProps) => {
       ctx.lineWidth = 2;
       ctx.beginPath();
       
-      // Draw rectangle with cursor at top-left corner
+      // Calculate width and height ensuring they can be negative
+      // This allows drawing in any direction while keeping cursor at top-left
+      const width = currentPos.x - startPos.x;
+      const height = currentPos.y - startPos.y;
+      
+      // Draw rectangle starting from the initial cursor position
       ctx.rect(
-        startPos.x,
-        startPos.y,
-        currentPos.x - startPos.x,
-        currentPos.y - startPos.y
+        Math.min(startPos.x, currentPos.x),
+        Math.min(startPos.y, currentPos.y),
+        Math.abs(width),
+        Math.abs(height)
       );
       ctx.stroke();
     };
