@@ -3,7 +3,7 @@ import { TopMenuBar } from "@/components/TopMenuBar";
 import { useState } from "react";
 
 const Index = () => {
-  const [activeFeature, setActiveFeature] = useState("mockup");
+  const [activeFeature, setActiveFeature] = useState("");
 
   return (
     <div className="min-h-screen bg-white text-slate-900">
