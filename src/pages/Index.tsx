@@ -8,8 +8,13 @@ import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Upload, Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import JSZip from 'jszip';
 import { changeDpiDataUrl } from "changedpi";
+import { 
+  createImage, 
+  createWatermarkedImage, 
+  createMockupImage, 
+  createZipFile 
+} from "@/utils/imageProcessing";
 
 const Index = () => {
   const [activeFeature, setActiveFeature] = useState("");
@@ -40,53 +45,6 @@ const Index = () => {
     }
   };
 
-  const createWatermarkedImage = async (imageDataUrl: string): Promise<string> => {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    const img = await createImage(imageDataUrl);
-    
-    canvas.width = img.width;
-    canvas.height = img.height;
-    
-    ctx?.drawImage(img, 0, 0);
-    
-    if (ctx) {
-      // Add text watermark
-      ctx.font = "180px Arial";
-      ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      
-      ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-      ctx.shadowBlur = 4;
-      ctx.shadowOffsetX = 2;
-      ctx.shadowOffsetY = 2;
-      
-      ctx.fillText(
-        "Ultra High Resolution",
-        canvas.width / 2,
-        canvas.height / 2
-      );
-      
-      // Reset shadow for logo
-      ctx.shadowColor = "transparent";
-      ctx.shadowBlur = 0;
-      ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 0;
-      
-      // Add logo watermark
-      const logoImg = await createImage("/lovable-uploads/6a3b93f0-d58c-4c78-8496-4639c21555d2.png");
-      const logoWidth = canvas.width * 0.15;
-      const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
-      
-      ctx.globalAlpha = 0.4;
-      ctx.drawImage(logoImg, 10, 10, logoWidth, logoHeight);
-      ctx.globalAlpha = 1.0;
-    }
-    
-    return canvas.toDataURL("image/jpeg", 0.9);
-  };
-
   const processImage = async () => {
     if (!uploadedImage) {
       toast({
@@ -107,45 +65,13 @@ const Index = () => {
       jpgCtx?.drawImage(img1, 0, 0, 3840, 2160);
       const jpgImage = jpgCanvas.toDataURL("image/jpeg", 0.9);
       
-      // Convert DPI to 300
+      // Convert DPI to 300 and create watermarked version
       const dpiAdjustedImage = changeDpiDataUrl(jpgImage, 300);
-
-      // Create watermarked version
       const watermarkedImage = await createWatermarkedImage(dpiAdjustedImage);
+      const mockupImage = await createMockupImage("/lovable-uploads/e0990050-1d0a-4a84-957f-2ea4deb3af1f.png", dpiAdjustedImage);
 
-      toast({
-        title: "Processing complete",
-        description: "Image converted, resized, and DPI adjusted",
-      });
-
-      // Step 2: Create mockup
-      const mockupCanvas = document.createElement("canvas");
-      const mockupCtx = mockupCanvas.getContext("2d");
-      mockupCanvas.width = 1588;
-      mockupCanvas.height = 1191;
-
-      const defaultImage = await createImage("/lovable-uploads/e0990050-1d0a-4a84-957f-2ea4deb3af1f.png");
-      const processedImage = await createImage(dpiAdjustedImage);
-
-      mockupCtx?.drawImage(defaultImage, 0, 0, mockupCanvas.width, mockupCanvas.height);
-      mockupCtx?.drawImage(
-        processedImage,
-        228, 224,  // top-left coordinates
-        1362 - 228, 841 - 224  // width and height based on coordinates
-      );
-
-      const mockupImage = mockupCanvas.toDataURL("image/jpeg", 0.9);
-
-      // Create ZIP file with all three images
-      const zip = new JSZip();
-      
-      // Add all images to the ZIP
-      zip.file("processed.jpg", dpiAdjustedImage.split('base64,')[1], {base64: true});
-      zip.file("mockup.jpg", mockupImage.split('base64,')[1], {base64: true});
-      zip.file("watermarked.jpg", watermarkedImage.split('base64,')[1], {base64: true});
-
-      // Generate and download ZIP
-      const content = await zip.generateAsync({type: "blob"});
+      // Create and download ZIP file
+      const content = await createZipFile(dpiAdjustedImage, mockupImage, watermarkedImage);
       const url = URL.createObjectURL(content);
       const a = document.createElement("a");
       a.href = url;
@@ -168,15 +94,6 @@ const Index = () => {
       });
       console.error(error);
     }
-  };
-
-  const createImage = (src: string): Promise<HTMLImageElement> => {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => resolve(img);
-      img.onerror = reject;
-      img.src = src;
-    });
   };
 
   return (
