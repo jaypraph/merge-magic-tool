@@ -60,8 +60,8 @@ export const WatermarkComponent = () => {
         // Load and draw the logo watermark
         const logoImg = new Image();
         logoImg.onload = () => {
-          // Calculate logo size (reduced to 10% of the image width)
-          const logoWidth = canvas.width * 0.1;
+          // Calculate logo size (increased to 15% of the image width)
+          const logoWidth = canvas.width * 0.15;
           const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
           
           // Draw logo in top-left corner with minimal padding
