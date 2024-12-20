@@ -2,7 +2,7 @@ import { useState, useCallback, useRef } from "react";
 import { ImageUpload } from "./ImageUpload";
 import { DrawingCanvas } from "./DrawingCanvas";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Download, Database } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,6 +21,15 @@ export const ImageEditor = () => {
   });
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
+
+  const setDefaultCoordinates = () => {
+    setCoordinates({
+      topLeft: "(100,100)",
+      topRight: "(300,100)",
+      bottomLeft: "(100,300)",
+      bottomRight: "(300,300)"
+    });
+  };
 
   const handleMergeImages = useCallback(async () => {
     if (!image1 || !image2) {
@@ -85,17 +94,28 @@ export const ImageEditor = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-4">
           <div className="flex items-center gap-4">
-            <Button
-              onClick={() => setRectangleMode(!rectangleMode)}
-              className={cn(
-                "w-12 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white",
-                rectangleMode 
-                  ? "transform translate-y-[2px]" 
-                  : "shadow-[0_4px_0_0_rgba(0,0,0,0.5)]"
-              )}
-            >
-              R
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => setRectangleMode(!rectangleMode)}
+                className={cn(
+                  "w-12 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white",
+                  rectangleMode 
+                    ? "transform translate-y-[2px]" 
+                    : "shadow-[0_4px_0_0_rgba(0,0,0,0.5)]"
+                )}
+              >
+                R
+              </Button>
+              <Button
+                onClick={setDefaultCoordinates}
+                className={cn(
+                  "w-12 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white",
+                  "shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:transform hover:translate-y-[2px] hover:shadow-none"
+                )}
+              >
+                <Database className="h-6 w-6" />
+              </Button>
+            </div>
             <div className="grid grid-cols-2 gap-2">
               <Textarea
                 value={coordinates.topLeft}
