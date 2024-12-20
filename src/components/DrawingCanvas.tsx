@@ -59,10 +59,10 @@ export const DrawingCanvas = ({
   ) => {
     ctx.font = '48px Arial';
     ctx.fillStyle = '#000000';
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-    ctx.shadowBlur = 4;
-    ctx.shadowOffsetX = 2;
-    ctx.shadowOffsetY = 2;
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetX = 4;
+    ctx.shadowOffsetY = 4;
     
     // Top-left coordinates
     ctx.fillText(`(${x},${y})`, x - 15, y - 15);
