@@ -1,6 +1,7 @@
 import { ImageEditor } from "@/components/ImageEditor";
 import { TopMenuBar } from "@/components/TopMenuBar";
 import { PngToJpgConverter } from "@/components/PngToJpgConverter";
+import { ImageResizer } from "@/components/ImageResizer";
 import { useState } from "react";
 
 const Index = () => {
@@ -20,6 +21,7 @@ const Index = () => {
           </>
         )}
         {activeFeature === "jpg" && <PngToJpgConverter />}
+        {activeFeature === "resize" && <ImageResizer />}
       </div>
     </div>
   );
