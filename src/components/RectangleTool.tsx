@@ -36,9 +36,22 @@ export const RectangleTool = ({ containerRef }: RectangleToolProps) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
+    
+    // Calculate the side length based on the larger difference
+    const xDiff = Math.abs(x - rectangle.start.x);
+    const yDiff = Math.abs(y - rectangle.start.y);
+    const sideLength = Math.max(xDiff, yDiff);
+    
+    // Determine the direction to maintain square shape
+    const xDir = x >= rectangle.start.x ? 1 : -1;
+    const yDir = y >= rectangle.start.y ? 1 : -1;
+    
     setRectangle({
-      ...rectangle,
-      end: { x, y }
+      start: rectangle.start,
+      end: {
+        x: rectangle.start.x + (sideLength * xDir),
+        y: rectangle.start.y + (sideLength * yDir)
+      }
     });
   };
 
@@ -67,22 +80,22 @@ export const RectangleTool = ({ containerRef }: RectangleToolProps) => {
             height: Math.abs(rectangle.end.y - rectangle.start.y),
           }}
         >
-          <span className="absolute top-0 left-0 -translate-y-6 text-xs text-slate-300">
+          <span className="absolute top-0 left-0 -translate-y-6 text-xs text-black">
             ({Math.round(Math.min(rectangle.start.x, rectangle.end.x))}, 
             {Math.round(Math.min(rectangle.start.y, rectangle.end.y))})
           </span>
           
-          <span className="absolute top-0 right-0 -translate-y-6 text-xs text-slate-300">
+          <span className="absolute top-0 right-0 -translate-y-6 text-xs text-black">
             ({Math.round(Math.max(rectangle.start.x, rectangle.end.x))}, 
             {Math.round(Math.min(rectangle.start.y, rectangle.end.y))})
           </span>
           
-          <span className="absolute bottom-0 left-0 translate-y-6 text-xs text-slate-300">
+          <span className="absolute bottom-0 left-0 translate-y-6 text-xs text-black">
             ({Math.round(Math.min(rectangle.start.x, rectangle.end.x))}, 
             {Math.round(Math.max(rectangle.start.y, rectangle.end.y))})
           </span>
           
-          <span className="absolute bottom-0 right-0 translate-y-6 text-xs text-slate-300">
+          <span className="absolute bottom-0 right-0 translate-y-6 text-xs text-black">
             ({Math.round(Math.max(rectangle.start.x, rectangle.end.x))}, 
             {Math.round(Math.max(rectangle.start.y, rectangle.end.y))})
           </span>
