@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Merge, FileImage, Maximize2 } from "lucide-react";
+import { Merge, FileImage } from "lucide-react";
 
 interface TopMenuBarProps {
   activeFeature: string;
@@ -14,10 +14,6 @@ export const TopMenuBar = ({ activeFeature, onFeatureSelect }: TopMenuBarProps) 
 
   const handleJpgClick = () => {
     onFeatureSelect(activeFeature === "jpg" ? "" : "jpg");
-  };
-
-  const handleResizeClick = () => {
-    onFeatureSelect(activeFeature === "resize" ? "" : "resize");
   };
 
   return (
@@ -47,18 +43,6 @@ export const TopMenuBar = ({ activeFeature, onFeatureSelect }: TopMenuBarProps) 
           >
             <Merge className="mr-2 h-5 w-5" />
             MockUp
-          </Button>
-          <Button
-            onClick={handleResizeClick}
-            className={cn(
-              "w-28 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white mr-2",
-              activeFeature === "resize"
-                ? "transform translate-y-[2px]"
-                : "shadow-[0_4px_0_0_rgba(0,0,0,0.5)]"
-            )}
-          >
-            <Maximize2 className="mr-2 h-5 w-5" />
-            Resize
           </Button>
         </div>
       </div>
