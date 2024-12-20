@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Upload, Play } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import JSZip from 'jszip';
+import { changeDpiDataUrl } from "changedpi";
 
 const Index = () => {
   const [activeFeature, setActiveFeature] = useState("");
@@ -49,7 +50,7 @@ const Index = () => {
     }
 
     try {
-      // Step 1: Convert to JPG and resize
+      // Step 1: Convert to JPG, resize, and set DPI to 300
       const jpgCanvas = document.createElement("canvas");
       const jpgCtx = jpgCanvas.getContext("2d");
       const img1 = await createImage(uploadedImage);
@@ -57,10 +58,13 @@ const Index = () => {
       jpgCanvas.height = 2160;
       jpgCtx?.drawImage(img1, 0, 0, 3840, 2160);
       const jpgImage = jpgCanvas.toDataURL("image/jpeg", 0.9);
+      
+      // Convert DPI to 300
+      const dpiAdjustedImage = changeDpiDataUrl(jpgImage, 300);
 
       toast({
         title: "Step 1 complete",
-        description: "Image converted to JPG and resized",
+        description: "Image converted to JPG, resized, and DPI set to 300",
       });
 
       // Step 2: Create mockup
@@ -70,7 +74,7 @@ const Index = () => {
       mockupCanvas.height = 1191;
 
       const defaultImage = await createImage("/lovable-uploads/e0990050-1d0a-4a84-957f-2ea4deb3af1f.png");
-      const processedImage = await createImage(jpgImage);
+      const processedImage = await createImage(dpiAdjustedImage);
 
       mockupCtx?.drawImage(defaultImage, 0, 0, mockupCanvas.width, mockupCanvas.height);
       mockupCtx?.drawImage(
@@ -90,7 +94,7 @@ const Index = () => {
       const zip = new JSZip();
       
       // Add both images to the ZIP
-      zip.file("processed.jpg", jpgImage.split('base64,')[1], {base64: true});
+      zip.file("processed.jpg", dpiAdjustedImage.split('base64,')[1], {base64: true});
       zip.file("mockup.jpg", mockupImage.split('base64,')[1], {base64: true});
 
       // Generate and download ZIP
