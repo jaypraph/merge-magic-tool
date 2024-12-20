@@ -64,8 +64,8 @@ export const RectangleTool = ({ containerRef }: RectangleToolProps) => {
       <Button 
         variant="outline" 
         className={cn(
-          "absolute top-4 left-4 z-10 w-10 h-10 font-bold",
-          rectangle ? "shadow-inner bg-accent" : "shadow-md hover:shadow-lg"
+          "absolute top-4 left-4 z-10 w-10 h-10 text-black shadow-md",
+          rectangle ? "shadow-inner bg-accent" : "hover:shadow-lg"
         )}
         onClick={() => setRectangle(null)}
       >
