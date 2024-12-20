@@ -1,5 +1,6 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { ImageUpload } from "./ImageUpload";
+import { DrawingCanvas } from "./DrawingCanvas";
 import { Button } from "@/components/ui/button";
 import { Download, Square } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
@@ -9,72 +10,9 @@ export const ImageEditor = () => {
   const [image1, setImage1] = useState<string>(defaultImage);
   const [image2, setImage2] = useState<string>("");
   const [mergedImage, setMergedImage] = useState<string>("");
-  const [isDrawing, setIsDrawing] = useState(false);
   const [rectangleMode, setRectangleMode] = useState(false);
-  const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
-
-  useEffect(() => {
-    if (image1) {
-      const canvas = canvasRef.current;
-      const ctx = canvas?.getContext("2d");
-      if (canvas && ctx) {
-        const img = new Image();
-        img.onload = () => {
-          canvas.width = img.width;
-          canvas.height = img.height;
-          ctx.drawImage(img, 0, 0);
-        };
-        img.src = image1;
-      }
-    }
-  }, [image1]);
-
-  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!rectangleMode) return;
-    
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    setIsDrawing(true);
-    setStartPos({ x, y });
-  }, [rectangleMode]);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDrawing || !rectangleMode) return;
-    
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d");
-    if (!canvas || !ctx) return;
-    
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    // Redraw the original image
-    const img = new Image();
-    img.onload = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0);
-      
-      // Draw the new rectangle
-      ctx.strokeStyle = "red";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.rect(startPos.x, startPos.y, x - startPos.x, y - startPos.y);
-      ctx.stroke();
-    };
-    img.src = image1;
-  }, [isDrawing, rectangleMode, startPos, image1]);
-
-  const handleMouseUp = useCallback(() => {
-    setIsDrawing(false);
-  }, []);
 
   const handleMergeImages = useCallback(async () => {
     if (!image1 || !image2) {
@@ -150,14 +88,7 @@ export const ImageEditor = () => {
             </Button>
           </div>
           <div className="relative border-2 border-dashed rounded-lg p-4">
-            <canvas
-              ref={canvasRef}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp}
-              className="max-w-full h-auto cursor-crosshair"
-            />
+            <DrawingCanvas image={image1} rectangleMode={rectangleMode} />
             <ImageUpload
               value={image1}
               onChange={setImage1}
