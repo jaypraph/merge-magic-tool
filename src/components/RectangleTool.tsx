@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Square } from "lucide-react";
 
 interface Coordinates {
   x: number;
@@ -63,11 +62,13 @@ export const RectangleTool = ({ containerRef }: RectangleToolProps) => {
     <>
       <Button 
         variant="outline" 
-        className="absolute top-4 left-4 z-10"
+        className={cn(
+          "absolute top-4 left-4 z-10 w-10 h-10 font-bold",
+          rectangle ? "shadow-inner bg-accent" : "shadow-md hover:shadow-lg"
+        )}
         onClick={() => setRectangle(null)}
       >
-        <Square className="h-4 w-4 mr-2" />
-        Rectangle Tool
+        R
       </Button>
 
       {rectangle && (
