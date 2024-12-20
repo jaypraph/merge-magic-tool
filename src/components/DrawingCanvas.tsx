@@ -26,19 +26,27 @@ export const DrawingCanvas = ({ image, rectangleMode }: DrawingCanvasProps) => {
     }
   }, [image]);
 
+  const getMousePos = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
+    return {
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY
+    };
+  }, []);
+
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!rectangleMode) return;
     
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
+    const pos = getMousePos(e);
     setIsDrawing(true);
-    setStartPos({ x, y });
-  }, [rectangleMode]);
+    setStartPos(pos);
+  }, [rectangleMode, getMousePos]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!isDrawing || !rectangleMode) return;
@@ -47,9 +55,7 @@ export const DrawingCanvas = ({ image, rectangleMode }: DrawingCanvasProps) => {
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
     
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const currentPos = getMousePos(e);
     
     const img = new Image();
     img.onload = () => {
@@ -59,11 +65,21 @@ export const DrawingCanvas = ({ image, rectangleMode }: DrawingCanvasProps) => {
       ctx.strokeStyle = "#000000";
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.rect(startPos.x, startPos.y, x - startPos.x, y - startPos.y);
+      
+      const width = currentPos.x - startPos.x;
+      const height = currentPos.y - startPos.y;
+      
+      // Draw rectangle centered on cursor
+      ctx.rect(
+        startPos.x - width/2,
+        startPos.y - height/2,
+        width,
+        height
+      );
       ctx.stroke();
     };
     img.src = image;
-  }, [isDrawing, rectangleMode, startPos, image]);
+  }, [isDrawing, rectangleMode, startPos, image, getMousePos]);
 
   const handleMouseUp = useCallback(() => {
     setIsDrawing(false);
