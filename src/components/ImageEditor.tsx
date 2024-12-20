@@ -101,25 +101,25 @@ export const ImageEditor = () => {
                 value={coordinates.topLeft}
                 readOnly
                 placeholder="Top Left"
-                className="h-16 text-lg font-mono resize-none"
+                className="h-12 text-base font-mono resize-none"
               />
               <Textarea
                 value={coordinates.topRight}
                 readOnly
                 placeholder="Top Right"
-                className="h-16 text-lg font-mono resize-none"
+                className="h-12 text-base font-mono resize-none"
               />
               <Textarea
                 value={coordinates.bottomLeft}
                 readOnly
                 placeholder="Bottom Left"
-                className="h-16 text-lg font-mono resize-none"
+                className="h-12 text-base font-mono resize-none"
               />
               <Textarea
                 value={coordinates.bottomRight}
                 readOnly
                 placeholder="Bottom Right"
-                className="h-16 text-lg font-mono resize-none"
+                className="h-12 text-base font-mono resize-none"
               />
             </div>
           </div>
