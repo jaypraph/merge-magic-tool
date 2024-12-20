@@ -4,7 +4,7 @@ import { PngToJpgConverter } from "@/components/PngToJpgConverter";
 import { ImageResizer } from "@/components/ImageResizer";
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Upload } from "lucide-react";
+import { Upload, Play } from "lucide-react";
 
 const Index = () => {
   const [activeFeature, setActiveFeature] = useState("");
@@ -34,13 +34,19 @@ const Index = () => {
         activeFeature={activeFeature}
         onFeatureSelect={setActiveFeature}
       />
-      <div className="flex justify-center mt-4">
+      <div className="flex justify-center mt-4 gap-4">
         <Button
           onClick={handleUploadClick}
           className="w-28 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none"
         >
           <Upload className="mr-2 h-5 w-5" />
           Upload
+        </Button>
+        <Button
+          className="w-28 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none"
+        >
+          <Play className="mr-2 h-5 w-5" />
+          Go
         </Button>
         <input
           type="file"
