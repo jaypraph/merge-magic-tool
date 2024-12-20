@@ -31,6 +31,17 @@ export const ImageEditor = () => {
     });
   };
 
+  const parseCoordinates = (coord: string) => {
+    const match = coord.match(/\((\d+),(\d+)\)/);
+    if (match) {
+      return {
+        x: parseInt(match[1]),
+        y: parseInt(match[2])
+      };
+    }
+    return null;
+  };
+
   const handleMergeImages = useCallback(async () => {
     if (!image1 || !image2) {
       toast({
@@ -41,17 +52,50 @@ export const ImageEditor = () => {
       return;
     }
 
+    if (!coordinates.topLeft || !coordinates.topRight || !coordinates.bottomLeft || !coordinates.bottomRight) {
+      toast({
+        title: "Missing Coordinates",
+        description: "Please draw a rectangle or set default coordinates first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
+      
+      // Load both images
       const img1 = await loadImage(canvasRef.current?.toDataURL() || image1);
       const img2 = await loadImage(image2);
 
-      canvas.width = img1.width + img2.width;
-      canvas.height = Math.max(img1.height, img2.height);
+      // Set canvas size to match the first image
+      canvas.width = img1.width;
+      canvas.height = img1.height;
 
+      // Draw the first image
       ctx?.drawImage(img1, 0, 0);
-      ctx?.drawImage(img2, img1.width, 0);
+
+      // Parse coordinates
+      const topLeft = parseCoordinates(coordinates.topLeft);
+      const topRight = parseCoordinates(coordinates.topRight);
+      const bottomLeft = parseCoordinates(coordinates.bottomLeft);
+      const bottomRight = parseCoordinates(coordinates.bottomRight);
+
+      if (topLeft && topRight && bottomLeft && bottomRight) {
+        // Calculate dimensions of the target area
+        const width = topRight.x - topLeft.x;
+        const height = bottomLeft.y - topLeft.y;
+
+        // Draw the second image into the specified coordinates
+        ctx?.drawImage(
+          img2,
+          topLeft.x,
+          topLeft.y,
+          width,
+          height
+        );
+      }
 
       const merged = canvas.toDataURL("image/png");
       setMergedImage(merged);
@@ -67,7 +111,7 @@ export const ImageEditor = () => {
         variant: "destructive",
       });
     }
-  }, [image1, image2, toast]);
+  }, [image1, image2, coordinates, toast]);
 
   const handleDownload = useCallback(() => {
     if (!mergedImage) return;
