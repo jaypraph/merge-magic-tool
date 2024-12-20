@@ -24,8 +24,8 @@ export const ImageEditor = () => {
 
   const setDefaultCoordinates = () => {
     setCoordinates({
-      topLeft: "(228,214)",
-      topRight: "(1362,214)",
+      topLeft: "(228,264)",
+      topRight: "(1362,264)",
       bottomLeft: "(228,841)",
       bottomRight: "(1362,841)"
     });
