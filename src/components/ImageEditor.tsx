@@ -14,10 +14,10 @@ export const ImageEditor = () => {
   const [mergedImage, setMergedImage] = useState<string>("");
   const [rectangleMode, setRectangleMode] = useState(false);
   const [coordinates, setCoordinates] = useState({
-    topLeft: "",
-    topRight: "",
-    bottomLeft: "",
-    bottomRight: ""
+    topLeft: "(228,224)",
+    topRight: "(1362,224)",
+    bottomLeft: "(228,841)",
+    bottomRight: "(1362,841)"
   });
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
