@@ -42,6 +42,24 @@ export const ImageUpload = ({
     noClick: showRectangleTool,
   });
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (showRectangleTool) {
+      e.preventDefault();
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (showRectangleTool) {
+      e.preventDefault();
+    }
+  };
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    if (showRectangleTool) {
+      e.preventDefault();
+    }
+  };
+
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold">{label}</h2>
