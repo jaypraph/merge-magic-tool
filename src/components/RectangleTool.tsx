@@ -20,7 +20,7 @@ export const RectangleTool = ({ containerRef }: RectangleToolProps) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [rectangle, setRectangle] = useState<Rectangle | null>(null);
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseDown = (e: React.MouseEvent) => {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -32,7 +32,7 @@ export const RectangleTool = ({ containerRef }: RectangleToolProps) => {
     });
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDrawing || !rectangle || !containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -75,16 +75,13 @@ export const RectangleTool = ({ containerRef }: RectangleToolProps) => {
 
       {rectangle && (
         <div
-          className="absolute border border-black pointer-events-none"
+          className="absolute border-2 border-black pointer-events-none"
           style={{
             left: Math.min(rectangle.start.x, rectangle.end.x),
             top: Math.min(rectangle.start.y, rectangle.end.y),
             width: Math.abs(rectangle.end.x - rectangle.start.x),
             height: Math.abs(rectangle.end.y - rectangle.start.y),
           }}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
         >
           <span className="absolute top-0 left-0 -translate-y-6 text-xs text-black">
             ({Math.round(Math.min(rectangle.start.x, rectangle.end.x))}, 

@@ -39,13 +39,12 @@ export const ImageUpload = ({
       "image/*": [".png", ".jpg", ".jpeg", ".gif"],
     },
     maxFiles: 1,
-    noClick: showRectangleTool, // Disable click-to-upload when rectangle tool is active
+    noClick: showRectangleTool,
   });
 
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold">{label}</h2>
-      {showRectangleTool && <RectangleTool containerRef={containerRef} />}
       <div
         {...getRootProps()}
         ref={containerRef}
@@ -56,8 +55,10 @@ export const ImageUpload = ({
             : "border-slate-700 hover:border-blue-500/50",
           showRectangleTool ? "cursor-crosshair" : "cursor-pointer"
         )}
+        onMouseDown={showRectangleTool ? (e) => e.preventDefault() : undefined}
       >
         <input {...getInputProps()} />
+        {showRectangleTool && <RectangleTool containerRef={containerRef} />}
         {value ? (
           <img
             src={value}
