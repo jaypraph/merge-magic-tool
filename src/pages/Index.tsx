@@ -40,6 +40,53 @@ const Index = () => {
     }
   };
 
+  const createWatermarkedImage = async (imageDataUrl: string): Promise<string> => {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const img = await createImage(imageDataUrl);
+    
+    canvas.width = img.width;
+    canvas.height = img.height;
+    
+    ctx?.drawImage(img, 0, 0);
+    
+    if (ctx) {
+      // Add text watermark
+      ctx.font = "180px Arial";
+      ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      
+      ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+      ctx.shadowBlur = 4;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
+      
+      ctx.fillText(
+        "Ultra High Resolution",
+        canvas.width / 2,
+        canvas.height / 2
+      );
+      
+      // Reset shadow for logo
+      ctx.shadowColor = "transparent";
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      
+      // Add logo watermark
+      const logoImg = await createImage("/lovable-uploads/6a3b93f0-d58c-4c78-8496-4639c21555d2.png");
+      const logoWidth = canvas.width * 0.15;
+      const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
+      
+      ctx.globalAlpha = 0.4;
+      ctx.drawImage(logoImg, 10, 10, logoWidth, logoHeight);
+      ctx.globalAlpha = 1.0;
+    }
+    
+    return canvas.toDataURL("image/jpeg", 0.9);
+  };
+
   const processImage = async () => {
     if (!uploadedImage) {
       toast({
@@ -63,9 +110,12 @@ const Index = () => {
       // Convert DPI to 300
       const dpiAdjustedImage = changeDpiDataUrl(jpgImage, 300);
 
+      // Create watermarked version
+      const watermarkedImage = await createWatermarkedImage(dpiAdjustedImage);
+
       toast({
-        title: "Step 1 complete",
-        description: "Image converted to JPG, resized, and DPI set to 300",
+        title: "Processing complete",
+        description: "Image converted, resized, and DPI adjusted",
       });
 
       // Step 2: Create mockup
@@ -86,17 +136,13 @@ const Index = () => {
 
       const mockupImage = mockupCanvas.toDataURL("image/jpeg", 0.9);
 
-      toast({
-        title: "Step 2 complete",
-        description: "Mockup created",
-      });
-
-      // Create ZIP file with both images
+      // Create ZIP file with all three images
       const zip = new JSZip();
       
-      // Add both images to the ZIP
+      // Add all images to the ZIP
       zip.file("processed.jpg", dpiAdjustedImage.split('base64,')[1], {base64: true});
       zip.file("mockup.jpg", mockupImage.split('base64,')[1], {base64: true});
+      zip.file("watermarked.jpg", watermarkedImage.split('base64,')[1], {base64: true});
 
       // Generate and download ZIP
       const content = await zip.generateAsync({type: "blob"});
