@@ -65,13 +65,15 @@ export const ImageEditor = () => {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
       
+      // Set specific dimensions for the canvas
+      canvas.width = 1588;
+      canvas.height = 1191;
+
       const img1 = await loadImage(canvasRef.current?.toDataURL() || image1);
       const img2 = await loadImage(image2);
 
-      canvas.width = img1.width;
-      canvas.height = img1.height;
-
-      ctx?.drawImage(img1, 0, 0);
+      // Draw first image scaled to canvas size
+      ctx?.drawImage(img1, 0, 0, canvas.width, canvas.height);
 
       const topLeft = parseCoordinates(coordinates.topLeft);
       const topRight = parseCoordinates(coordinates.topRight);
@@ -79,15 +81,21 @@ export const ImageEditor = () => {
       const bottomRight = parseCoordinates(coordinates.bottomRight);
 
       if (topLeft && topRight && bottomLeft && bottomRight) {
-        const width = topRight.x - topLeft.x;
-        const height = bottomLeft.y - topLeft.y;
+        // Scale coordinates to new canvas size
+        const scaleX = canvas.width / img1.width;
+        const scaleY = canvas.height / img1.height;
+        
+        const scaledX = Math.round(topLeft.x * scaleX);
+        const scaledY = Math.round(topLeft.y * scaleY);
+        const scaledWidth = Math.round((topRight.x - topLeft.x) * scaleX);
+        const scaledHeight = Math.round((bottomLeft.y - topLeft.y) * scaleY);
 
         ctx?.drawImage(
           img2,
-          topLeft.x,
-          topLeft.y,
-          width,
-          height
+          scaledX,
+          scaledY,
+          scaledWidth,
+          scaledHeight
         );
       }
 
