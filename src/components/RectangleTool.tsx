@@ -74,7 +74,7 @@ export const RectangleTool = ({ containerRef }: RectangleToolProps) => {
 
       {rectangle && (
         <div
-          className="absolute border-2 border-blue-500 pointer-events-none"
+          className="absolute border border-black pointer-events-none"
           style={{
             left: Math.min(rectangle.start.x, rectangle.end.x),
             top: Math.min(rectangle.start.y, rectangle.end.y),
