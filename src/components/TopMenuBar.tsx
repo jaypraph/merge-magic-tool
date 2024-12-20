@@ -18,8 +18,8 @@ export const TopMenuBar = ({ activeFeature, onFeatureSelect }: TopMenuBarProps) 
             className={cn(
               "w-28 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white mr-2",
               activeFeature === "mockup"
-                ? "transform translate-y-[2px] shadow-none"
-                : "shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px]"
+                ? "transform translate-y-[2px]"
+                : "shadow-[0_4px_0_0_rgba(0,0,0,0.5)]"
             )}
           >
             <Merge className="mr-2 h-5 w-5" />
