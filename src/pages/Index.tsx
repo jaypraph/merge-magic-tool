@@ -1,5 +1,6 @@
 import { ImageEditor } from "@/components/ImageEditor";
 import { TopMenuBar } from "@/components/TopMenuBar";
+import { PngToJpgConverter } from "@/components/PngToJpgConverter";
 import { useState } from "react";
 
 const Index = () => {
@@ -18,6 +19,7 @@ const Index = () => {
             <ImageEditor />
           </>
         )}
+        {activeFeature === "jpg" && <PngToJpgConverter />}
       </div>
     </div>
   );
