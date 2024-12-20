@@ -77,20 +77,18 @@ export const ImageEditor = () => {
     <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold">First Image</h2>
-            <Button
-              onClick={() => setRectangleMode(!rectangleMode)}
-              className={cn(
-                "w-12 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white",
-                rectangleMode 
-                  ? "transform translate-y-[2px]" 
-                  : "shadow-[0_4px_0_0_rgba(0,0,0,0.5)]"
-              )}
-            >
-              R
-            </Button>
-          </div>
+          <Button
+            onClick={() => setRectangleMode(!rectangleMode)}
+            className={cn(
+              "w-12 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white",
+              rectangleMode 
+                ? "transform translate-y-[2px]" 
+                : "shadow-[0_4px_0_0_rgba(0,0,0,0.5)]"
+            )}
+          >
+            R
+          </Button>
+          <h2 className="text-xl font-semibold">First Image</h2>
           <div className="relative border-2 border-dashed rounded-lg p-4">
             <DrawingCanvas image={image1} rectangleMode={rectangleMode} />
             <ImageUpload
