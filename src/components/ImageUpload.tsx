@@ -55,7 +55,9 @@ export const ImageUpload = ({
             : "border-slate-700 hover:border-blue-500/50",
           showRectangleTool ? "cursor-crosshair" : "cursor-pointer"
         )}
-        onMouseDown={showRectangleTool ? (e) => e.preventDefault() : undefined}
+        onMouseDown={showRectangleTool ? handleMouseDown : undefined}
+        onMouseMove={showRectangleTool ? handleMouseMove : undefined}
+        onMouseUp={showRectangleTool ? handleMouseUp : undefined}
       >
         <input {...getInputProps()} />
         {showRectangleTool && <RectangleTool containerRef={containerRef} />}

@@ -85,7 +85,7 @@ export const RectangleTool = ({ containerRef }: RectangleToolProps) => {
         >
           <span className="absolute top-0 left-0 -translate-y-6 text-xs text-black">
             ({Math.round(Math.min(rectangle.start.x, rectangle.end.x))}, 
-            {Math.round(Math.min(rectangle.start.y, rectangle.end.y))})
+            {Math.round(Math.min(rectangle.start.y, rectangle.start.y))})
           </span>
           
           <span className="absolute top-0 right-0 -translate-y-6 text-xs text-black">
