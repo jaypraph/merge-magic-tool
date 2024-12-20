@@ -50,14 +50,6 @@ export const DrawingCanvas = ({
     };
   }, []);
 
-  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!rectangleMode) return;
-    
-    const pos = getMousePos(e);
-    setIsDrawing(true);
-    setStartPos(pos);
-  }, [rectangleMode, getMousePos]);
-
   const drawCoordinates = useCallback((
     ctx: CanvasRenderingContext2D,
     x: number,
@@ -65,21 +57,29 @@ export const DrawingCanvas = ({
     width: number,
     height: number
   ) => {
-    ctx.font = '16px Arial';
+    ctx.font = '48px Arial'; // Increased from 16px to 48px (300% larger)
     ctx.fillStyle = '#000000';
     
     // Top-left coordinates
-    ctx.fillText(`(${x},${y})`, x - 5, y - 5);
+    ctx.fillText(`(${x},${y})`, x - 15, y - 15);
     
     // Top-right coordinates
-    ctx.fillText(`(${x + width},${y})`, x + width + 5, y - 5);
+    ctx.fillText(`(${x + width},${y})`, x + width + 15, y - 15);
     
     // Bottom-left coordinates
-    ctx.fillText(`(${x},${y + height})`, x - 5, y + height + 15);
+    ctx.fillText(`(${x},${y + height})`, x - 15, y + height + 45);
     
     // Bottom-right coordinates
-    ctx.fillText(`(${x + width},${y + height})`, x + width + 5, y + height + 15);
+    ctx.fillText(`(${x + width},${y + height})`, x + width + 15, y + height + 45);
   }, []);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!rectangleMode) return;
+    
+    const pos = getMousePos(e);
+    setIsDrawing(true);
+    setStartPos(pos);
+  }, [rectangleMode, getMousePos]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!isDrawing || !rectangleMode) return;
