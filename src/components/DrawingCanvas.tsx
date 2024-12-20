@@ -66,15 +66,12 @@ export const DrawingCanvas = ({ image, rectangleMode }: DrawingCanvasProps) => {
       ctx.lineWidth = 2;
       ctx.beginPath();
       
-      const width = currentPos.x - startPos.x;
-      const height = currentPos.y - startPos.y;
-      
-      // Draw rectangle centered on cursor
+      // Draw rectangle with cursor at top-left corner
       ctx.rect(
-        startPos.x - width/2,
-        startPos.y - height/2,
-        width,
-        height
+        startPos.x,
+        startPos.y,
+        currentPos.x - startPos.x,
+        currentPos.y - startPos.y
       );
       ctx.stroke();
     };
