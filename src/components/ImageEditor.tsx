@@ -91,11 +91,6 @@ export const ImageEditor = () => {
           <h2 className="text-xl font-semibold">First Image</h2>
           <div className="relative border-2 border-dashed rounded-lg p-4">
             <DrawingCanvas image={image1} rectangleMode={rectangleMode} />
-            <ImageUpload
-              value={image1}
-              onChange={setImage1}
-              label="First Image"
-            />
           </div>
         </div>
         <ImageUpload
