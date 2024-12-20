@@ -8,12 +8,17 @@ interface TopMenuBarProps {
 }
 
 export const TopMenuBar = ({ activeFeature, onFeatureSelect }: TopMenuBarProps) => {
+  const handleMockupClick = () => {
+    // If mockup is already active, deactivate it, otherwise activate it
+    onFeatureSelect(activeFeature === "mockup" ? "" : "mockup");
+  };
+
   return (
     <div className="w-full bg-white border-b border-slate-200 shadow-sm mb-8">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center h-16">
           <Button
-            onClick={() => onFeatureSelect("mockup")}
+            onClick={handleMockupClick}
             className={cn(
               "w-28 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white mr-2",
               activeFeature === "mockup"
