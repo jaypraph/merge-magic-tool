@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface DrawingCanvasProps {
   image: string;
@@ -56,7 +56,6 @@ export const DrawingCanvas = ({ image, rectangleMode }: DrawingCanvasProps) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0);
       
-      // Draw the new rectangle in black
       ctx.strokeStyle = "#000000";
       ctx.lineWidth = 2;
       ctx.beginPath();

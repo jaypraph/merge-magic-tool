@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { ImageUpload } from "./ImageUpload";
 import { DrawingCanvas } from "./DrawingCanvas";
 import { Button } from "@/components/ui/button";
