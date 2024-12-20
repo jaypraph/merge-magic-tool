@@ -2,8 +2,9 @@ import { useState, useCallback, useRef } from "react";
 import { ImageUpload } from "./ImageUpload";
 import { DrawingCanvas } from "./DrawingCanvas";
 import { Button } from "@/components/ui/button";
-import { Download, Square } from "lucide-react";
+import { Download } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
 import defaultImage from "/lovable-uploads/e0990050-1d0a-4a84-957f-2ea4deb3af1f.png";
 
 export const ImageEditor = () => {
@@ -80,11 +81,14 @@ export const ImageEditor = () => {
             <h2 className="text-xl font-semibold">First Image</h2>
             <Button
               onClick={() => setRectangleMode(!rectangleMode)}
-              variant={rectangleMode ? "secondary" : "outline"}
-              className="gap-2"
+              className={cn(
+                "w-12 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white",
+                rectangleMode 
+                  ? "transform translate-y-[2px]" 
+                  : "shadow-[0_4px_0_0_rgba(0,0,0,0.5)]"
+              )}
             >
-              <Square className="h-4 w-4" />
-              {rectangleMode ? "Cancel Rectangle" : "Draw Rectangle"}
+              R
             </Button>
           </div>
           <div className="relative border-2 border-dashed rounded-lg p-4">
