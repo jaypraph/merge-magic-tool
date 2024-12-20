@@ -6,6 +6,7 @@ import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Upload, Play } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import JSZip from 'jszip';
 
 const Index = () => {
   const [activeFeature, setActiveFeature] = useState("");
@@ -47,59 +48,28 @@ const Index = () => {
     }
 
     try {
-      // Step 1: Convert to JPG
+      // Step 1: Convert to JPG and resize
       const jpgCanvas = document.createElement("canvas");
       const jpgCtx = jpgCanvas.getContext("2d");
       const img1 = await createImage(uploadedImage);
-      jpgCanvas.width = img1.width;
-      jpgCanvas.height = img1.height;
-      jpgCtx?.drawImage(img1, 0, 0);
-      const jpgImage = await new Promise<string>((resolve) => {
-        jpgCanvas.toBlob((blob) => {
-          if (blob) {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result as string);
-            reader.readAsDataURL(blob);
-          }
-        }, "image/jpeg", 0.9);
-      });
+      jpgCanvas.width = 3840;
+      jpgCanvas.height = 2160;
+      jpgCtx?.drawImage(img1, 0, 0, 3840, 2160);
+      const jpgImage = jpgCanvas.toDataURL("image/jpeg", 0.9);
 
       toast({
         title: "Step 1 complete",
-        description: "Image converted to JPG",
+        description: "Image converted to JPG and resized",
       });
 
-      // Step 2: Resize to 3840x2160
-      const resizeCanvas = document.createElement("canvas");
-      const resizeCtx = resizeCanvas.getContext("2d");
-      resizeCanvas.width = 3840;
-      resizeCanvas.height = 2160;
-      const img2 = await createImage(jpgImage);
-      resizeCtx?.drawImage(img2, 0, 0, 3840, 2160);
-      const resizedImage = await new Promise<string>((resolve) => {
-        resizeCanvas.toBlob((blob) => {
-          if (blob) {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result as string);
-            reader.readAsDataURL(blob);
-          }
-        }, "image/jpeg", 0.9);
-      });
-
-      toast({
-        title: "Step 2 complete",
-        description: "Image resized to 3840x2160",
-      });
-
-      // Step 3: Merge with default mockup
-      setActiveFeature("mockup");
+      // Step 2: Create mockup
       const mockupCanvas = document.createElement("canvas");
       const mockupCtx = mockupCanvas.getContext("2d");
       mockupCanvas.width = 1588;
       mockupCanvas.height = 1191;
 
       const defaultImage = await createImage("/lovable-uploads/e0990050-1d0a-4a84-957f-2ea4deb3af1f.png");
-      const processedImage = await createImage(resizedImage);
+      const processedImage = await createImage(jpgImage);
 
       mockupCtx?.drawImage(defaultImage, 0, 0, mockupCanvas.width, mockupCanvas.height);
       mockupCtx?.drawImage(
@@ -108,23 +78,35 @@ const Index = () => {
         1362 - 228, 841 - 224  // width and height based on coordinates
       );
 
-      mockupCanvas.toBlob((blob) => {
-        if (blob) {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = "processed-image.jpg";
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
+      const mockupImage = mockupCanvas.toDataURL("image/jpeg", 0.9);
 
-          toast({
-            title: "Success!",
-            description: "Image processing complete. Your file has been downloaded.",
-          });
-        }
-      }, "image/jpeg", 0.9);
+      toast({
+        title: "Step 2 complete",
+        description: "Mockup created",
+      });
+
+      // Create ZIP file with both images
+      const zip = new JSZip();
+      
+      // Add both images to the ZIP
+      zip.file("processed.jpg", jpgImage.split('base64,')[1], {base64: true});
+      zip.file("mockup.jpg", mockupImage.split('base64,')[1], {base64: true});
+
+      // Generate and download ZIP
+      const content = await zip.generateAsync({type: "blob"});
+      const url = URL.createObjectURL(content);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "processed-images.zip";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      toast({
+        title: "Success!",
+        description: "Images have been processed and downloaded as ZIP file.",
+      });
 
     } catch (error) {
       toast({
