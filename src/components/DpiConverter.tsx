@@ -7,6 +7,8 @@ import { changeDpiDataUrl } from "changedpi";
 export const DpiConverter = () => {
   const [uploadedImage, setUploadedImage] = useState<string>("");
   const { toast } = useToast();
+  
+  const fileInputRef = useState<HTMLInputElement | null>(null);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -17,6 +19,10 @@ export const DpiConverter = () => {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
   };
 
   const handleConvertDpi = async () => {
@@ -64,16 +70,15 @@ export const DpiConverter = () => {
           onChange={handleImageUpload}
           accept="image/*"
           className="hidden"
-          id="dpi-upload"
+          ref={fileInputRef}
         />
-        <label htmlFor="dpi-upload">
-          <Button
-            className="w-28 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none"
-          >
-            <Upload className="mr-2 h-5 w-5" />
-            Upload
-          </Button>
-        </label>
+        <Button
+          onClick={handleUploadClick}
+          className="w-28 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none"
+        >
+          <Upload className="mr-2 h-5 w-5" />
+          Upload
+        </Button>
         {uploadedImage && (
           <>
             <div className="w-full aspect-video relative border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
