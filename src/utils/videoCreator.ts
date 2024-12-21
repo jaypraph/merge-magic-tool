@@ -47,11 +47,12 @@ export const createVideoFromImages = async (images: string[]) => {
       'output.mp4'
     ]);
 
-    // Read the output video file
+    // Read the output video file and convert to Uint8Array
     const data = await ffmpeg.readFile('output.mp4');
+    const videoData = data instanceof Uint8Array ? data : new Uint8Array(data);
     
     // Create a download link and trigger download
-    const url = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
+    const url = URL.createObjectURL(new Blob([videoData], { type: 'video/mp4' }));
     const a = document.createElement('a');
     a.href = url;
     a.download = 'slideshow.mp4';
