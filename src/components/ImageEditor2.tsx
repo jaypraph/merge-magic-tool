@@ -1,15 +1,14 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback } from "react";
 import { ImageUpload } from "./ImageUpload";
 import { DrawingCanvas } from "./DrawingCanvas";
-import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { CoordinatesPanel } from "./CoordinatesPanel";
 import { MergedResult } from "./MergedResult";
 import { MockupSelector } from "./MockupSelector";
 import { mockupImages } from "@/constants/mockupDefaults";
+import { MergeDownloadButtons } from "./MergeDownloadButtons";
+import { createMockupImage } from "@/utils/mockupImageProcessing";
 import JSZip from "jszip";
-import { cn } from "@/lib/utils";
 
 export const ImageEditor2 = () => {
   const [selectedMockup, setSelectedMockup] = useState(mockupImages[0].src);
@@ -17,7 +16,6 @@ export const ImageEditor2 = () => {
   const [mergedImage, setMergedImage] = useState<string>("");
   const [rectangleMode, setRectangleMode] = useState(false);
   const [coordinates, setCoordinates] = useState(mockupImages[0].defaultCoordinates);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
 
   const setDefaultCoordinates = () => {
@@ -25,55 +23,6 @@ export const ImageEditor2 = () => {
     if (selectedMockupData?.defaultCoordinates) {
       setCoordinates(selectedMockupData.defaultCoordinates);
     }
-  };
-
-  const parseCoordinates = (coord: string) => {
-    const match = coord.match(/\((\d+),(\d+)\)/);
-    if (match) {
-      return {
-        x: parseInt(match[1]),
-        y: parseInt(match[2])
-      };
-    }
-    return null;
-  };
-
-  const createMergedImage = async (mockupSrc: string, mockupCoordinates: any) => {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    
-    canvas.width = 2000;
-    canvas.height = 2000;
-
-    const img1 = await loadImage(mockupSrc);
-    const img2 = await loadImage(image2);
-
-    ctx?.drawImage(img1, 0, 0, canvas.width, canvas.height);
-
-    const topLeft = parseCoordinates(mockupCoordinates.topLeft);
-    const topRight = parseCoordinates(mockupCoordinates.topRight);
-    const bottomLeft = parseCoordinates(mockupCoordinates.bottomLeft);
-    const bottomRight = parseCoordinates(mockupCoordinates.bottomRight);
-
-    if (topLeft && topRight && bottomLeft && bottomRight) {
-      const scaleX = canvas.width / img1.width;
-      const scaleY = canvas.height / img1.height;
-      
-      const scaledX = Math.round(topLeft.x * scaleX);
-      const scaledY = Math.round(topLeft.y * scaleY);
-      const scaledWidth = Math.round((topRight.x - topLeft.x) * scaleX);
-      const scaledHeight = Math.round((bottomLeft.y - topLeft.y) * scaleY);
-
-      ctx?.drawImage(
-        img2,
-        scaledX,
-        scaledY,
-        scaledWidth,
-        scaledHeight
-      );
-    }
-
-    return canvas.toDataURL("image/png");
   };
 
   const handleMergeImages = useCallback(async () => {
@@ -91,7 +40,7 @@ export const ImageEditor2 = () => {
       
       // Create a merged image for each mockup
       for (const mockup of mockupImages) {
-        const mergedImageData = await createMergedImage(mockup.src, mockup.defaultCoordinates);
+        const mergedImageData = await createMockupImage(mockup.src, image2, mockup.defaultCoordinates);
         const imageData = mergedImageData.split('base64,')[1];
         zip.file(`mockup-${mockup.id}.png`, imageData, {base64: true});
       }
@@ -110,7 +59,7 @@ export const ImageEditor2 = () => {
       // Show the preview of the currently selected mockup
       const selectedMockupData = mockupImages.find(m => m.src === selectedMockup);
       if (selectedMockupData) {
-        const previewImage = await createMergedImage(selectedMockup, selectedMockupData.defaultCoordinates);
+        const previewImage = await createMockupImage(selectedMockup, image2, selectedMockupData.defaultCoordinates);
         setMergedImage(previewImage);
       }
       
@@ -126,15 +75,6 @@ export const ImageEditor2 = () => {
       });
     }
   }, [image2, selectedMockup, toast]);
-
-  const loadImage = (src: string): Promise<HTMLImageElement> => {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => resolve(img);
-      img.onerror = reject;
-      img.src = src;
-    });
-  };
 
   const handleSelectMockup = (src: string) => {
     setSelectedMockup(src);
@@ -197,23 +137,11 @@ export const ImageEditor2 = () => {
         />
       </div>
 
-      <div className="flex justify-center gap-4">
-        <Button
-          onClick={handleMergeImages}
-          className="bg-blue-600 hover:bg-blue-700"
-        >
-          Merge Images
-        </Button>
-        {mergedImage && (
-          <Button
-            onClick={handleDownload}
-            className="bg-green-600 hover:bg-green-700"
-          >
-            <Download className="mr-2 h-4 w-4" />
-            Download
-          </Button>
-        )}
-      </div>
+      <MergeDownloadButtons
+        onMerge={handleMergeImages}
+        onDownload={handleDownload}
+        showDownload={!!mergedImage}
+      />
 
       <MergedResult mergedImage={mergedImage} />
     </div>
