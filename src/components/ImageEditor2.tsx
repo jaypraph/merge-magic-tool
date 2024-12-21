@@ -6,48 +6,23 @@ import { Download } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { CoordinatesPanel } from "./CoordinatesPanel";
 import { MergedResult } from "./MergedResult";
-import { cn } from "@/lib/utils"; // Added this import
-
-// Import all mockup images
-import mockup1 from "/lovable-uploads/f11800fe-956b-491f-be37-84dcdb5d49a6.png";
-import mockup2 from "/lovable-uploads/d431648e-7ad2-4f54-b0b5-2e8bc6584253.png";
-import mockup3 from "/lovable-uploads/73501f70-efa7-4db7-8023-3350c6c6bdc3.png";
-import mockup4 from "/lovable-uploads/5f1a7892-29a7-4bd5-af8b-6e461f99f6ae.png";
-import mockup5 from "/lovable-uploads/a0e68f3a-cf81-46d9-9c33-ca2623df6c0e.png";
-import mockup6 from "/lovable-uploads/cc7da80f-4c68-45bb-b29b-50ef30d1477b.png";
-import mockup7 from "/lovable-uploads/d4eeac06-22f4-4135-a4ac-0b3931c8fac9.png";
-
-const mockupImages = [
-  { id: 1, src: mockup1 },
-  { id: 2, src: mockup2 },
-  { id: 3, src: mockup3 },
-  { id: 4, src: mockup4 },
-  { id: 5, src: mockup5 },
-  { id: 6, src: mockup6 },
-  { id: 7, src: mockup7 },
-];
+import { MockupSelector } from "./MockupSelector";
+import { mockupImages } from "@/constants/mockupDefaults";
 
 export const ImageEditor2 = () => {
   const [selectedMockup, setSelectedMockup] = useState(mockupImages[0].src);
   const [image2, setImage2] = useState<string>("");
   const [mergedImage, setMergedImage] = useState<string>("");
   const [rectangleMode, setRectangleMode] = useState(false);
-  const [coordinates, setCoordinates] = useState({
-    topLeft: "(228,224)",
-    topRight: "(1362,224)",
-    bottomLeft: "(228,841)",
-    bottomRight: "(1362,841)"
-  });
+  const [coordinates, setCoordinates] = useState(mockupImages[0].defaultCoordinates);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
 
   const setDefaultCoordinates = () => {
-    setCoordinates({
-      topLeft: "(228,224)",
-      topRight: "(1362,224)",
-      bottomLeft: "(228,841)",
-      bottomRight: "(1362,841)"
-    });
+    const selectedMockupData = mockupImages.find(m => m.src === selectedMockup);
+    if (selectedMockupData?.defaultCoordinates) {
+      setCoordinates(selectedMockupData.defaultCoordinates);
+    }
   };
 
   const parseCoordinates = (coord: string) => {
@@ -151,30 +126,22 @@ export const ImageEditor2 = () => {
     });
   };
 
+  const handleSelectMockup = (src: string) => {
+    setSelectedMockup(src);
+    const selectedMockupData = mockupImages.find(m => m.src === src);
+    if (selectedMockupData?.defaultCoordinates) {
+      setCoordinates(selectedMockupData.defaultCoordinates);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-4">
-          <div className="grid grid-cols-4 gap-2">
-            {mockupImages.map((mockup) => (
-              <button
-                key={mockup.id}
-                onClick={() => setSelectedMockup(mockup.src)}
-                className={cn(
-                  "p-1 border-2 rounded transition-all",
-                  selectedMockup === mockup.src
-                    ? "border-blue-500"
-                    : "border-transparent hover:border-gray-300"
-                )}
-              >
-                <img
-                  src={mockup.src}
-                  alt={`Mockup ${mockup.id}`}
-                  className="w-full h-auto"
-                />
-              </button>
-            ))}
-          </div>
+          <MockupSelector
+            selectedMockup={selectedMockup}
+            onSelectMockup={handleSelectMockup}
+          />
           <CoordinatesPanel
             coordinates={coordinates}
             rectangleMode={rectangleMode}
