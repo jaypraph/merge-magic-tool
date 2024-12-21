@@ -8,6 +8,7 @@ import { CoordinatesPanel } from "./CoordinatesPanel";
 import { MergedResult } from "./MergedResult";
 import { MockupSelector } from "./MockupSelector";
 import { mockupImages } from "@/constants/mockupDefaults";
+import { cn } from "@/lib/utils";
 
 export const ImageEditor2 = () => {
   const [selectedMockup, setSelectedMockup] = useState(mockupImages[0].src);
@@ -59,8 +60,9 @@ export const ImageEditor2 = () => {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
       
-      canvas.width = 1588;
-      canvas.height = 1191;
+      // Update canvas dimensions to 2000x2000
+      canvas.width = 2000;
+      canvas.height = 2000;
 
       const img1 = await loadImage(canvasRef.current?.toDataURL() || selectedMockup);
       const img2 = await loadImage(image2);
