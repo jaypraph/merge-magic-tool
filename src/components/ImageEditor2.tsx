@@ -6,6 +6,7 @@ import { Download } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { CoordinatesPanel } from "./CoordinatesPanel";
 import { MergedResult } from "./MergedResult";
+import { cn } from "@/lib/utils"; // Added this import
 
 // Import all mockup images
 import mockup1 from "/lovable-uploads/f11800fe-956b-491f-be37-84dcdb5d49a6.png";
