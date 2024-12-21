@@ -32,9 +32,15 @@ export const ImageMerger = ({ image2, selectedMockup, setMergedImage }: ImageMer
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
         
-        // Set canvas size to 2000x2000
-        canvas.width = 2000;
-        canvas.height = 2000;
+        // Set canvas size based on mockup ID
+        // mockup-1 has ID 1, all others use 2000x2000
+        if (mockup.id === 1) {
+          canvas.width = 1588;
+          canvas.height = 1191;
+        } else {
+          canvas.width = 2000;
+          canvas.height = 2000;
+        }
 
         const img1 = await createImage(mockup.src);
         const img2 = await createImage(image2);
