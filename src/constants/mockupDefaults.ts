@@ -11,20 +11,20 @@ export const mockupImages = [
     id: 1, 
     src: mockup1,
     defaultCoordinates: {
-      topLeft: "(108,68)",
-      topRight: "(419,68)",
-      bottomLeft: "(108,241)",
-      bottomRight: "(419,241)"
+      topLeft: "(228,224)",
+      topRight: "(1362,224)",
+      bottomLeft: "(228,841)",
+      bottomRight: "(1362,841)"
     }
   },
   { 
     id: 2, 
     src: mockup2,
     defaultCoordinates: {
-      topLeft: "(126,102)",
-      topRight: "(372,102)",
-      bottomLeft: "(126,247)",
-      bottomRight: "(372,247)"
+      topLeft: "(124,100)",
+      topRight: "(376,100)",
+      bottomLeft: "(124,245)",
+      bottomRight: "(376,245)"
     }
   },
   { id: 3, src: mockup3 },
