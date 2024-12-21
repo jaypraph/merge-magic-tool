@@ -1,4 +1,5 @@
 import { ImageEditor } from "@/components/ImageEditor";
+import { ImageEditor2 } from "@/components/ImageEditor2";
 import { TopMenuBar } from "@/components/TopMenuBar";
 import { PngToJpgConverter } from "@/components/PngToJpgConverter";
 import { ImageResizer } from "@/components/ImageResizer";
@@ -130,6 +131,12 @@ const Index = () => {
           <>
             <h1 className="text-3xl md:text-4xl font-bold text-center mb-8">Image Merger</h1>
             <ImageEditor />
+          </>
+        )}
+        {activeFeature === "mockup2" && (
+          <>
+            <h1 className="text-3xl md:text-4xl font-bold text-center mb-8">Image Merger 2</h1>
+            <ImageEditor2 />
           </>
         )}
         {activeFeature === "jpg" && <PngToJpgConverter />}

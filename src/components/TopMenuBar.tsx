@@ -12,6 +12,10 @@ export const TopMenuBar = ({ activeFeature, onFeatureSelect }: TopMenuBarProps) 
     onFeatureSelect(activeFeature === "mockup" ? "" : "mockup");
   };
 
+  const handleMockup2Click = () => {
+    onFeatureSelect(activeFeature === "mockup2" ? "" : "mockup2");
+  };
+
   const handleJpgClick = () => {
     onFeatureSelect(activeFeature === "jpg" ? "" : "jpg");
   };
@@ -91,6 +95,18 @@ export const TopMenuBar = ({ activeFeature, onFeatureSelect }: TopMenuBarProps) 
           >
             <Merge className="mr-2 h-5 w-5" />
             MockUp
+          </Button>
+          <Button
+            onClick={handleMockup2Click}
+            className={cn(
+              "w-28 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white mr-2",
+              activeFeature === "mockup2"
+                ? "transform translate-y-[2px]"
+                : "shadow-[0_4px_0_0_rgba(0,0,0,0.5)]"
+            )}
+          >
+            <Merge className="mr-2 h-5 w-5" />
+            MockUp-2
           </Button>
         </div>
       </div>
