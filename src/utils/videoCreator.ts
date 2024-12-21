@@ -45,16 +45,16 @@ export const createVideoFromImages = async (images: string[], onProgress?: (prog
       throw new Error('FFmpeg failed to load');
     }
     console.log('FFmpeg loaded successfully');
-    onProgress?.(10);
+    onProgress?.(5);
 
     // Write each image to FFmpeg's virtual filesystem
-    const imageLoadingProgressRange = 40; // Increased from 30 to 40
+    const imageLoadingProgressRange = 45; // Increased range for image loading
     for (let i = 0; i < images.length; i++) {
       console.log(`Processing image ${i + 1}/${images.length}`);
       const imageName = `image${i}.jpg`;
       const imageData = await fetchFile(images[i]);
       await ffmpeg.writeFile(imageName, imageData);
-      const progress = 10 + Math.round((i + 1) / images.length * imageLoadingProgressRange);
+      const progress = 5 + Math.round((i + 1) / images.length * imageLoadingProgressRange);
       console.log(`Image ${i + 1} processed, progress: ${progress}%`);
       onProgress?.(progress);
     }
