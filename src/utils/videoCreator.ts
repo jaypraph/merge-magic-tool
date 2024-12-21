@@ -21,10 +21,7 @@ const loadFFmpeg = async () => {
       console.log('Loading FFmpeg with URLs:', { coreURL, wasmURL });
       await ffmpeg.load({
         coreURL,
-        wasmURL,
-        progress: (progress) => {
-          console.log('FFmpeg load progress:', progress);
-        }
+        wasmURL
       });
       console.log('FFmpeg loaded successfully');
     } else {
