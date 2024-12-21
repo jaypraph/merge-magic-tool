@@ -3,124 +3,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { processImageForVideo } from "@/utils/videoProcessing";
-import { Slideshow } from "@/components/Slideshow";
-import { useToast } from "@/components/ui/use-toast";
 
 const VideoDesign = () => {
   const [uploadedImage, setUploadedImage] = useState<string>("");
-  const [processedImages, setProcessedImages] = useState<string[]>([]);
-  const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
-
-  const handleImageProcess = async () => {
-    if (!uploadedImage) {
-      toast({
-        title: "No image selected",
-        description: "Please upload an image first",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsProcessing(true);
-    try {
-      const images = await processImageForVideo(uploadedImage);
-      setProcessedImages(images);
-      toast({
-        title: "Success!",
-        description: "Images processed successfully. Slideshow started.",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to process images. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleDownloadVideo = async () => {
-    if (processedImages.length === 0) {
-      toast({
-        title: "No images to process",
-        description: "Please process images first",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      const canvas = document.createElement('canvas');
-      canvas.width = 2880;
-      canvas.height = 2160;
-      const ctx = canvas.getContext('2d');
-      const stream = canvas.captureStream(30); // 30 FPS
-      const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'video/webm;codecs=h264',
-        videoBitsPerSecond: 8000000 // 8 Mbps for high quality
-      });
-
-      const chunks: Blob[] = [];
-      mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(chunks, { type: 'video/mp4' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'slideshow.mp4';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      };
-
-      mediaRecorder.start();
-
-      // Draw each image for 2.5 seconds
-      for (let i = 0; i < processedImages.length; i++) {
-        const img = new Image();
-        img.src = processedImages[i];
-        await new Promise<void>((resolve) => {
-          img.onload = () => {
-            ctx?.clearRect(0, 0, canvas.width, canvas.height);
-            // Calculate dimensions to maintain aspect ratio
-            const scale = Math.min(
-              canvas.width / img.width,
-              canvas.height / img.height
-            );
-            const x = (canvas.width - img.width * scale) / 2;
-            const y = (canvas.height - img.height * scale) / 2;
-            ctx?.drawImage(
-              img,
-              x,
-              y,
-              img.width * scale,
-              img.height * scale
-            );
-            resolve();
-          };
-        });
-        await new Promise(resolve => setTimeout(resolve, 2500)); // 2.5 seconds per slide
-      }
-
-      mediaRecorder.stop();
-      
-      toast({
-        title: "Success!",
-        description: "Video created successfully. Download starting...",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to create video. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -138,41 +24,12 @@ const VideoDesign = () => {
           Video Design
         </h1>
         
-        <div className="max-w-2xl mx-auto space-y-8">
+        <div className="max-w-2xl mx-auto">
           <ImageUpload
             value={uploadedImage}
             onChange={setUploadedImage}
             label="Upload Video Thumbnail"
           />
-          
-          {uploadedImage && (
-            <div className="flex justify-center">
-              <Button
-                onClick={handleImageProcess}
-                disabled={isProcessing}
-                className="w-full max-w-xs"
-              >
-                {isProcessing ? "Processing..." : "Process Image"}
-              </Button>
-            </div>
-          )}
-
-          {processedImages.length > 0 && (
-            <>
-              <div className="mt-8">
-                <h2 className="text-2xl font-semibold mb-4">Preview Slideshow</h2>
-                <Slideshow images={processedImages} />
-              </div>
-              <div className="flex justify-center">
-                <Button
-                  onClick={handleDownloadVideo}
-                  className="w-full max-w-xs"
-                >
-                  Download MP4
-                </Button>
-              </div>
-            </>
-          )}
         </div>
       </div>
     </div>
