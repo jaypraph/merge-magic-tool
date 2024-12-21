@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { ImageUpload } from "./ImageUpload";
 import { DrawingCanvas } from "./DrawingCanvas";
 import { useToast } from "@/hooks/use-toast";
@@ -7,8 +7,7 @@ import { MergedResult } from "./MergedResult";
 import { MockupSelector } from "./MockupSelector";
 import { mockupImages } from "@/constants/mockupDefaults";
 import { MergeDownloadButtons } from "./MergeDownloadButtons";
-import { createMockupImage } from "@/utils/mockupImageProcessing";
-import JSZip from "jszip";
+import { ImageMerger } from "./ImageMerger";
 
 export const ImageEditor2 = () => {
   const [selectedMockup, setSelectedMockup] = useState(mockupImages[0].src);
@@ -25,92 +24,11 @@ export const ImageEditor2 = () => {
     }
   };
 
-  const handleMergeImages = useCallback(async () => {
-    if (!image2) {
-      toast({
-        title: "Missing Image",
-        description: "Please upload an image before merging.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      const zip = new JSZip();
-      
-      // Create a merged image for each mockup
-      for (const mockup of mockupImages) {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        
-        // Set canvas size to 2000x2000
-        canvas.width = 2000;
-        canvas.height = 2000;
-
-        const img1 = await createImage(mockup.src);
-        const img2 = await createImage(image2);
-
-        // Draw first image scaled to canvas size
-        ctx?.drawImage(img1, 0, 0, canvas.width, canvas.height);
-
-        const topLeft = parseCoordinates(mockup.defaultCoordinates.topLeft);
-        const topRight = parseCoordinates(mockup.defaultCoordinates.topRight);
-        const bottomLeft = parseCoordinates(mockup.defaultCoordinates.bottomLeft);
-        const bottomRight = parseCoordinates(mockup.defaultCoordinates.bottomRight);
-
-        if (topLeft && topRight && bottomLeft && bottomRight) {
-          const scaleX = canvas.width / img1.width;
-          const scaleY = canvas.height / img1.height;
-          
-          const scaledX = Math.round(topLeft.x * scaleX);
-          const scaledY = Math.round(topLeft.y * scaleY);
-          const scaledWidth = Math.round((topRight.x - topLeft.x) * scaleX);
-          const scaledHeight = Math.round((bottomLeft.y - topLeft.y) * scaleY);
-
-          ctx?.drawImage(
-            img2,
-            scaledX,
-            scaledY,
-            scaledWidth,
-            scaledHeight
-          );
-        }
-
-        const mergedImageData = canvas.toDataURL("image/png");
-        const imageData = mergedImageData.split('base64,')[1];
-        zip.file(`mockup-${mockup.id}.png`, imageData, {base64: true});
-      }
-      
-      // Generate and download the zip file
-      const content = await zip.generateAsync({type: "blob"});
-      const url = URL.createObjectURL(content);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "merged-mockups.zip";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
-      // Show the preview of the currently selected mockup
-      const selectedMockupData = mockupImages.find(m => m.src === selectedMockup);
-      if (selectedMockupData) {
-        const previewImage = await createMockupImage(selectedMockup, image2, selectedMockupData.defaultCoordinates);
-        setMergedImage(previewImage);
-      }
-      
-      toast({
-        title: "Success!",
-        description: "All mockups have been merged and downloaded as a ZIP file.",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to merge images. Please try again.",
-        variant: "destructive",
-      });
-    }
-  }, [image2, selectedMockup, toast]);
+  const { handleMergeImages } = ImageMerger({ 
+    image2, 
+    selectedMockup, 
+    setMergedImage 
+  });
 
   const handleSelectMockup = (src: string) => {
     setSelectedMockup(src);
@@ -141,26 +59,6 @@ export const ImageEditor2 = () => {
       title: "Success!",
       description: "Image downloaded successfully",
     });
-  };
-
-  const createImage = (src: string): Promise<HTMLImageElement> => {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => resolve(img);
-      img.onerror = reject;
-      img.src = src;
-    });
-  };
-
-  const parseCoordinates = (coord: string) => {
-    const match = coord.match(/\((\d+),(\d+)\)/);
-    if (match) {
-      return {
-        x: parseInt(match[1]),
-        y: parseInt(match[2])
-      };
-    }
-    return null;
   };
 
   return (
