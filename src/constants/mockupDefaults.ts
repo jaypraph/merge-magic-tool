@@ -11,10 +11,10 @@ export const mockupImages = [
     id: 1, 
     src: mockup1,
     defaultCoordinates: {
-      topLeft: "(113,71)",
-      topRight: "(414,71)",
-      bottomLeft: "(113,239)",
-      bottomRight: "(416,239)"
+      topLeft: "(108,68)",
+      topRight: "(419,68)",
+      bottomLeft: "(108,241)",
+      bottomRight: "(419,241)"
     }
   },
   { id: 2, src: mockup2 },
