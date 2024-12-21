@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Merge, FileImage, Maximize2, Gauge, Wrench, Video } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface TopMenuBarProps {
   activeFeature: string;
@@ -8,6 +9,8 @@ interface TopMenuBarProps {
 }
 
 export const TopMenuBar = ({ activeFeature, onFeatureSelect }: TopMenuBarProps) => {
+  const navigate = useNavigate();
+
   const handleMockupClick = () => {
     onFeatureSelect(activeFeature === "mockup" ? "" : "mockup");
   };
@@ -17,7 +20,7 @@ export const TopMenuBar = ({ activeFeature, onFeatureSelect }: TopMenuBarProps) 
   };
 
   const handleVdClick = () => {
-    onFeatureSelect(activeFeature === "vd" ? "" : "vd");
+    navigate('/video-design');
   };
 
   const handleJpgClick = () => {
