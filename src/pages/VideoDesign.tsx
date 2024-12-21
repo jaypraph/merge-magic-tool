@@ -45,53 +45,84 @@ const VideoDesign = () => {
 
   const handleDownload = async () => {
     try {
+      // Create a video element to play the frames
+      const video = document.createElement('video');
+      video.width = 3840;  // 4K width
+      video.height = 2160; // 4K height
+
+      // Create a canvas to draw the frames
       const canvas = document.createElement('canvas');
+      canvas.width = video.width;
+      canvas.height = video.height;
       const ctx = canvas.getContext('2d');
-      const img = new Image();
-      
-      // Set canvas size to match the first image
-      img.onload = () => {
-        canvas.width = img.width;
-        canvas.height = img.height;
-      };
-      img.src = processedImages[0];
 
-      // Create video element
+      if (!ctx) {
+        throw new Error('Could not get canvas context');
+      }
+
+      // Set up MediaRecorder with specific codec
+      const stream = canvas.captureStream(30);
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'video/webm;codecs=h264',
+        videoBitsPerSecond: 8000000 // 8 Mbps for high quality
+      });
+
+      const chunks: BlobPart[] = [];
+      mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+
       const videoBlob = await new Promise<Blob>((resolve) => {
-        const mediaRecorder = new MediaRecorder(canvas.captureStream(30));
-        const chunks: BlobPart[] = [];
-
-        mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
-        mediaRecorder.onstop = () => resolve(new Blob(chunks, { type: 'video/mp4' }));
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(chunks, { type: 'video/webm' });
+          resolve(blob);
+        };
 
         // Start recording
         mediaRecorder.start();
 
-        // Draw each image
+        // Process each image
         let currentFrame = 0;
-        const drawNextFrame = () => {
+        const drawNextFrame = async () => {
           if (currentFrame < processedImages.length) {
-            const currentImg = new Image();
-            currentImg.onload = () => {
-              ctx?.clearRect(0, 0, canvas.width, canvas.height);
-              ctx?.drawImage(currentImg, 0, 0);
+            const img = new Image();
+            img.onload = () => {
+              // Clear canvas and draw new frame
+              ctx.fillStyle = 'black';
+              ctx.fillRect(0, 0, canvas.width, canvas.height);
+              
+              // Calculate dimensions to maintain aspect ratio
+              const scale = Math.min(
+                canvas.width / img.width,
+                canvas.height / img.height
+              );
+              const x = (canvas.width - img.width * scale) / 2;
+              const y = (canvas.height - img.height * scale) / 2;
+              
+              ctx.drawImage(
+                img,
+                x, y,
+                img.width * scale,
+                img.height * scale
+              );
+              
               currentFrame++;
-              setTimeout(drawNextFrame, 2500); // Match the slideshow duration
+              if (currentFrame < processedImages.length) {
+                setTimeout(drawNextFrame, 2500); // Match slideshow duration
+              } else {
+                mediaRecorder.stop();
+              }
             };
-            currentImg.src = processedImages[currentFrame];
-          } else {
-            mediaRecorder.stop();
+            img.src = processedImages[currentFrame];
           }
         };
 
         drawNextFrame();
       });
 
-      // Create download link
+      // Create download link with proper extension
       const url = URL.createObjectURL(videoBlob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'slideshow.mp4';
+      a.download = 'slideshow.webm';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -102,6 +133,7 @@ const VideoDesign = () => {
         description: "Video downloaded successfully.",
       });
     } catch (error) {
+      console.error('Video creation error:', error);
       toast({
         title: "Error",
         description: "Failed to download video. Please try again.",
