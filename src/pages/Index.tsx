@@ -13,9 +13,11 @@ import { changeDpiDataUrl } from "changedpi";
 import { 
   createImage, 
   createWatermarkedImage, 
-  createMockupImage, 
+  createMockupImage,
   createZipFile 
 } from "@/utils/imageProcessing";
+import { mockupImages } from "@/constants/mockupDefaults";
+import JSZip from "jszip";
 
 const Index = () => {
   const [activeFeature, setActiveFeature] = useState("");
@@ -46,6 +48,62 @@ const Index = () => {
     }
   };
 
+  const createMockup2Images = async (uploadedImage: string) => {
+    const mockupResults = [];
+    for (const mockup of mockupImages) {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      
+      canvas.width = 2000;
+      canvas.height = 2000;
+
+      const img1 = await createImage(mockup.src);
+      const img2 = await createImage(uploadedImage);
+
+      ctx?.drawImage(img1, 0, 0, canvas.width, canvas.height);
+
+      const coordinates = mockup.defaultCoordinates;
+      const topLeft = parseCoordinates(coordinates.topLeft);
+      const topRight = parseCoordinates(coordinates.topRight);
+      const bottomLeft = parseCoordinates(coordinates.bottomLeft);
+
+      if (topLeft && topRight && bottomLeft) {
+        const scaleX = canvas.width / img1.width;
+        const scaleY = canvas.height / img1.height;
+        
+        const scaledX = Math.round(topLeft.x * scaleX);
+        const scaledY = Math.round(topLeft.y * scaleY);
+        const scaledWidth = Math.round((topRight.x - topLeft.x) * scaleX);
+        const scaledHeight = Math.round((bottomLeft.y - topLeft.y) * scaleY);
+
+        ctx?.drawImage(
+          img2,
+          scaledX,
+          scaledY,
+          scaledWidth,
+          scaledHeight
+        );
+      }
+
+      mockupResults.push({
+        id: mockup.id,
+        dataUrl: canvas.toDataURL("image/png")
+      });
+    }
+    return mockupResults;
+  };
+
+  const parseCoordinates = (coord: string) => {
+    const match = coord.match(/\((\d+),(\d+)\)/);
+    if (match) {
+      return {
+        x: parseInt(match[1]),
+        y: parseInt(match[2])
+      };
+    }
+    return null;
+  };
+
   const processImage = async () => {
     if (!uploadedImage) {
       toast({
@@ -57,7 +115,9 @@ const Index = () => {
     }
 
     try {
-      // Step 1: Convert to JPG, resize, and set DPI to 300
+      const zip = new JSZip();
+      
+      // Create JPG version
       const jpgCanvas = document.createElement("canvas");
       const jpgCtx = jpgCanvas.getContext("2d");
       const img1 = await createImage(uploadedImage);
@@ -71,8 +131,19 @@ const Index = () => {
       const watermarkedImage = await createWatermarkedImage(dpiAdjustedImage);
       const mockupImage = await createMockupImage("/lovable-uploads/e0990050-1d0a-4a84-957f-2ea4deb3af1f.png", dpiAdjustedImage);
 
-      // Create and download ZIP file
-      const content = await createZipFile(dpiAdjustedImage, mockupImage, watermarkedImage);
+      // Add regular processed images to ZIP
+      zip.file("processed.jpg", jpgImage.split('base64,')[1], {base64: true});
+      zip.file("watermarked.jpg", watermarkedImage.split('base64,')[1], {base64: true});
+      zip.file("oreomock5.jpg", mockupImage.split('base64,')[1], {base64: true});
+
+      // Create and add MS (Mockup-2) images
+      const mockup2Images = await createMockup2Images(dpiAdjustedImage);
+      mockup2Images.forEach(mockup => {
+        zip.file(`mockup-${mockup.id}.png`, mockup.dataUrl.split('base64,')[1], {base64: true});
+      });
+
+      // Generate and download the ZIP file
+      const content = await zip.generateAsync({type: "blob"});
       const url = URL.createObjectURL(content);
       const a = document.createElement("a");
       a.href = url;
@@ -84,9 +155,8 @@ const Index = () => {
 
       toast({
         title: "Success!",
-        description: "Images have been processed and downloaded as ZIP file.",
+        description: "All images have been processed and downloaded as ZIP file.",
       });
-
     } catch (error) {
       toast({
         title: "Error",
