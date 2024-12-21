@@ -4,15 +4,30 @@ import { toBlobURL, fetchFile } from '@ffmpeg/util';
 let ffmpeg: FFmpeg | null = null;
 
 const loadFFmpeg = async () => {
-  if (!ffmpeg) {
-    ffmpeg = new FFmpeg();
-    const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
-    await ffmpeg.load({
-      coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-      wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
-    });
+  try {
+    console.log('Starting FFmpeg load process...');
+    if (!ffmpeg) {
+      ffmpeg = new FFmpeg();
+      console.log('FFmpeg instance created');
+      
+      const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
+      console.log('Fetching FFmpeg core from:', baseURL);
+      
+      const coreURL = await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript');
+      const wasmURL = await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm');
+      
+      console.log('Core URLs created, loading FFmpeg...');
+      await ffmpeg.load({
+        coreURL,
+        wasmURL
+      });
+      console.log('FFmpeg load completed successfully');
+    }
+    return ffmpeg;
+  } catch (error) {
+    console.error('Error loading FFmpeg:', error);
+    throw new Error('Failed to load FFmpeg. Please try again.');
   }
-  return ffmpeg;
 };
 
 export const createVideoFromImages = async (images: string[]) => {
