@@ -73,7 +73,10 @@ export const ImageMerger = ({ image2, selectedMockup, setMergedImage }: ImageMer
 
         const mergedImageData = canvas.toDataURL("image/png");
         const imageData = mergedImageData.split('base64,')[1];
-        zip.file(`mockup-${mockup.id}.png`, imageData, {base64: true});
+        
+        // Use "oreomock5" name for mockup-1, otherwise use regular naming
+        const fileName = mockup.id === 1 ? "oreomock5.png" : `mockup-${mockup.id}.png`;
+        zip.file(fileName, imageData, {base64: true});
       }
       
       // Generate and download the zip file
