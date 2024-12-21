@@ -69,27 +69,10 @@ const Index = () => {
       // Convert DPI to 300 and create watermarked version
       const dpiAdjustedImage = changeDpiDataUrl(jpgImage, 300);
       const watermarkedImage = await createWatermarkedImage(dpiAdjustedImage);
-      
-      // Only create mockup-1 image for the Go button
-      const mockupImage = await createMockupImage(
-        "/lovable-uploads/e0990050-1d0a-4a84-957f-2ea4deb3af1f.png",
-        dpiAdjustedImage,
-        {
-          topLeft: "(228,224)",
-          topRight: "(1362,224)",
-          bottomLeft: "(228,841)",
-          bottomRight: "(1362,841)"
-        }
-      );
+      const mockupImage = await createMockupImage("/lovable-uploads/e0990050-1d0a-4a84-957f-2ea4deb3af1f.png", dpiAdjustedImage);
 
-      // Create and download ZIP file with all variations except mockup-2
-      const content = await createZipFile(
-        dpiAdjustedImage,
-        mockupImage,
-        watermarkedImage,
-        uploadedImage
-      );
-      
+      // Create and download ZIP file
+      const content = await createZipFile(dpiAdjustedImage, mockupImage, watermarkedImage);
       const url = URL.createObjectURL(content);
       const a = document.createElement("a");
       a.href = url;
