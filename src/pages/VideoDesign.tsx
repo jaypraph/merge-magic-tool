@@ -57,7 +57,7 @@ const VideoDesign = () => {
       img.src = processedImages[0];
 
       // Create video element
-      const videoBlob = await new Promise((resolve) => {
+      const videoBlob = await new Promise<Blob>((resolve) => {
         const mediaRecorder = new MediaRecorder(canvas.captureStream(30));
         const chunks: BlobPart[] = [];
 
