@@ -94,7 +94,7 @@ export const TopMenuBar = ({ activeFeature, onFeatureSelect }: TopMenuBarProps) 
             )}
           >
             <Merge className="mr-2 h-5 w-5" />
-            MockUp
+            M
           </Button>
           <Button
             onClick={handleMockup2Click}
@@ -106,7 +106,7 @@ export const TopMenuBar = ({ activeFeature, onFeatureSelect }: TopMenuBarProps) 
             )}
           >
             <Merge className="mr-2 h-5 w-5" />
-            MockUp-2
+            M-2
           </Button>
         </div>
       </div>
