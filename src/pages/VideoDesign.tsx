@@ -45,25 +45,20 @@ const VideoDesign = () => {
 
   const handleDownload = async () => {
     try {
-      // Create a video element to play the frames
-      const video = document.createElement('video');
-      video.width = 3840;  // 4K width
-      video.height = 2160; // 4K height
-
-      // Create a canvas to draw the frames
+      // Create a canvas with 4K dimensions
       const canvas = document.createElement('canvas');
-      canvas.width = video.width;
-      canvas.height = video.height;
+      canvas.width = 3840;
+      canvas.height = 2160;
       const ctx = canvas.getContext('2d');
 
       if (!ctx) {
         throw new Error('Could not get canvas context');
       }
 
-      // Set up MediaRecorder with specific codec
+      // Set up MediaRecorder with VP8 codec (better supported for WebM)
       const stream = canvas.captureStream(30);
       const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'video/webm;codecs=h264',
+        mimeType: 'video/webm;codecs=vp8',
         videoBitsPerSecond: 8000000 // 8 Mbps for high quality
       });
 
@@ -76,49 +71,57 @@ const VideoDesign = () => {
           resolve(blob);
         };
 
-        // Start recording
         mediaRecorder.start();
 
-        // Process each image
+        // Process each image with proper timing
         let currentFrame = 0;
-        const drawNextFrame = async () => {
-          if (currentFrame < processedImages.length) {
-            const img = new Image();
-            img.onload = () => {
-              // Clear canvas and draw new frame
-              ctx.fillStyle = 'black';
-              ctx.fillRect(0, 0, canvas.width, canvas.height);
-              
-              // Calculate dimensions to maintain aspect ratio
-              const scale = Math.min(
-                canvas.width / img.width,
-                canvas.height / img.height
-              );
-              const x = (canvas.width - img.width * scale) / 2;
-              const y = (canvas.height - img.height * scale) / 2;
-              
-              ctx.drawImage(
-                img,
-                x, y,
-                img.width * scale,
-                img.height * scale
-              );
-              
-              currentFrame++;
-              if (currentFrame < processedImages.length) {
-                setTimeout(drawNextFrame, 2500); // Match slideshow duration
-              } else {
-                mediaRecorder.stop();
-              }
-            };
-            img.src = processedImages[currentFrame];
+        const frameDuration = 2500; // 2.5 seconds per frame
+        
+        const processFrame = async () => {
+          if (currentFrame >= processedImages.length) {
+            mediaRecorder.stop();
+            return;
           }
+
+          const img = new Image();
+          img.onload = () => {
+            // Fill background with black
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Calculate dimensions to maintain aspect ratio
+            const scale = Math.min(
+              canvas.width / img.width,
+              canvas.height / img.height
+            );
+            const x = (canvas.width - img.width * scale) / 2;
+            const y = (canvas.height - img.height * scale) / 2;
+
+            // Draw image with high quality settings
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            
+            ctx.drawImage(
+              img,
+              x, y,
+              img.width * scale,
+              img.height * scale
+            );
+
+            currentFrame++;
+            if (currentFrame < processedImages.length) {
+              setTimeout(processFrame, frameDuration);
+            } else {
+              setTimeout(() => mediaRecorder.stop(), frameDuration);
+            }
+          };
+          img.src = processedImages[currentFrame];
         };
 
-        drawNextFrame();
+        processFrame();
       });
 
-      // Create download link with proper extension
+      // Download the video
       const url = URL.createObjectURL(videoBlob);
       const a = document.createElement('a');
       a.href = url;
