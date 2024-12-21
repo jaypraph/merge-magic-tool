@@ -69,6 +69,8 @@ const Index = () => {
       // Convert DPI to 300 and create watermarked version
       const dpiAdjustedImage = changeDpiDataUrl(jpgImage, 300);
       const watermarkedImage = await createWatermarkedImage(dpiAdjustedImage);
+      
+      // Only create mockup-1 image for the Go button
       const mockupImage = await createMockupImage(
         "/lovable-uploads/e0990050-1d0a-4a84-957f-2ea4deb3af1f.png",
         dpiAdjustedImage,
@@ -80,7 +82,7 @@ const Index = () => {
         }
       );
 
-      // Create and download ZIP file with all variations
+      // Create and download ZIP file with all variations except mockup-2
       const content = await createZipFile(
         dpiAdjustedImage,
         mockupImage,
