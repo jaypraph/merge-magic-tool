@@ -5,8 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { processImageForVideo } from "@/utils/videoProcessing";
 import { Slideshow } from "@/components/Slideshow";
-import { useToast } from "@/hooks/use-toast";
-import { VideoExporter } from "@/components/VideoExporter";
+import { useToast } from "@/components/ui/use-toast";
 
 const VideoDesign = () => {
   const [uploadedImage, setUploadedImage] = useState<string>("");
@@ -67,26 +66,23 @@ const VideoDesign = () => {
             label="Upload Video Thumbnail"
           />
           
-          <Button
-            onClick={handleImageProcess}
-            disabled={isProcessing}
-            className="w-full max-w-xs mx-auto block"
-          >
-            {isProcessing ? "Processing..." : "Process Image"}
-          </Button>
+          {uploadedImage && (
+            <div className="flex justify-center">
+              <Button
+                onClick={handleImageProcess}
+                disabled={isProcessing}
+                className="w-full max-w-xs"
+              >
+                {isProcessing ? "Processing..." : "Process Image"}
+              </Button>
+            </div>
+          )}
 
           {processedImages.length > 0 && (
-            <>
-              <div className="mt-8">
-                <h2 className="text-2xl font-semibold mb-4">Preview Slideshow</h2>
-                <Slideshow images={processedImages} />
-              </div>
-              
-              <div className="mt-8">
-                <h2 className="text-2xl font-semibold mb-4">Export Video</h2>
-                <VideoExporter images={processedImages} />
-              </div>
-            </>
+            <div className="mt-8">
+              <h2 className="text-2xl font-semibold mb-4">Preview Slideshow</h2>
+              <Slideshow images={processedImages} />
+            </div>
           )}
         </div>
       </div>
