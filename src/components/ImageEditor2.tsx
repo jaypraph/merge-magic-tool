@@ -3,11 +3,12 @@ import { ImageUpload } from "./ImageUpload";
 import { DrawingCanvas } from "./DrawingCanvas";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { CoordinatesPanel } from "./CoordinatesPanel";
 import { MergedResult } from "./MergedResult";
 import { MockupSelector } from "./MockupSelector";
 import { mockupImages } from "@/constants/mockupDefaults";
+import JSZip from "jszip";
 import { cn } from "@/lib/utils";
 
 export const ImageEditor2 = () => {
@@ -37,67 +38,85 @@ export const ImageEditor2 = () => {
     return null;
   };
 
-  const handleMergeImages = useCallback(async () => {
-    if (!selectedMockup || !image2) {
-      toast({
-        title: "Missing Images",
-        description: "Please select a mockup and upload an image before merging.",
-        variant: "destructive",
-      });
-      return;
+  const createMergedImage = async (mockupSrc: string, mockupCoordinates: any) => {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    
+    canvas.width = 2000;
+    canvas.height = 2000;
+
+    const img1 = await loadImage(mockupSrc);
+    const img2 = await loadImage(image2);
+
+    ctx?.drawImage(img1, 0, 0, canvas.width, canvas.height);
+
+    const topLeft = parseCoordinates(mockupCoordinates.topLeft);
+    const topRight = parseCoordinates(mockupCoordinates.topRight);
+    const bottomLeft = parseCoordinates(mockupCoordinates.bottomLeft);
+    const bottomRight = parseCoordinates(mockupCoordinates.bottomRight);
+
+    if (topLeft && topRight && bottomLeft && bottomRight) {
+      const scaleX = canvas.width / img1.width;
+      const scaleY = canvas.height / img1.height;
+      
+      const scaledX = Math.round(topLeft.x * scaleX);
+      const scaledY = Math.round(topLeft.y * scaleY);
+      const scaledWidth = Math.round((topRight.x - topLeft.x) * scaleX);
+      const scaledHeight = Math.round((bottomLeft.y - topLeft.y) * scaleY);
+
+      ctx?.drawImage(
+        img2,
+        scaledX,
+        scaledY,
+        scaledWidth,
+        scaledHeight
+      );
     }
 
-    if (!coordinates.topLeft || !coordinates.topRight || !coordinates.bottomLeft || !coordinates.bottomRight) {
+    return canvas.toDataURL("image/png");
+  };
+
+  const handleMergeImages = useCallback(async () => {
+    if (!image2) {
       toast({
-        title: "Missing Coordinates",
-        description: "Please draw a rectangle or set default coordinates first.",
+        title: "Missing Image",
+        description: "Please upload an image before merging.",
         variant: "destructive",
       });
       return;
     }
 
     try {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
+      const zip = new JSZip();
       
-      // Update canvas dimensions to 2000x2000
-      canvas.width = 2000;
-      canvas.height = 2000;
-
-      const img1 = await loadImage(canvasRef.current?.toDataURL() || selectedMockup);
-      const img2 = await loadImage(image2);
-
-      ctx?.drawImage(img1, 0, 0, canvas.width, canvas.height);
-
-      const topLeft = parseCoordinates(coordinates.topLeft);
-      const topRight = parseCoordinates(coordinates.topRight);
-      const bottomLeft = parseCoordinates(coordinates.bottomLeft);
-      const bottomRight = parseCoordinates(coordinates.bottomRight);
-
-      if (topLeft && topRight && bottomLeft && bottomRight) {
-        const scaleX = canvas.width / img1.width;
-        const scaleY = canvas.height / img1.height;
-        
-        const scaledX = Math.round(topLeft.x * scaleX);
-        const scaledY = Math.round(topLeft.y * scaleY);
-        const scaledWidth = Math.round((topRight.x - topLeft.x) * scaleX);
-        const scaledHeight = Math.round((bottomLeft.y - topLeft.y) * scaleY);
-
-        ctx?.drawImage(
-          img2,
-          scaledX,
-          scaledY,
-          scaledWidth,
-          scaledHeight
-        );
+      // Create a merged image for each mockup
+      for (const mockup of mockupImages) {
+        const mergedImageData = await createMergedImage(mockup.src, mockup.defaultCoordinates);
+        const imageData = mergedImageData.split('base64,')[1];
+        zip.file(`mockup-${mockup.id}.png`, imageData, {base64: true});
       }
+      
+      // Generate and download the zip file
+      const content = await zip.generateAsync({type: "blob"});
+      const url = URL.createObjectURL(content);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "merged-mockups.zip";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
 
-      const merged = canvas.toDataURL("image/png");
-      setMergedImage(merged);
+      // Show the preview of the currently selected mockup
+      const selectedMockupData = mockupImages.find(m => m.src === selectedMockup);
+      if (selectedMockupData) {
+        const previewImage = await createMergedImage(selectedMockup, selectedMockupData.defaultCoordinates);
+        setMergedImage(previewImage);
+      }
       
       toast({
         title: "Success!",
-        description: "Images merged successfully. Click download to save.",
+        description: "All mockups have been merged and downloaded as a ZIP file.",
       });
     } catch (error) {
       toast({
@@ -106,18 +125,7 @@ export const ImageEditor2 = () => {
         variant: "destructive",
       });
     }
-  }, [selectedMockup, image2, coordinates, toast]);
-
-  const handleDownload = useCallback(() => {
-    if (!mergedImage) return;
-    
-    const link = document.createElement("a");
-    link.href = mergedImage;
-    link.download = "merged-image.png";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }, [mergedImage]);
+  }, [image2, selectedMockup, toast]);
 
   const loadImage = (src: string): Promise<HTMLImageElement> => {
     return new Promise((resolve, reject) => {
