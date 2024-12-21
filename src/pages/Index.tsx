@@ -16,6 +16,7 @@ import {
   createMockupImage, 
   createZipFile 
 } from "@/utils/imageProcessing";
+import { mockupImages } from "@/constants/mockupDefaults";
 
 const Index = () => {
   const [activeFeature, setActiveFeature] = useState("");
@@ -69,21 +70,59 @@ const Index = () => {
       // Convert DPI to 300 and create watermarked version
       const dpiAdjustedImage = changeDpiDataUrl(jpgImage, 300);
       const watermarkedImage = await createWatermarkedImage(dpiAdjustedImage);
-      const mockupImage = await createMockupImage(
-        "/lovable-uploads/e0990050-1d0a-4a84-957f-2ea4deb3af1f.png",
-        dpiAdjustedImage,
-        {
-          topLeft: "(228,224)",
-          topRight: "(1362,224)",
-          bottomLeft: "(228,841)",
-          bottomRight: "(1362,841)"
-        }
-      );
 
+      // Create mockup images with correct dimensions
+      const mockupPromises = mockupImages.map(async (mockup) => {
+        const canvas = document.createElement("canvas");
+        // Set dimensions based on mockup ID
+        if (mockup.id === 1) {
+          canvas.width = 1588;
+          canvas.height = 1191;
+        } else {
+          canvas.width = 2000;
+          canvas.height = 2000;
+        }
+        
+        const ctx = canvas.getContext("2d");
+        const mockupImg = await createImage(mockup.src);
+        const uploadedImg = await createImage(uploadedImage);
+        
+        ctx?.drawImage(mockupImg, 0, 0, canvas.width, canvas.height);
+        
+        const topLeft = parseCoordinates(mockup.defaultCoordinates.topLeft);
+        const topRight = parseCoordinates(mockup.defaultCoordinates.topRight);
+        const bottomLeft = parseCoordinates(mockup.defaultCoordinates.bottomLeft);
+        
+        if (topLeft && topRight && bottomLeft) {
+          const scaleX = canvas.width / mockupImg.width;
+          const scaleY = canvas.height / mockupImg.height;
+          
+          const scaledX = Math.round(topLeft.x * scaleX);
+          const scaledY = Math.round(topLeft.y * scaleY);
+          const scaledWidth = Math.round((topRight.x - topLeft.x) * scaleX);
+          const scaledHeight = Math.round((bottomLeft.y - topLeft.y) * scaleY);
+          
+          ctx?.drawImage(
+            uploadedImg,
+            scaledX,
+            scaledY,
+            scaledWidth,
+            scaledHeight
+          );
+        }
+        
+        return {
+          id: mockup.id,
+          dataUrl: canvas.toDataURL("image/png")
+        };
+      });
+
+      const mockupResults = await Promise.all(mockupPromises);
+      
       // Create and download ZIP file with all variations
       const content = await createZipFile(
         dpiAdjustedImage,
-        mockupImage,
+        mockupResults,
         watermarkedImage,
         uploadedImage
       );
@@ -110,6 +149,17 @@ const Index = () => {
       });
       console.error(error);
     }
+  };
+
+  const parseCoordinates = (coord: string) => {
+    const match = coord.match(/\((\d+),(\d+)\)/);
+    if (match) {
+      return {
+        x: parseInt(match[1]),
+        y: parseInt(match[2])
+      };
+    }
+    return null;
   };
 
   return (
