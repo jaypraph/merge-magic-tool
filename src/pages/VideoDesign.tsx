@@ -1,16 +1,18 @@
 import { ImageUpload } from "@/components/ImageUpload";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { processImageForVideo } from "@/utils/videoProcessing";
 import { Slideshow } from "@/components/Slideshow";
 import { useToast } from "@/components/ui/use-toast";
+import { createVideoFromImages } from "@/utils/videoCreator";
 
 const VideoDesign = () => {
   const [uploadedImage, setUploadedImage] = useState<string>("");
   const [processedImages, setProcessedImages] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isCreatingVideo, setIsCreatingVideo] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -43,6 +45,34 @@ const VideoDesign = () => {
     }
   };
 
+  const handleVideoDownload = async () => {
+    if (processedImages.length === 0) {
+      toast({
+        title: "No images to process",
+        description: "Please process images first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsCreatingVideo(true);
+    try {
+      await createVideoFromImages(processedImages);
+      toast({
+        title: "Success!",
+        description: "Video created and downloaded successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create video. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCreatingVideo(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto p-4 md:p-8">
@@ -66,17 +96,26 @@ const VideoDesign = () => {
             label="Upload Video Thumbnail"
           />
           
-          {uploadedImage && (
-            <div className="flex justify-center">
+          <div className="flex justify-center gap-4">
+            <Button
+              onClick={handleImageProcess}
+              disabled={isProcessing}
+              className="w-full max-w-xs"
+            >
+              {isProcessing ? "Processing..." : "Process Image"}
+            </Button>
+
+            {processedImages.length > 0 && (
               <Button
-                onClick={handleImageProcess}
-                disabled={isProcessing}
-                className="w-full max-w-xs"
+                onClick={handleVideoDownload}
+                disabled={isCreatingVideo}
+                className="w-full max-w-xs flex items-center gap-2"
               >
-                {isProcessing ? "Processing..." : "Process Image"}
+                <Download className="h-4 w-4" />
+                {isCreatingVideo ? "Creating Video..." : "Download Video"}
               </Button>
-            </div>
-          )}
+            )}
+          </div>
 
           {processedImages.length > 0 && (
             <div className="mt-8">
