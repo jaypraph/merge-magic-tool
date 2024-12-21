@@ -33,18 +33,24 @@ const loadFFmpeg = async () => {
 export const createVideoFromImages = async (images: string[], onProgress?: (progress: number) => void) => {
   try {
     console.log('Starting video creation process...');
+    onProgress?.(5); // Initial progress - FFmpeg loading
+
     const ffmpeg = await loadFFmpeg();
     console.log('FFmpeg loaded successfully');
+    onProgress?.(10); // FFmpeg loaded
 
     // Write each image to FFmpeg's virtual filesystem
+    const imageLoadingProgressRange = 30; // 10% to 40%
     for (let i = 0; i < images.length; i++) {
       console.log(`Processing image ${i + 1}/${images.length}`);
       const imageName = `image${i}.jpg`;
       const imageData = await fetchFile(images[i]);
       await ffmpeg.writeFile(imageName, imageData);
-      onProgress?.(Math.round((i / images.length) * 50)); // First 50% is for loading images
+      const progress = 10 + Math.round((i / images.length) * imageLoadingProgressRange);
+      onProgress?.(progress);
     }
     console.log('All images written to FFmpeg filesystem');
+    onProgress?.(40);
 
     // Create a complex filter for crossfade transitions
     const filters = [];
@@ -55,7 +61,6 @@ export const createVideoFromImages = async (images: string[], onProgress?: (prog
       inputs.push(`-loop 1 -t 2.5 -i image${i}.jpg`);
       
       if (i > 0) {
-        // Add crossfade transition
         filters.push(`[${i}:v][trans${i}]xfade=transition=fade:duration=0.5:offset=2[v${i}]`);
       }
       
@@ -67,6 +72,8 @@ export const createVideoFromImages = async (images: string[], onProgress?: (prog
     const filterComplex = filters.join(';');
     const concatFilter = `${overlays.join('')}concat=n=${images.length}:v=1:a=0,format=yuv420p[outv]`;
     
+    onProgress?.(50); // Filter setup complete
+
     // Create FFmpeg command
     const command = [
       ...inputs,
@@ -85,13 +92,17 @@ export const createVideoFromImages = async (images: string[], onProgress?: (prog
 
     // Execute FFmpeg command
     console.log('Starting FFmpeg video creation...');
+    onProgress?.(60); // Starting video encoding
+
     await ffmpeg.exec(command.flatMap(cmd => cmd.split(' ')));
     console.log('FFmpeg video creation completed');
+    onProgress?.(80); // Video encoding complete
 
     // Read the output video file
     console.log('Reading output video file...');
     const data = await ffmpeg.readFile('output.mp4');
     console.log('Video file read successfully');
+    onProgress?.(90); // File read complete
     
     // Create a download link and trigger download
     console.log('Creating download link...');
@@ -104,6 +115,7 @@ export const createVideoFromImages = async (images: string[], onProgress?: (prog
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     console.log('Video download triggered');
+    onProgress?.(95); // Download triggered
 
     // Cleanup FFmpeg filesystem
     console.log('Starting cleanup...');
@@ -113,7 +125,7 @@ export const createVideoFromImages = async (images: string[], onProgress?: (prog
     await ffmpeg.deleteFile('output.mp4');
     console.log('Cleanup completed');
     
-    onProgress?.(100); // Complete progress
+    onProgress?.(100); // Process complete
   } catch (error) {
     console.error('Error in video creation:', error);
     throw error;
