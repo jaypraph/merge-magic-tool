@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Merge, FileImage, Maximize2, Gauge, Wrench } from "lucide-react";
+import { Merge, FileImage, Maximize2, Gauge, Wrench, Video } from "lucide-react";
 
 interface TopMenuBarProps {
   activeFeature: string;
@@ -14,6 +14,10 @@ export const TopMenuBar = ({ activeFeature, onFeatureSelect }: TopMenuBarProps) 
 
   const handleMockup2Click = () => {
     onFeatureSelect(activeFeature === "mockup2" ? "" : "mockup2");
+  };
+
+  const handleVdClick = () => {
+    onFeatureSelect(activeFeature === "vd" ? "" : "vd");
   };
 
   const handleJpgClick = () => {
@@ -107,6 +111,18 @@ export const TopMenuBar = ({ activeFeature, onFeatureSelect }: TopMenuBarProps) 
           >
             <Merge className="mr-2 h-5 w-5" />
             MS
+          </Button>
+          <Button
+            onClick={handleVdClick}
+            className={cn(
+              "w-28 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white mr-2",
+              activeFeature === "vd"
+                ? "transform translate-y-[2px]"
+                : "shadow-[0_4px_0_0_rgba(0,0,0,0.5)]"
+            )}
+          >
+            <Video className="mr-2 h-5 w-5" />
+            VD
           </Button>
         </div>
       </div>
