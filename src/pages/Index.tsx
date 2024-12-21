@@ -69,10 +69,25 @@ const Index = () => {
       // Convert DPI to 300 and create watermarked version
       const dpiAdjustedImage = changeDpiDataUrl(jpgImage, 300);
       const watermarkedImage = await createWatermarkedImage(dpiAdjustedImage);
-      const mockupImage = await createMockupImage("/lovable-uploads/e0990050-1d0a-4a84-957f-2ea4deb3af1f.png", dpiAdjustedImage);
+      const mockupImage = await createMockupImage(
+        "/lovable-uploads/e0990050-1d0a-4a84-957f-2ea4deb3af1f.png",
+        dpiAdjustedImage,
+        {
+          topLeft: "(228,224)",
+          topRight: "(1362,224)",
+          bottomLeft: "(228,841)",
+          bottomRight: "(1362,841)"
+        }
+      );
 
-      // Create and download ZIP file
-      const content = await createZipFile(dpiAdjustedImage, mockupImage, watermarkedImage);
+      // Create and download ZIP file with all variations
+      const content = await createZipFile(
+        dpiAdjustedImage,
+        mockupImage,
+        watermarkedImage,
+        uploadedImage
+      );
+      
       const url = URL.createObjectURL(content);
       const a = document.createElement("a");
       a.href = url;
