@@ -14,7 +14,7 @@ export const Slideshow = ({ images }: SlideshowProps) => {
       setCurrentIndex((prevIndex) => 
         prevIndex === images.length - 1 ? 0 : prevIndex + 1
       );
-    }, 10000); // 10 seconds duration
+    }, 2500); // Changed from 10000 to 2500 milliseconds (2.5 seconds)
 
     return () => clearInterval(timer);
   }, [images]);
