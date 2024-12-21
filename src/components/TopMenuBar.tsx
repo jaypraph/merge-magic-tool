@@ -106,7 +106,7 @@ export const TopMenuBar = ({ activeFeature, onFeatureSelect }: TopMenuBarProps) 
             )}
           >
             <Merge className="mr-2 h-5 w-5" />
-            M-2
+            MS
           </Button>
         </div>
       </div>
