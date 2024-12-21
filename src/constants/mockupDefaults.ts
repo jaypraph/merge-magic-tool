@@ -67,5 +67,14 @@ export const mockupImages = [
       bottomRight: "(385,232)"
     }
   },
-  { id: 7, src: mockup7 },
+  { 
+    id: 7, 
+    src: mockup7,
+    defaultCoordinates: {
+      topLeft: "(158,112)",
+      topRight: "(370,112)",
+      bottomLeft: "(158,242)",
+      bottomRight: "(370,242)"
+    }
+  },
 ];
