@@ -144,6 +144,29 @@ export const ImageEditor2 = () => {
     }
   };
 
+  const handleDownload = () => {
+    if (!mergedImage) {
+      toast({
+        title: "No merged image",
+        description: "Please merge images first before downloading",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const a = document.createElement("a");
+    a.href = mergedImage;
+    a.download = "merged-mockup.png";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    toast({
+      title: "Success!",
+      description: "Image downloaded successfully",
+    });
+  };
+
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
