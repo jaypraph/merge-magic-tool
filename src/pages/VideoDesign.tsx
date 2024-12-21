@@ -7,12 +7,14 @@ import { processImageForVideo } from "@/utils/videoProcessing";
 import { Slideshow } from "@/components/Slideshow";
 import { useToast } from "@/components/ui/use-toast";
 import { createVideoFromImages } from "@/utils/videoCreator";
+import { Progress } from "@/components/ui/progress";
 
 const VideoDesign = () => {
   const [uploadedImage, setUploadedImage] = useState<string>("");
   const [processedImages, setProcessedImages] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isCreatingVideo, setIsCreatingVideo] = useState(false);
+  const [videoProgress, setVideoProgress] = useState(0);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -56,13 +58,17 @@ const VideoDesign = () => {
     }
 
     setIsCreatingVideo(true);
+    setVideoProgress(0);
     try {
-      await createVideoFromImages(processedImages);
+      await createVideoFromImages(processedImages, (progress) => {
+        setVideoProgress(progress);
+      });
       toast({
         title: "Success!",
         description: "Video created and downloaded successfully.",
       });
     } catch (error) {
+      console.error('Video creation error:', error);
       toast({
         title: "Error",
         description: "Failed to create video. Please try again.",
@@ -70,6 +76,7 @@ const VideoDesign = () => {
       });
     } finally {
       setIsCreatingVideo(false);
+      setVideoProgress(0);
     }
   };
 
@@ -116,6 +123,15 @@ const VideoDesign = () => {
               </Button>
             )}
           </div>
+
+          {isCreatingVideo && (
+            <div className="space-y-2">
+              <Progress value={videoProgress} className="w-full" />
+              <p className="text-sm text-center text-gray-500">
+                Creating video: {videoProgress}%
+              </p>
+            </div>
+          )}
 
           {processedImages.length > 0 && (
             <div className="mt-8">

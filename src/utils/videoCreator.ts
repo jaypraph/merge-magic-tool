@@ -30,7 +30,7 @@ const loadFFmpeg = async () => {
   }
 };
 
-export const createVideoFromImages = async (images: string[]) => {
+export const createVideoFromImages = async (images: string[], onProgress?: (progress: number) => void) => {
   try {
     console.log('Starting video creation process...');
     const ffmpeg = await loadFFmpeg();
@@ -42,22 +42,37 @@ export const createVideoFromImages = async (images: string[]) => {
       const imageName = `image${i}.jpg`;
       const imageData = await fetchFile(images[i]);
       await ffmpeg.writeFile(imageName, imageData);
+      onProgress?.(Math.round((i / images.length) * 50)); // First 50% is for loading images
     }
     console.log('All images written to FFmpeg filesystem');
 
-    // Create a concat file that lists all images
-    const concat = images.map((_, i) => {
-      return `file 'image${i}.jpg'\nduration 2.5`;
-    }).join('\n');
-    await ffmpeg.writeFile('concat.txt', new TextEncoder().encode(concat));
-    console.log('Concat file created');
+    // Create a complex filter for crossfade transitions
+    const filters = [];
+    const inputs = [];
+    const overlays = [];
+    
+    for (let i = 0; i < images.length; i++) {
+      inputs.push(`-loop 1 -t 2.5 -i image${i}.jpg`);
+      
+      if (i > 0) {
+        // Add crossfade transition
+        filters.push(`[${i}:v][trans${i}]xfade=transition=fade:duration=0.5:offset=2[v${i}]`);
+      }
+      
+      if (i < images.length - 1) {
+        overlays.push(`[v${i}]`);
+      }
+    }
 
-    // Run FFmpeg command to create video
-    console.log('Starting FFmpeg video creation...');
-    await ffmpeg.exec([
-      '-f', 'concat',
-      '-safe', '0',
-      '-i', 'concat.txt',
+    const filterComplex = filters.join(';');
+    const concatFilter = `${overlays.join('')}concat=n=${images.length}:v=1:a=0,format=yuv420p[outv]`;
+    
+    // Create FFmpeg command
+    const command = [
+      ...inputs,
+      '-filter_complex',
+      `${filterComplex};${concatFilter}`,
+      '-map', '[outv]',
       '-c:v', 'libx264',
       '-preset', 'medium',
       '-crf', '23',
@@ -66,7 +81,11 @@ export const createVideoFromImages = async (images: string[]) => {
       '-pix_fmt', 'yuv420p',
       '-movflags', '+faststart',
       'output.mp4'
-    ]);
+    ].filter(Boolean);
+
+    // Execute FFmpeg command
+    console.log('Starting FFmpeg video creation...');
+    await ffmpeg.exec(command.flatMap(cmd => cmd.split(' ')));
     console.log('FFmpeg video creation completed');
 
     // Read the output video file
@@ -91,9 +110,10 @@ export const createVideoFromImages = async (images: string[]) => {
     for (let i = 0; i < images.length; i++) {
       await ffmpeg.deleteFile(`image${i}.jpg`);
     }
-    await ffmpeg.deleteFile('concat.txt');
     await ffmpeg.deleteFile('output.mp4');
     console.log('Cleanup completed');
+    
+    onProgress?.(100); // Complete progress
   } catch (error) {
     console.error('Error in video creation:', error);
     throw error;
