@@ -37,7 +37,7 @@ const loadFFmpeg = async () => {
 export const createVideoFromImages = async (images: string[], onProgress?: (progress: number) => void) => {
   try {
     console.log('Starting video creation process...');
-    onProgress?.(5);
+    onProgress?.(0);
 
     console.log('Loading FFmpeg...');
     const ffmpeg = await loadFFmpeg();
@@ -48,18 +48,18 @@ export const createVideoFromImages = async (images: string[], onProgress?: (prog
     onProgress?.(10);
 
     // Write each image to FFmpeg's virtual filesystem
-    const imageLoadingProgressRange = 30;
+    const imageLoadingProgressRange = 40; // Increased from 30 to 40
     for (let i = 0; i < images.length; i++) {
       console.log(`Processing image ${i + 1}/${images.length}`);
       const imageName = `image${i}.jpg`;
       const imageData = await fetchFile(images[i]);
       await ffmpeg.writeFile(imageName, imageData);
-      const progress = 10 + Math.round((i / images.length) * imageLoadingProgressRange);
+      const progress = 10 + Math.round((i + 1) / images.length * imageLoadingProgressRange);
       console.log(`Image ${i + 1} processed, progress: ${progress}%`);
       onProgress?.(progress);
     }
     console.log('All images written to FFmpeg filesystem');
-    onProgress?.(40);
+    onProgress?.(50);
 
     // Create a complex filter for crossfade transitions
     const filters = [];
@@ -82,7 +82,7 @@ export const createVideoFromImages = async (images: string[], onProgress?: (prog
     const concatFilter = `${overlays.join('')}concat=n=${images.length}:v=1:a=0,format=yuv420p[outv]`;
     
     console.log('Filter setup complete');
-    onProgress?.(50);
+    onProgress?.(60);
 
     // Create FFmpeg command
     const command = [
@@ -101,7 +101,7 @@ export const createVideoFromImages = async (images: string[], onProgress?: (prog
     ].filter(Boolean);
 
     console.log('Starting FFmpeg command execution:', command);
-    onProgress?.(60);
+    onProgress?.(70);
 
     await ffmpeg.exec(command.flatMap(cmd => cmd.split(' ')));
     console.log('FFmpeg video creation completed');
