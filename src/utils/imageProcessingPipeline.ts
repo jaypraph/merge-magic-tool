@@ -16,11 +16,13 @@ const createImage = (src: string): Promise<HTMLImageElement> => {
 export const convertToJpg = async (imageDataUrl: string): Promise<string> => {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Could not get canvas context");
+  
   const img = await createImage(imageDataUrl);
   
   canvas.width = img.width;
   canvas.height = img.height;
-  ctx?.drawImage(img, 0, 0);
+  ctx.drawImage(img, 0, 0);
   
   return canvas.toDataURL("image/jpeg", 0.9);
 };
@@ -28,6 +30,8 @@ export const convertToJpg = async (imageDataUrl: string): Promise<string> => {
 export const resizeTo4K = async (imageDataUrl: string): Promise<string> => {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Could not get canvas context");
+  
   const img = await createImage(imageDataUrl);
   
   // 4K UHD resolution
@@ -44,9 +48,9 @@ export const resizeTo4K = async (imageDataUrl: string): Promise<string> => {
   const x = (canvas.width - newWidth) / 2;
   const y = (canvas.height - newHeight) / 2;
   
-  ctx?.fillStyle = 'white';
-  ctx?.fillRect(0, 0, canvas.width, canvas.height);
-  ctx?.drawImage(img, x, y, newWidth, newHeight);
+  ctx.fillStyle = 'white';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img, x, y, newWidth, newHeight);
   
   return canvas.toDataURL("image/jpeg", 0.9);
 };
@@ -54,6 +58,7 @@ export const resizeTo4K = async (imageDataUrl: string): Promise<string> => {
 export const createMockup = async (mockupSrc: string, processedImage: string): Promise<string> => {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Could not get canvas context");
   
   canvas.width = 2000;
   canvas.height = 2000;
@@ -62,7 +67,7 @@ export const createMockup = async (mockupSrc: string, processedImage: string): P
     const mockupImg = await createImage(mockupSrc);
     const contentImg = await createImage(processedImage);
 
-    ctx?.drawImage(mockupImg, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(mockupImg, 0, 0, canvas.width, canvas.height);
 
     const mockupData = mockupImages.find(m => m.src === mockupSrc);
     if (mockupData) {
@@ -80,7 +85,7 @@ export const createMockup = async (mockupSrc: string, processedImage: string): P
         const scaledWidth = Math.round((topRight.x - topLeft.x) * scaleX);
         const scaledHeight = Math.round((bottomLeft.y - topLeft.y) * scaleY);
 
-        ctx?.drawImage(
+        ctx.drawImage(
           contentImg,
           scaledX,
           scaledY,
