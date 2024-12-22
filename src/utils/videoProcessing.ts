@@ -10,7 +10,7 @@ export const createSlideshow = async (images: string[]): Promise<Blob> => {
   const stream = canvas.captureStream(30); // 30 FPS
   const mediaRecorder = new MediaRecorder(stream, {
     mimeType: 'video/webm;codecs=h264',
-    videoBitsPerSecond: 8000000 // 8 Mbps for high quality
+    videoBitsPerSecond: 20000000 // 20 Mbps for ultra high quality
   });
 
   const chunks: Blob[] = [];
@@ -49,28 +49,33 @@ export const createSlideshow = async (images: string[]): Promise<Blob> => {
           const x = (canvas.width - newWidth) / 2;
           const y = (canvas.height - newHeight) / 2;
 
-          // Fade in (500ms)
+          // Fade in (300ms - faster transition)
           for (let alpha = 0; alpha <= 1; alpha += 0.1) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = 'black';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.globalAlpha = alpha;
+            
+            // Use better image rendering
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            
             ctx.drawImage(img, x, y, newWidth, newHeight);
-            await new Promise(resolve => setTimeout(resolve, 50));
+            await new Promise(resolve => setTimeout(resolve, 30)); // 30ms steps for smoother transition
           }
 
-          // Hold for 1.5 seconds (full opacity)
+          // Hold for 1.9 seconds (full opacity)
           ctx.globalAlpha = 1;
-          await new Promise(resolve => setTimeout(resolve, 1500));
+          await new Promise(resolve => setTimeout(resolve, 1900));
 
-          // Fade out (500ms)
+          // Fade out (300ms - faster transition)
           for (let alpha = 1; alpha >= 0; alpha -= 0.1) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = 'black';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.globalAlpha = alpha;
             ctx.drawImage(img, x, y, newWidth, newHeight);
-            await new Promise(resolve => setTimeout(resolve, 50));
+            await new Promise(resolve => setTimeout(resolve, 30)); // 30ms steps for smoother transition
           }
 
           resolveTransition();
