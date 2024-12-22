@@ -34,7 +34,20 @@ export const resizeTo4K = async (imageDataUrl: string): Promise<string> => {
   canvas.width = 3840;
   canvas.height = 2160;
   
-  ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+  // Calculate aspect ratio preserving dimensions
+  const scale = Math.min(
+    canvas.width / img.width,
+    canvas.height / img.height
+  );
+  const newWidth = img.width * scale;
+  const newHeight = img.height * scale;
+  const x = (canvas.width - newWidth) / 2;
+  const y = (canvas.height - newHeight) / 2;
+  
+  ctx?.fillStyle = 'white';
+  ctx?.fillRect(0, 0, canvas.width, canvas.height);
+  ctx?.drawImage(img, x, y, newWidth, newHeight);
+  
   return canvas.toDataURL("image/jpeg", 0.9);
 };
 
@@ -107,11 +120,11 @@ export const processImage = async (imageDataUrl: string): Promise<string[]> => {
     const resizedVersion = await resizeTo4K(jpgVersion);
     console.log("Resized to 4K");
     
-    // Adjust DPI - Apply DPI adjustment to the resized version before any other processing
+    // Apply DPI adjustment immediately after resize
     const dpiAdjusted = changeDpiDataUrl(resizedVersion, 300);
     console.log("Adjusted DPI to 300");
     
-    // Create mockups (1, 2, 3, 5)
+    // Create mockups using the DPI-adjusted version
     const selectedMockups = [
       mockupImages[0], // mockup 1
       mockupImages[1], // mockup 2
@@ -125,7 +138,7 @@ export const processImage = async (imageDataUrl: string): Promise<string[]> => {
     );
     console.log("Created all mockups");
     
-    // Return processed image (with DPI adjustment) and all mockups
+    // Return DPI-adjusted image first, followed by mockups
     return [dpiAdjusted, ...mockupResults];
   } catch (error) {
     console.error("Error in image processing pipeline:", error);

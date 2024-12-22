@@ -1,5 +1,4 @@
 export const createSlideshow = async (images: string[]): Promise<Blob> => {
-  // Create a canvas for the video frames
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d')!;
   
@@ -7,7 +6,6 @@ export const createSlideshow = async (images: string[]): Promise<Blob> => {
   canvas.width = 2880;
   canvas.height = 2160;
 
-  // Create MediaRecorder to record the canvas
   const stream = canvas.captureStream(30); // 30 FPS
   const mediaRecorder = new MediaRecorder(stream, {
     mimeType: 'video/webm;codecs=h264',
@@ -38,11 +36,23 @@ export const createSlideshow = async (images: string[]): Promise<Blob> => {
           img.src = imageUrl;
           await new Promise(resolve => img.onload = resolve);
 
+          // Calculate aspect ratio preserving dimensions
+          const scale = Math.min(
+            canvas.width / img.width,
+            canvas.height / img.height
+          );
+          const newWidth = img.width * scale;
+          const newHeight = img.height * scale;
+          const x = (canvas.width - newWidth) / 2;
+          const y = (canvas.height - newHeight) / 2;
+
           // Fade in (500ms)
           for (let alpha = 0; alpha <= 1; alpha += 0.1) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.globalAlpha = alpha;
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, x, y, newWidth, newHeight);
             await new Promise(resolve => setTimeout(resolve, 50));
           }
 
@@ -53,8 +63,10 @@ export const createSlideshow = async (images: string[]): Promise<Blob> => {
           // Fade out (500ms)
           for (let alpha = 1; alpha >= 0; alpha -= 0.1) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.globalAlpha = alpha;
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, x, y, newWidth, newHeight);
             await new Promise(resolve => setTimeout(resolve, 50));
           }
 
