@@ -9,7 +9,6 @@ const createImage = (src: string): Promise<HTMLImageElement> => {
       console.error("Error loading image:", src, e);
       reject(e);
     };
-    // Ensure we're using the correct path format
     img.src = src.startsWith('data:') ? src : src.replace(/^\//, '');
   });
 };
@@ -108,7 +107,7 @@ export const processImage = async (imageDataUrl: string): Promise<string[]> => {
     const resizedVersion = await resizeTo4K(jpgVersion);
     console.log("Resized to 4K");
     
-    // Adjust DPI
+    // Adjust DPI - Apply DPI adjustment to the resized version before any other processing
     const dpiAdjusted = changeDpiDataUrl(resizedVersion, 300);
     console.log("Adjusted DPI to 300");
     
@@ -126,7 +125,7 @@ export const processImage = async (imageDataUrl: string): Promise<string[]> => {
     );
     console.log("Created all mockups");
     
-    // Return processed image and all mockups
+    // Return processed image (with DPI adjustment) and all mockups
     return [dpiAdjusted, ...mockupResults];
   } catch (error) {
     console.error("Error in image processing pipeline:", error);
