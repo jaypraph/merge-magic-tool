@@ -1,9 +1,10 @@
 export const createSlideshow = async (images: string[]): Promise<Blob> => {
+  // Create a high-resolution canvas (4K UHD)
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d')!;
   
-  // Set video dimensions (2880x2160)
-  canvas.width = 2880;
+  // Set video dimensions to 4K (3840x2160)
+  canvas.width = 3840;
   canvas.height = 2160;
 
   const stream = canvas.captureStream(30); // 30 FPS
@@ -43,6 +44,8 @@ export const createSlideshow = async (images: string[]): Promise<Blob> => {
           );
           const newWidth = img.width * scale;
           const newHeight = img.height * scale;
+          
+          // Center the image
           const x = (canvas.width - newWidth) / 2;
           const y = (canvas.height - newHeight) / 2;
 
