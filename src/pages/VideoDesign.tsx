@@ -1,17 +1,20 @@
 import { ImageUpload } from "@/components/ImageUpload";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Video, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { processImage } from "@/utils/imageProcessingPipeline";
 import { useToast } from "@/components/ui/use-toast";
 import { Progress } from "@/components/ui/progress";
+import { createSlideshow } from "@/utils/videoProcessing";
 
 const VideoDesign = () => {
   const [uploadedImage, setUploadedImage] = useState<string>("");
   const [processedImages, setProcessedImages] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isCreatingVideo, setIsCreatingVideo] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [videoUrl, setVideoUrl] = useState<string>("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -47,6 +50,49 @@ const VideoDesign = () => {
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const handleCreateVideo = async () => {
+    if (processedImages.length === 0) {
+      toast({
+        title: "No images available",
+        description: "Please process images first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsCreatingVideo(true);
+    try {
+      const videoBlob = await createSlideshow(processedImages);
+      const url = URL.createObjectURL(videoBlob);
+      setVideoUrl(url);
+      
+      toast({
+        title: "Success!",
+        description: "Video created successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create video",
+        variant: "destructive",
+      });
+      console.error(error);
+    } finally {
+      setIsCreatingVideo(false);
+    }
+  };
+
+  const handleDownloadVideo = () => {
+    if (!videoUrl) return;
+    
+    const link = document.createElement("a");
+    link.href = videoUrl;
+    link.download = "slideshow.mp4";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -109,6 +155,33 @@ const VideoDesign = () => {
                   </div>
                 ))}
               </div>
+
+              <div className="flex justify-center gap-4">
+                <Button
+                  onClick={handleCreateVideo}
+                  disabled={isCreatingVideo}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  <Video className="mr-2 h-4 w-4" />
+                  Make Video
+                </Button>
+
+                {videoUrl && (
+                  <Button
+                    onClick={handleDownloadVideo}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    <Download className="mr-2 h-4 w-4" />
+                    Download Video
+                  </Button>
+                )}
+              </div>
+
+              {isCreatingVideo && (
+                <p className="text-center text-sm text-gray-500">
+                  Creating video...
+                </p>
+              )}
             </div>
           )}
         </div>
