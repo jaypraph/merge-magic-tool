@@ -1,21 +1,9 @@
-import { createImage } from "./imageProcessing";
 import { mockupImages } from "@/constants/mockupDefaults";
 
-interface MockupResult {
-  id: number;
+export interface MockupResult {
+  id: string;
   dataUrl: string;
 }
-
-const parseCoordinates = (coord: string) => {
-  const match = coord.match(/\((\d+),(\d+)\)/);
-  if (match) {
-    return {
-      x: parseInt(match[1]),
-      y: parseInt(match[2])
-    };
-  }
-  return null;
-};
 
 export const createMockup2Images = async (uploadedImage: string): Promise<MockupResult[]> => {
   const mockupResults = [];
@@ -27,38 +15,52 @@ export const createMockup2Images = async (uploadedImage: string): Promise<Mockup
     canvas.width = 2000;
     canvas.height = 2000;
 
-    const img1 = await createImage(mockup.src);
-    const img2 = await createImage(uploadedImage);
-
-    ctx?.drawImage(img1, 0, 0, canvas.width, canvas.height);
-
-    const coordinates = mockup.defaultCoordinates;
-    const topLeft = parseCoordinates(coordinates.topLeft);
-    const topRight = parseCoordinates(coordinates.topRight);
-    const bottomLeft = parseCoordinates(coordinates.bottomLeft);
-
-    if (topLeft && topRight && bottomLeft) {
-      const scaleX = canvas.width / img1.width;
-      const scaleY = canvas.height / img1.height;
+    try {
+      // Ensure we're using the correct path format
+      const mockupPath = mockup.src.startsWith('/') ? mockup.src : `/${mockup.src}`;
       
-      const scaledX = Math.round(topLeft.x * scaleX);
-      const scaledY = Math.round(topLeft.y * scaleY);
-      const scaledWidth = Math.round((topRight.x - topLeft.x) * scaleX);
-      const scaledHeight = Math.round((bottomLeft.y - topLeft.y) * scaleY);
+      // Load mockup image
+      const mockupImg = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = mockupPath;
+      });
 
-      ctx?.drawImage(
-        img2,
-        scaledX,
-        scaledY,
-        scaledWidth,
-        scaledHeight
-      );
+      // Load uploaded image
+      const uploadedImg = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = uploadedImage;
+      });
+
+      // Draw mockup image
+      ctx?.drawImage(mockupImg, 0, 0, canvas.width, canvas.height);
+
+      // Get coordinates from mockup data
+      const coords = mockup.defaultCoordinates;
+      const topLeft = coords.topLeft.match(/\((\d+),(\d+)\)/);
+      const topRight = coords.topRight.match(/\((\d+),(\d+)\)/);
+      const bottomLeft = coords.bottomLeft.match(/\((\d+),(\d+)\)/);
+
+      if (topLeft && topRight && bottomLeft) {
+        const width = parseInt(topRight[1]) - parseInt(topLeft[1]);
+        const height = parseInt(bottomLeft[2]) - parseInt(topLeft[2]);
+        const x = parseInt(topLeft[1]);
+        const y = parseInt(topLeft[2]);
+
+        // Draw uploaded image in the correct position
+        ctx?.drawImage(uploadedImg, x, y, width, height);
+      }
+
+      mockupResults.push({
+        id: mockup.id,
+        dataUrl: canvas.toDataURL("image/png")
+      });
+    } catch (error) {
+      console.error(`Error processing mockup ${mockup.id}:`, error);
     }
-
-    mockupResults.push({
-      id: mockup.id,
-      dataUrl: canvas.toDataURL("image/png")
-    });
   }
   
   return mockupResults;

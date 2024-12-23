@@ -1,4 +1,3 @@
-import { changeDpiDataUrl } from "changedpi";
 import { createSlideshow } from "./videoProcessing";
 import { createImage, createWatermarkedImage, createMockupImage } from "./imageProcessing";
 import { createMockup2Images } from "./mockupProcessing";
@@ -34,7 +33,9 @@ export const processImage = async (uploadedImage?: string): Promise<ProcessImage
       
       // Create mockup versions for all mockup images
       for (const mockup of mockupImages) {
-        const mockupImage = await createMockupImage(mockup.src, dpiAdjustedImage);
+        // Ensure we're using the correct path format
+        const mockupPath = mockup.src.startsWith('/') ? mockup.src : `/${mockup.src}`;
+        const mockupImage = await createMockupImage(mockupPath, dpiAdjustedImage);
         processedImages.push(mockupImage);
       }
     }
