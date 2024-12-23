@@ -4,6 +4,7 @@ import { Upload, Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import JSZip from "jszip";
 import { processImage } from "@/utils/imageProcessingPipeline";
+import { Progress } from "@/components/ui/progress";
 
 interface ImageProcessorProps {
   uploadedImage: string;
@@ -13,6 +14,7 @@ interface ImageProcessorProps {
 export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorProps) => {
   const { toast } = useToast();
   const [processingStage, setProcessingStage] = useState<string>("");
+  const [progress, setProgress] = useState(0);
 
   const handleProcessImage = async () => {
     if (!uploadedImage) {
@@ -26,9 +28,10 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
 
     try {
       const zip = new JSZip();
+      setProgress(0);
       
       // Process images through the pipeline
-      const result = await processImage(uploadedImage, setProcessingStage);
+      const result = await processImage(uploadedImage, setProcessingStage, setProgress);
       
       // Add processed images to ZIP with specific names
       result.images.forEach((item, index) => {
@@ -57,18 +60,20 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
       URL.revokeObjectURL(url);
 
       setProcessingStage("");
+      setProgress(0);
       toast({
         title: "Success!",
         description: "All images and video have been processed and downloaded as ZIP file.",
       });
     } catch (error) {
+      console.error("Processing error:", error);
       setProcessingStage("");
+      setProgress(0);
       toast({
         title: "Error",
         description: "An error occurred while processing the images",
         variant: "destructive",
       });
-      console.error(error);
     }
   };
 
@@ -91,8 +96,16 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
         </Button>
       </div>
       {processingStage && (
-        <div className="text-green-600 font-medium text-center mt-2">
-          {processingStage}
+        <div className="w-full max-w-md space-y-2">
+          <div className="text-green-600 font-medium text-center">
+            {processingStage}
+            {processingStage === "Creating video slideshow..." && progress > 0 && (
+              <span> ({Math.round(progress)}%)</span>
+            )}
+          </div>
+          {processingStage === "Creating video slideshow..." && (
+            <Progress value={progress} className="w-full" />
+          )}
         </div>
       )}
     </div>

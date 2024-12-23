@@ -10,7 +10,8 @@ export interface ProcessImageResult {
 
 export const processImage = async (
   uploadedImage?: string,
-  setProcessingStage?: (stage: string) => void
+  setProcessingStage?: (stage: string) => void,
+  setProgress?: (progress: number) => void
 ): Promise<ProcessImageResult> => {
   try {
     console.log("Starting image processing pipeline...");
@@ -58,7 +59,7 @@ export const processImage = async (
       mockup2Images[3]
     ];
 
-    const videoBase64 = await createSlideshow(slideshowImages);
+    const videoBase64 = await createSlideshow(slideshowImages, setProgress || (() => {}));
     processedImages.push(videoBase64);
     
     return { images: processedImages };
