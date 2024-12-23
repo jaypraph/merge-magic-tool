@@ -51,7 +51,7 @@ export const resizeTo4K = async (imageDataUrl: string): Promise<string> => {
   ctx.drawImage(img, x, y, newWidth, newHeight);
   
   const jpgOutput = canvas.toDataURL("image/jpeg", 0.9);
-  return changeDpiDataUrl(jpgOutput, 300); // Ensure 300 DPI
+  return changeDpiDataUrl(jpgOutput, 300);
 };
 
 export const createMockup = async (mockupSrc: string, processedImage: string): Promise<string> => {
@@ -95,7 +95,7 @@ export const createMockup = async (mockupSrc: string, processedImage: string): P
     }
 
     const output = canvas.toDataURL("image/png");
-    return changeDpiDataUrl(output, 300); // Ensure 300 DPI
+    return changeDpiDataUrl(output, 300);
   } catch (error) {
     console.error("Error creating mockup:", error);
     throw error;

@@ -144,8 +144,7 @@ const Index = () => {
 
       // Process video
       const result = await processImage(dpiAdjustedImage);
-      const videoBlob = result.video;
-      zip.file("slideshow.mp4", videoBlob);
+      zip.file("slideshow.mp4", result.video);
 
       // Generate and download the ZIP file
       const content = await zip.generateAsync({type: "blob"});
