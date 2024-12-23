@@ -16,35 +16,37 @@ export const processImage = async (uploadedImage?: string): Promise<ProcessImage
     const processedImages: string[] = [];
     
     if (uploadedImage) {
-      // Create JPG version with 300 DPI
+      // Step 1: Create JPG version and resize to 4K
       const jpgCanvas = document.createElement("canvas");
       const jpgCtx = jpgCanvas.getContext("2d");
       const img1 = await createImage(uploadedImage);
-      jpgCanvas.width = 3840;
-      jpgCanvas.height = 2160;
+      jpgCanvas.width = 3840;  // 4K width
+      jpgCanvas.height = 2160; // 4K height
       jpgCtx?.drawImage(img1, 0, 0, 3840, 2160);
       const jpgImage = jpgCanvas.toDataURL("image/jpeg", 0.9);
       
+      // Step 2: Apply 300 DPI to the matrix image
       const dpiAdjustedImage = changeDpiDataUrl(jpgImage, 300);
-      processedImages.push(dpiAdjustedImage);
+      processedImages.push(dpiAdjustedImage); // This will be mtrx-1.jpg
       
-      // Create watermarked version
+      // Step 3: Create watermarked version
       const watermarkedImage = await createWatermarkedImage(dpiAdjustedImage);
-      processedImages.push(watermarkedImage);
+      processedImages.push(watermarkedImage); // This will be wm-1.jpg
       
-      // Create mockup versions for all mockup images
+      // Step 4: Create mockup versions for all mockup images
       for (const mockup of mockupImages) {
-        // Ensure we're using the correct path format
         const mockupPath = mockup.src.startsWith('/') ? mockup.src : `/${mockup.src}`;
         const mockupImage = await createMockupImage(mockupPath, dpiAdjustedImage);
-        processedImages.push(mockupImage);
+        // Apply 300 DPI to mockup images as well
+        const dpiAdjustedMockup = changeDpiDataUrl(mockupImage, 300);
+        processedImages.push(dpiAdjustedMockup);
       }
     }
     
-    // Create video from processed images
-    console.log("Creating video...");
+    // Step 5: Create video from all processed images
+    console.log("Creating video from processed images...");
     const video = await createSlideshow(processedImages);
-    console.log("Video created");
+    console.log("Video creation completed");
     
     return {
       images: processedImages,
