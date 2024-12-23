@@ -1,213 +1,12 @@
 import { changeDpiDataUrl } from "changedpi";
-import { mockupImages } from "@/constants/mockupDefaults";
-import defaultImage from "/lovable-uploads/e0990050-1d0a-4a84-957f-2ea4deb3af1f.png";
-import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { fetchFile, toBlobURL } from '@ffmpeg/util';
+import { convertToJpg, resizeTo4K } from './imageOperations';
+import { createWatermarkedImage } from './watermarkOperations';
+import { createMockup1, createMockup2Variations } from './mockupOperations';
+import { createSlideshow } from './videoOperations';
 
 export interface ProcessImageResult {
   images: string[];
 }
-
-const createImage = (src: string): Promise<HTMLImageElement> => {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-    img.src = src;
-  });
-};
-
-const convertToJpg = async (pngImage: string): Promise<string> => {
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-  const img = await createImage(pngImage);
-  
-  canvas.width = img.width;
-  canvas.height = img.height;
-  ctx?.drawImage(img, 0, 0);
-  
-  return canvas.toDataURL("image/jpeg", 0.9);
-};
-
-const resizeTo4K = async (imageUrl: string): Promise<string> => {
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-  const img = await createImage(imageUrl);
-  
-  canvas.width = 3840;
-  canvas.height = 2160;
-  ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
-  
-  return canvas.toDataURL("image/jpeg", 0.9);
-};
-
-const createWatermarkedImage = async (imageDataUrl: string): Promise<string> => {
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-  const img = await createImage(imageDataUrl);
-  
-  canvas.width = img.width;
-  canvas.height = img.height;
-  
-  ctx?.drawImage(img, 0, 0);
-  
-  if (ctx) {
-    // Doubled the fontSize by multiplying by 0.16 instead of 0.08
-    const fontSize = Math.floor(canvas.height * 0.16);
-    
-    ctx.font = `${fontSize}px Arial`;
-    ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    
-    ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-    ctx.shadowBlur = 4;
-    ctx.shadowOffsetX = 2;
-    ctx.shadowOffsetY = 2;
-    
-    ctx.fillText(
-      "Ultra High Resolution",
-      canvas.width / 2,
-      canvas.height / 2
-    );
-    
-    ctx.shadowColor = "transparent";
-    ctx.shadowBlur = 0;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
-    
-    const logoImg = await createImage("/lovable-uploads/6a3b93f0-d58c-4c78-8496-4639c21555d2.png");
-    const logoWidth = canvas.width * 0.15;
-    const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
-    
-    ctx.globalAlpha = 0.4;
-    ctx.drawImage(logoImg, 10, 10, logoWidth, logoHeight);
-    ctx.globalAlpha = 1.0;
-  }
-  
-  return canvas.toDataURL("image/jpeg", 0.9);
-};
-
-const createMockup1 = async (imageUrl: string): Promise<string> => {
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-  
-  canvas.width = 1588;
-  canvas.height = 1191;
-  
-  const mockupImg = await createImage(defaultImage);
-  const uploadedImg = await createImage(imageUrl);
-  
-  ctx?.drawImage(mockupImg, 0, 0, canvas.width, canvas.height);
-  ctx?.drawImage(uploadedImg, 228, 224, 1362 - 228, 841 - 224);
-  
-  return canvas.toDataURL("image/jpeg", 0.9);
-};
-
-const createMockup2Variations = async (imageUrl: string): Promise<string[]> => {
-  const mockupResults: string[] = [];
-
-  for (const mockup of mockupImages) {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    
-    canvas.width = 2000;
-    canvas.height = 2000;
-
-    try {
-      const mockupImg = await createImage(mockup.src);
-      const uploadedImg = await createImage(imageUrl);
-
-      ctx?.drawImage(mockupImg, 0, 0, canvas.width, canvas.height);
-
-      const coords = mockup.defaultCoordinates;
-      const topLeft = coords.topLeft.match(/\((\d+),(\d+)\)/);
-      const topRight = coords.topRight.match(/\((\d+),(\d+)\)/);
-      const bottomLeft = coords.bottomLeft.match(/\((\d+),(\d+)\)/);
-
-      if (topLeft && topRight && bottomLeft) {
-        const width = parseInt(topRight[1]) - parseInt(topLeft[1]);
-        const height = parseInt(bottomLeft[2]) - parseInt(topLeft[2]);
-        const x = parseInt(topLeft[1]);
-        const y = parseInt(topLeft[2]);
-
-        const scaleX = canvas.width / mockupImg.width;
-        const scaleY = canvas.height / mockupImg.height;
-        
-        const scaledX = Math.round(x * scaleX);
-        const scaledY = Math.round(y * scaleY);
-        const scaledWidth = Math.round(width * scaleX);
-        const scaledHeight = Math.round(height * scaleY);
-
-        ctx?.drawImage(uploadedImg, scaledX, scaledY, scaledWidth, scaledHeight);
-      }
-
-      const mergedImage = canvas.toDataURL("image/jpeg", 0.9);
-      mockupResults.push(mergedImage);
-    } catch (error) {
-      console.error(`Error processing mockup:`, error);
-    }
-  }
-
-  return mockupResults;
-};
-
-const createSlideshow = async (images: string[]): Promise<string> => {
-  console.log("Starting slideshow creation...");
-  const ffmpeg = new FFmpeg();
-  
-  try {
-    await ffmpeg.load({
-      coreURL: await toBlobURL(`/ffmpeg-core.js`, 'text/javascript'),
-      wasmURL: await toBlobURL(`/ffmpeg-core.wasm`, 'application/wasm'),
-    });
-    
-    console.log("FFmpeg loaded successfully");
-
-    // Convert base64 images to files and write them to FFmpeg's virtual filesystem
-    for (let i = 0; i < images.length; i++) {
-      const imageData = images[i].split(',')[1];
-      const uint8Array = Uint8Array.from(atob(imageData), c => c.charCodeAt(0));
-      await ffmpeg.writeFile(`image${i}.jpg`, uint8Array);
-      console.log(`Written image ${i} to FFmpeg filesystem`);
-    }
-
-    // Create a file list for FFmpeg
-    const fileList = images.map((_, i) => `file 'image${i}.jpg'`).join('\n');
-    await ffmpeg.writeFile('files.txt', fileList);
-    console.log("File list created");
-
-    // Run FFmpeg command to create slideshow
-    await ffmpeg.exec([
-      '-f', 'concat',
-      '-safe', '0',
-      '-i', 'files.txt',
-      '-framerate', '30',
-      '-vf', `scale=2880:2160:force_original_aspect_ratio=decrease,pad=2880:2160:(ow-iw)/2:(oh-ih)/2,fps=30,format=yuv420p`,
-      '-c:v', 'libx264',
-      '-pix_fmt', 'yuv420p',
-      '-r', '30',
-      '-framerate', '30',
-      '-video_track_timescale', '30000',
-      '-vf', `zoompan=d=75:fps=30`,  // 2.5 seconds per image (75 frames at 30fps)
-      'output.mp4'
-    ]);
-
-    console.log("FFmpeg command executed");
-
-    // Read the output file and convert to base64
-    const data = await ffmpeg.readFile('output.mp4');
-    const videoBlob = new Blob([data], { type: 'video/mp4' });
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.readAsDataURL(videoBlob);
-    });
-  } catch (error) {
-    console.error("Error in createSlideshow:", error);
-    throw error;
-  }
-};
 
 export const processImage = async (
   uploadedImage?: string,
@@ -232,31 +31,31 @@ export const processImage = async (
     // 2. Set DPI to 300 and save as mtrx-1
     setProcessingStage?.("Adjusting DPI...");
     const dpiAdjustedImage = changeDpiDataUrl(resizedImage, 300);
-    processedImages.push(dpiAdjustedImage); // mtrx-1
+    processedImages.push(dpiAdjustedImage);
     
     // 3. Create watermarked version (wm-1)
     setProcessingStage?.("Adding watermark...");
     const watermarkedImage = await createWatermarkedImage(dpiAdjustedImage);
-    processedImages.push(watermarkedImage); // wm-1
+    processedImages.push(watermarkedImage);
     
     // 4. Create Mockup 1 (oreomock5)
     setProcessingStage?.("Creating first mockup...");
     const mockup1Image = await createMockup1(dpiAdjustedImage);
-    processedImages.push(mockup1Image); // oreomock5
+    processedImages.push(mockup1Image);
     
     // 5. Create seven Mockup 2 variations
     setProcessingStage?.("Creating mockup variations...");
     const mockup2Images = await createMockup2Variations(dpiAdjustedImage);
-    processedImages.push(...mockup2Images); // seven additional mockups
+    processedImages.push(...mockup2Images);
 
-    // 6. Create slideshow video from selected images
+    // 6. Create slideshow video
     setProcessingStage?.("Creating video slideshow...");
     const slideshowImages = [
-      dpiAdjustedImage, // mtrx-1
-      mockup1Image,     // mockup-1
-      mockup2Images[0], // mockup-2
-      mockup2Images[1], // mockup-3
-      mockup2Images[3]  // mockup-5
+      dpiAdjustedImage,
+      mockup1Image,
+      mockup2Images[0],
+      mockup2Images[1],
+      mockup2Images[3]
     ];
 
     const videoBase64 = await createSlideshow(slideshowImages);
