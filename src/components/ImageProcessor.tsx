@@ -26,7 +26,7 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
     try {
       const zip = new JSZip();
       
-      // Process images and create video
+      // Process images
       const result = await processImage(uploadedImage);
       
       // Add processed images to ZIP with specific names
@@ -36,11 +36,6 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
                         `m${index-1}.jpg`;
         zip.file(fileName, image.split('base64,')[1], {base64: true});
       });
-      
-      // Add video if available
-      if (result.video) {
-        zip.file("slideshow.mp4", result.video);
-      }
 
       // Generate and download the ZIP file
       const content = await zip.generateAsync({type: "blob"});
@@ -55,7 +50,7 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
 
       toast({
         title: "Success!",
-        description: "All images and video have been processed and downloaded as ZIP file.",
+        description: "All images have been processed and downloaded as ZIP file.",
       });
     } catch (error) {
       toast({
