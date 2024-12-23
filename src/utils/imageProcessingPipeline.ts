@@ -1,5 +1,6 @@
 import { changeDpiDataUrl } from "changedpi";
 import { createSlideshow } from "./videoProcessing";
+import { mockupImages } from "@/constants/mockupDefaults";
 
 const createImage = (src: string): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {
@@ -112,7 +113,7 @@ const parseCoordinates = (coord: string) => {
   return null;
 };
 
-interface ProcessImageResult {
+export interface ProcessImageResult {
   images: string[];
   video: Blob;
 }
