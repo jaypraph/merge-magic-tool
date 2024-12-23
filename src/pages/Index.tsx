@@ -144,7 +144,7 @@ const Index = () => {
 
       // Process video
       const result = await processImage();
-      if (result?.video) {
+      if (result && result.video) {
         zip.file("slideshow.mp4", result.video);
       }
 
