@@ -1,5 +1,4 @@
 import { changeDpiDataUrl } from "changedpi";
-import { mockupImages } from "@/constants/mockupDefaults";
 import { createSlideshow } from "./videoProcessing";
 
 const createImage = (src: string): Promise<HTMLImageElement> => {
@@ -113,10 +112,12 @@ const parseCoordinates = (coord: string) => {
   return null;
 };
 
-export const processImage = async (imageDataUrl: string): Promise<{
+interface ProcessImageResult {
   images: string[];
   video: Blob;
-}> => {
+}
+
+export const processImage = async (imageDataUrl: string): Promise<ProcessImageResult> => {
   try {
     console.log("Starting image processing pipeline...");
     
