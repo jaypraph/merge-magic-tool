@@ -4,7 +4,6 @@ import { changeDpiDataUrl } from "changedpi";
 
 export interface ProcessImageResult {
   images: string[];
-  video: Blob;
 }
 
 export const processImage = async (uploadedImage?: string): Promise<ProcessImageResult> => {
@@ -39,8 +38,7 @@ export const processImage = async (uploadedImage?: string): Promise<ProcessImage
     }
     
     return {
-      images: processedImages,
-      video: new Blob() // Return empty blob since video feature is removed
+      images: processedImages
     };
   } catch (error) {
     console.error("Error in image processing pipeline:", error);
