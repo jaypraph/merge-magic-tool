@@ -6,15 +6,12 @@ const createImage = (src: string): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => resolve(img);
-    img.onerror = (e) => {
-      console.error("Error loading image:", src, e);
-      reject(e);
-    };
-    img.src = src.startsWith('data:') ? src : src.replace(/^\//, '');
+    img.onerror = reject;
+    img.src = src;
   });
 };
 
-export const convertToJpg = async (imageDataUrl: string): Promise<string> => {
+const convertToJpg = async (imageDataUrl: string): Promise<string> => {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Could not get canvas context");
@@ -27,7 +24,7 @@ export const convertToJpg = async (imageDataUrl: string): Promise<string> => {
   return canvas.toDataURL("image/jpeg", 0.9);
 };
 
-export const resizeTo4K = async (imageDataUrl: string): Promise<string> => {
+const resizeTo4K = async (imageDataUrl: string): Promise<string> => {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Could not get canvas context");
@@ -54,7 +51,7 @@ export const resizeTo4K = async (imageDataUrl: string): Promise<string> => {
   return changeDpiDataUrl(jpgOutput, 300);
 };
 
-export const createMockup = async (mockupSrc: string, processedImage: string): Promise<string> => {
+const createMockup = async (mockupSrc: string, processedImage: string): Promise<string> => {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Could not get canvas context");
