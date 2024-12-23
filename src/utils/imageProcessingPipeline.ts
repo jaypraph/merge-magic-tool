@@ -1,3 +1,4 @@
+import { changeDpiDataUrl } from "changedpi";
 import { createSlideshow } from "./videoProcessing";
 import { createImage, createWatermarkedImage, createMockupImage } from "./imageProcessing";
 import { createMockup2Images } from "./mockupProcessing";
