@@ -18,9 +18,9 @@ export const processImage = async (uploadedImage?: string): Promise<ProcessImage
       const jpgCanvas = document.createElement("canvas");
       const jpgCtx = jpgCanvas.getContext("2d");
       const img1 = await createImage(uploadedImage);
-      jpgCanvas.width = 3840;
-      jpgCanvas.height = 2160;
-      jpgCtx?.drawImage(img1, 0, 0, 3840, 2160);
+      jpgCanvas.width = img1.width;
+      jpgCanvas.height = img1.height;
+      jpgCtx?.drawImage(img1, 0, 0, jpgCanvas.width, jpgCanvas.height);
       const jpgImage = jpgCanvas.toDataURL("image/jpeg", 0.9);
       
       const dpiAdjustedImage = changeDpiDataUrl(jpgImage, 300);
@@ -32,7 +32,6 @@ export const processImage = async (uploadedImage?: string): Promise<ProcessImage
       
       // Create mockup versions for all mockup images
       for (const mockup of mockupImages) {
-        // Ensure we're using the correct path format
         const mockupPath = mockup.src.startsWith('/') ? mockup.src : `/${mockup.src}`;
         const mockupImage = await createMockupImage(mockupPath, dpiAdjustedImage);
         processedImages.push(mockupImage);
