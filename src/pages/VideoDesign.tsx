@@ -32,8 +32,13 @@ const VideoDesign = () => {
     setProgress(0);
 
     try {
-      const results = await processImage(uploadedImage);
-      setProcessedImages(results);
+      const result = await processImage(uploadedImage);
+      setProcessedImages(result.images);
+      
+      // Create and set video URL
+      const url = URL.createObjectURL(result.video);
+      setVideoUrl(url);
+      
       setProgress(100);
       
       toast({

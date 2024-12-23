@@ -18,6 +18,7 @@ import {
 } from "@/utils/imageProcessing";
 import { mockupImages } from "@/constants/mockupDefaults";
 import JSZip from "jszip";
+import { processImage } from "@/utils/imageProcessingPipeline";
 
 const Index = () => {
   const [activeFeature, setActiveFeature] = useState("");
@@ -142,8 +143,8 @@ const Index = () => {
       });
 
       // Process video
-      const { images, video } = await processImage(dpiAdjustedImage);
-      const videoBlob = new Blob([video], { type: 'video/mp4' });
+      const result = await processImage(dpiAdjustedImage);
+      const videoBlob = result.video;
       zip.file("slideshow.mp4", videoBlob);
 
       // Generate and download the ZIP file

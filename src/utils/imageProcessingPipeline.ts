@@ -113,7 +113,10 @@ const parseCoordinates = (coord: string) => {
   return null;
 };
 
-export const processImage = async (imageDataUrl: string): Promise<{ images: string[], video: Blob }> => {
+export const processImage = async (imageDataUrl: string): Promise<{
+  images: string[];
+  video: Blob;
+}> => {
   try {
     console.log("Starting image processing pipeline...");
     
