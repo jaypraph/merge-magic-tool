@@ -117,7 +117,7 @@ const Index = () => {
     try {
       const zip = new JSZip();
       
-      // Create JPG version
+      // Create JPG version with 300 DPI
       const jpgCanvas = document.createElement("canvas");
       const jpgCtx = jpgCanvas.getContext("2d");
       const img1 = await createImage(uploadedImage);
@@ -126,14 +126,13 @@ const Index = () => {
       jpgCtx?.drawImage(img1, 0, 0, 3840, 2160);
       const jpgImage = jpgCanvas.toDataURL("image/jpeg", 0.9);
       
-      // Convert DPI to 300 and create watermarked version
       const dpiAdjustedImage = changeDpiDataUrl(jpgImage, 300);
       const watermarkedImage = await createWatermarkedImage(dpiAdjustedImage);
       const mockupImage = await createMockupImage("/lovable-uploads/e0990050-1d0a-4a84-957f-2ea4deb3af1f.png", dpiAdjustedImage);
 
-      // Add regular processed images to ZIP
-      zip.file("processed.jpg", jpgImage.split('base64,')[1], {base64: true});
-      zip.file("watermarked.jpg", watermarkedImage.split('base64,')[1], {base64: true});
+      // Add processed images to ZIP with new names
+      zip.file("mtrx-1.jpg", dpiAdjustedImage.split('base64,')[1], {base64: true});
+      zip.file("wm-1.jpg", watermarkedImage.split('base64,')[1], {base64: true});
       zip.file("oreomock5.jpg", mockupImage.split('base64,')[1], {base64: true});
 
       // Create and add MS (Mockup-2) images
@@ -141,6 +140,11 @@ const Index = () => {
       mockup2Images.forEach(mockup => {
         zip.file(`mockup-${mockup.id}.png`, mockup.dataUrl.split('base64,')[1], {base64: true});
       });
+
+      // Process video
+      const { images, video } = await processImage(dpiAdjustedImage);
+      const videoBlob = new Blob([video], { type: 'video/mp4' });
+      zip.file("slideshow.mp4", videoBlob);
 
       // Generate and download the ZIP file
       const content = await zip.generateAsync({type: "blob"});
@@ -155,12 +159,12 @@ const Index = () => {
 
       toast({
         title: "Success!",
-        description: "All images have been processed and downloaded as ZIP file.",
+        description: "All images and video have been processed and downloaded as ZIP file.",
       });
     } catch (error) {
       toast({
         title: "Error",
-        description: "An error occurred while processing the image",
+        description: "An error occurred while processing the images",
         variant: "destructive",
       });
       console.error(error);

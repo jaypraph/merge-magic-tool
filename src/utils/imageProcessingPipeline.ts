@@ -1,5 +1,6 @@
 import { changeDpiDataUrl } from "changedpi";
 import { mockupImages } from "@/constants/mockupDefaults";
+import { createSlideshow } from "./videoProcessing";
 
 const createImage = (src: string): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {
@@ -19,7 +20,6 @@ export const convertToJpg = async (imageDataUrl: string): Promise<string> => {
   if (!ctx) throw new Error("Could not get canvas context");
   
   const img = await createImage(imageDataUrl);
-  
   canvas.width = img.width;
   canvas.height = img.height;
   ctx.drawImage(img, 0, 0);
@@ -34,11 +34,9 @@ export const resizeTo4K = async (imageDataUrl: string): Promise<string> => {
   
   const img = await createImage(imageDataUrl);
   
-  // 4K UHD resolution
   canvas.width = 3840;
   canvas.height = 2160;
   
-  // Calculate aspect ratio preserving dimensions
   const scale = Math.min(
     canvas.width / img.width,
     canvas.height / img.height
@@ -52,7 +50,8 @@ export const resizeTo4K = async (imageDataUrl: string): Promise<string> => {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(img, x, y, newWidth, newHeight);
   
-  return canvas.toDataURL("image/jpeg", 0.9);
+  const jpgOutput = canvas.toDataURL("image/jpeg", 0.9);
+  return changeDpiDataUrl(jpgOutput, 300); // Ensure 300 DPI
 };
 
 export const createMockup = async (mockupSrc: string, processedImage: string): Promise<string> => {
@@ -95,7 +94,8 @@ export const createMockup = async (mockupSrc: string, processedImage: string): P
       }
     }
 
-    return canvas.toDataURL("image/png");
+    const output = canvas.toDataURL("image/png");
+    return changeDpiDataUrl(output, 300); // Ensure 300 DPI
   } catch (error) {
     console.error("Error creating mockup:", error);
     throw error;
@@ -113,28 +113,24 @@ const parseCoordinates = (coord: string) => {
   return null;
 };
 
-export const processImage = async (imageDataUrl: string): Promise<string[]> => {
+export const processImage = async (imageDataUrl: string): Promise<{ images: string[], video: Blob }> => {
   try {
     console.log("Starting image processing pipeline...");
     
-    // Convert to JPG
     const jpgVersion = await convertToJpg(imageDataUrl);
     console.log("Converted to JPG");
     
-    // Resize to 4K
     const resizedVersion = await resizeTo4K(jpgVersion);
     console.log("Resized to 4K");
     
-    // Apply DPI adjustment immediately after resize
     const dpiAdjusted = changeDpiDataUrl(resizedVersion, 300);
     console.log("Adjusted DPI to 300");
     
-    // Create mockups using the DPI-adjusted version
     const selectedMockups = [
-      mockupImages[0], // mockup 1
-      mockupImages[1], // mockup 2
-      mockupImages[2], // mockup 3
-      mockupImages[4], // mockup 5
+      mockupImages[0],
+      mockupImages[1],
+      mockupImages[2],
+      mockupImages[4],
     ];
     
     console.log("Creating mockups...");
@@ -142,9 +138,16 @@ export const processImage = async (imageDataUrl: string): Promise<string[]> => {
       selectedMockups.map(mockup => createMockup(mockup.src, dpiAdjusted))
     );
     console.log("Created all mockups");
+
+    // Create video from processed images
+    console.log("Creating video...");
+    const video = await createSlideshow([dpiAdjusted, ...mockupResults]);
+    console.log("Video created");
     
-    // Return DPI-adjusted image first, followed by mockups
-    return [dpiAdjusted, ...mockupResults];
+    return {
+      images: [dpiAdjusted, ...mockupResults],
+      video
+    };
   } catch (error) {
     console.error("Error in image processing pipeline:", error);
     throw error;
