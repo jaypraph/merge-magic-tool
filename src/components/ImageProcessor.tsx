@@ -26,14 +26,15 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
     try {
       const zip = new JSZip();
       
-      // Process images
+      // Process images through the pipeline
       const result = await processImage(uploadedImage);
       
       // Add processed images to ZIP with specific names
       result.images.forEach((image, index) => {
         const fileName = index === 0 ? "mtrx-1.jpg" : 
-                        index === 1 ? "wm-1.jpg" : 
-                        `m${index-1}.jpg`;
+                        index === 1 ? "wm-1.jpg" :
+                        index === 2 ? "oreomock5.jpg" :
+                        `mockup${index-2}.jpg`;
         zip.file(fileName, image.split('base64,')[1], {base64: true});
       });
 
