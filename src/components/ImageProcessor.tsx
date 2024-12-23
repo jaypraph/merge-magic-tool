@@ -12,6 +12,7 @@ interface ImageProcessorProps {
 
 export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorProps) => {
   const { toast } = useToast();
+  const [processingStage, setProcessingStage] = useState<string>("");
 
   const handleProcessImage = async () => {
     if (!uploadedImage) {
@@ -27,7 +28,7 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
       const zip = new JSZip();
       
       // Process images through the pipeline
-      const result = await processImage(uploadedImage);
+      const result = await processImage(uploadedImage, setProcessingStage);
       
       // Add processed images to ZIP with specific names
       result.images.forEach((item, index) => {
@@ -43,6 +44,7 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
         }
       });
 
+      setProcessingStage("Creating ZIP file...");
       // Generate and download the ZIP file
       const content = await zip.generateAsync({type: "blob"});
       const url = URL.createObjectURL(content);
@@ -54,11 +56,13 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
+      setProcessingStage("");
       toast({
         title: "Success!",
         description: "All images and video have been processed and downloaded as ZIP file.",
       });
     } catch (error) {
+      setProcessingStage("");
       toast({
         title: "Error",
         description: "An error occurred while processing the images",
@@ -69,21 +73,28 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
   };
 
   return (
-    <div className="flex justify-center mt-4 gap-4">
-      <Button
-        onClick={onUploadClick}
-        className="w-28 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none"
-      >
-        <Upload className="mr-2 h-5 w-5" />
-        Upload
-      </Button>
-      <Button
-        onClick={handleProcessImage}
-        className="w-28 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none"
-      >
-        <Play className="mr-2 h-5 w-5" />
-        Go
-      </Button>
+    <div className="flex flex-col items-center mt-4 gap-4">
+      <div className="flex justify-center gap-4">
+        <Button
+          onClick={onUploadClick}
+          className="w-28 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none"
+        >
+          <Upload className="mr-2 h-5 w-5" />
+          Upload
+        </Button>
+        <Button
+          onClick={handleProcessImage}
+          className="w-28 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none"
+        >
+          <Play className="mr-2 h-5 w-5" />
+          Go
+        </Button>
+      </div>
+      {processingStage && (
+        <div className="text-green-600 font-medium text-center mt-2">
+          {processingStage}
+        </div>
+      )}
     </div>
   );
 };

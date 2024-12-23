@@ -153,47 +153,66 @@ const createMockup2Variations = async (imageUrl: string): Promise<string[]> => {
 };
 
 const createSlideshow = async (images: string[]): Promise<string> => {
+  console.log("Starting slideshow creation...");
   const ffmpeg = new FFmpeg();
-  await ffmpeg.load();
+  
+  try {
+    await ffmpeg.load({
+      coreURL: await toBlobURL(`/ffmpeg-core.js`, 'text/javascript'),
+      wasmURL: await toBlobURL(`/ffmpeg-core.wasm`, 'application/wasm'),
+    });
+    
+    console.log("FFmpeg loaded successfully");
 
-  // Convert base64 images to files and write them to FFmpeg's virtual filesystem
-  for (let i = 0; i < images.length; i++) {
-    const imageData = images[i].split(',')[1];
-    const uint8Array = Uint8Array.from(atob(imageData), c => c.charCodeAt(0));
-    await ffmpeg.writeFile(`image${i}.jpg`, uint8Array);
+    // Convert base64 images to files and write them to FFmpeg's virtual filesystem
+    for (let i = 0; i < images.length; i++) {
+      const imageData = images[i].split(',')[1];
+      const uint8Array = Uint8Array.from(atob(imageData), c => c.charCodeAt(0));
+      await ffmpeg.writeFile(`image${i}.jpg`, uint8Array);
+      console.log(`Written image ${i} to FFmpeg filesystem`);
+    }
+
+    // Create a file list for FFmpeg
+    const fileList = images.map((_, i) => `file 'image${i}.jpg'`).join('\n');
+    await ffmpeg.writeFile('files.txt', fileList);
+    console.log("File list created");
+
+    // Run FFmpeg command to create slideshow
+    await ffmpeg.exec([
+      '-f', 'concat',
+      '-safe', '0',
+      '-i', 'files.txt',
+      '-framerate', '30',
+      '-vf', `scale=2880:2160:force_original_aspect_ratio=decrease,pad=2880:2160:(ow-iw)/2:(oh-ih)/2,fps=30,format=yuv420p`,
+      '-c:v', 'libx264',
+      '-pix_fmt', 'yuv420p',
+      '-r', '30',
+      '-framerate', '30',
+      '-video_track_timescale', '30000',
+      '-vf', `zoompan=d=75:fps=30`,  // 2.5 seconds per image (75 frames at 30fps)
+      'output.mp4'
+    ]);
+
+    console.log("FFmpeg command executed");
+
+    // Read the output file and convert to base64
+    const data = await ffmpeg.readFile('output.mp4');
+    const videoBlob = new Blob([data], { type: 'video/mp4' });
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.readAsDataURL(videoBlob);
+    });
+  } catch (error) {
+    console.error("Error in createSlideshow:", error);
+    throw error;
   }
-
-  // Create a file list for FFmpeg
-  const fileList = images.map((_, i) => `file 'image${i}.jpg'`).join('\n');
-  await ffmpeg.writeFile('files.txt', fileList);
-
-  // Run FFmpeg command to create slideshow
-  await ffmpeg.exec([
-    '-f', 'concat',
-    '-safe', '0',
-    '-i', 'files.txt',
-    '-framerate', '30',
-    '-vf', `scale=2880:2160:force_original_aspect_ratio=decrease,pad=2880:2160:(ow-iw)/2:(oh-ih)/2,fps=30,format=yuv420p`,
-    '-c:v', 'libx264',
-    '-pix_fmt', 'yuv420p',
-    '-r', '30',
-    '-framerate', '30',
-    '-video_track_timescale', '30000',
-    '-vf', `zoompan=d=75:fps=30`,  // 2.5 seconds per image (75 frames at 30fps)
-    'output.mp4'
-  ]);
-
-  // Read the output file and convert to base64
-  const data = await ffmpeg.readFile('output.mp4');
-  const videoBlob = new Blob([data], { type: 'video/mp4' });
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result as string);
-    reader.readAsDataURL(videoBlob);
-  });
 };
 
-export const processImage = async (uploadedImage?: string): Promise<ProcessImageResult> => {
+export const processImage = async (
+  uploadedImage?: string,
+  setProcessingStage?: (stage: string) => void
+): Promise<ProcessImageResult> => {
   try {
     console.log("Starting image processing pipeline...");
     
@@ -204,26 +223,34 @@ export const processImage = async (uploadedImage?: string): Promise<ProcessImage
     const processedImages: string[] = [];
     
     // 1. Convert PNG to JPG and resize to 4K
+    setProcessingStage?.("Converting to JPG...");
     const jpgImage = await convertToJpg(uploadedImage);
+    
+    setProcessingStage?.("Resizing to 4K...");
     const resizedImage = await resizeTo4K(jpgImage);
     
     // 2. Set DPI to 300 and save as mtrx-1
+    setProcessingStage?.("Adjusting DPI...");
     const dpiAdjustedImage = changeDpiDataUrl(resizedImage, 300);
     processedImages.push(dpiAdjustedImage); // mtrx-1
     
     // 3. Create watermarked version (wm-1)
+    setProcessingStage?.("Adding watermark...");
     const watermarkedImage = await createWatermarkedImage(dpiAdjustedImage);
     processedImages.push(watermarkedImage); // wm-1
     
     // 4. Create Mockup 1 (oreomock5)
+    setProcessingStage?.("Creating first mockup...");
     const mockup1Image = await createMockup1(dpiAdjustedImage);
     processedImages.push(mockup1Image); // oreomock5
     
     // 5. Create seven Mockup 2 variations
+    setProcessingStage?.("Creating mockup variations...");
     const mockup2Images = await createMockup2Variations(dpiAdjustedImage);
     processedImages.push(...mockup2Images); // seven additional mockups
 
     // 6. Create slideshow video from selected images
+    setProcessingStage?.("Creating video slideshow...");
     const slideshowImages = [
       dpiAdjustedImage, // mtrx-1
       mockup1Image,     // mockup-1
