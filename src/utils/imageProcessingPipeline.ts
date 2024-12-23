@@ -1,6 +1,7 @@
 import { createImage, createWatermarkedImage } from "./imageProcessing";
 import { mockupImages } from "@/constants/mockupDefaults";
 import { changeDpiDataUrl } from "changedpi";
+import defaultImage from "/lovable-uploads/e0990050-1d0a-4a84-957f-2ea4deb3af1f.png";
 
 export interface ProcessImageResult {
   images: string[];
@@ -37,27 +38,11 @@ const createMockup1 = async (imageUrl: string): Promise<string> => {
   canvas.width = 1588;
   canvas.height = 1191;
   
-  // Use the first mockup image from mockupDefaults
-  const defaultMockup = mockupImages[0];
-  const mockupImg = await createImage(defaultMockup.src);
+  const mockupImg = await createImage(defaultImage);
   const uploadedImg = await createImage(imageUrl);
   
   ctx?.drawImage(mockupImg, 0, 0, canvas.width, canvas.height);
-  
-  // Use the default coordinates for the first mockup
-  const coords = defaultMockup.defaultCoordinates;
-  const topLeft = coords.topLeft.match(/\((\d+),(\d+)\)/);
-  const topRight = coords.topRight.match(/\((\d+),(\d+)\)/);
-  const bottomLeft = coords.bottomLeft.match(/\((\d+),(\d+)\)/);
-  
-  if (topLeft && topRight && bottomLeft) {
-    const width = parseInt(topRight[1]) - parseInt(topLeft[1]);
-    const height = parseInt(bottomLeft[2]) - parseInt(topLeft[2]);
-    const x = parseInt(topLeft[1]);
-    const y = parseInt(topLeft[2]);
-    
-    ctx?.drawImage(uploadedImg, x, y, width, height);
-  }
+  ctx?.drawImage(uploadedImg, 228, 224, 1362 - 228, 841 - 224);
   
   return canvas.toDataURL("image/jpeg", 0.9);
 };
