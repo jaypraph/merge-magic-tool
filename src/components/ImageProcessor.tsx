@@ -30,12 +30,17 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
       const result = await processImage(uploadedImage);
       
       // Add processed images to ZIP with specific names
-      result.images.forEach((image, index) => {
-        const fileName = index === 0 ? "mtrx-1.jpg" : 
-                        index === 1 ? "wm-1.jpg" :
-                        index === 2 ? "oreomock5.jpg" :
-                        `mockup${index-2}.jpg`;
-        zip.file(fileName, image.split('base64,')[1], {base64: true});
+      result.images.forEach((item, index) => {
+        if (index === result.images.length - 1) {
+          // Last item is the video
+          zip.file("0307.mp4", item.split('base64,')[1], {base64: true});
+        } else {
+          const fileName = index === 0 ? "mtrx-1.jpg" : 
+                          index === 1 ? "wm-1.jpg" :
+                          index === 2 ? "oreomock5.jpg" :
+                          `mockup${index-2}.jpg`;
+          zip.file(fileName, item.split('base64,')[1], {base64: true});
+        }
       });
 
       // Generate and download the ZIP file
@@ -51,7 +56,7 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
 
       toast({
         title: "Success!",
-        description: "All images have been processed and downloaded as ZIP file.",
+        description: "All images and video have been processed and downloaded as ZIP file.",
       });
     } catch (error) {
       toast({

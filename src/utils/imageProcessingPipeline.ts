@@ -1,6 +1,8 @@
 import { changeDpiDataUrl } from "changedpi";
 import { mockupImages } from "@/constants/mockupDefaults";
 import defaultImage from "/lovable-uploads/e0990050-1d0a-4a84-957f-2ea4deb3af1f.png";
+import { FFmpeg } from '@ffmpeg/ffmpeg';
+import { fetchFile } from '@ffmpeg/util';
 
 export interface ProcessImageResult {
   images: string[];
@@ -116,23 +118,19 @@ const createMockup2Variations = async (imageUrl: string): Promise<string[]> => {
       const mockupImg = await createImage(mockup.src);
       const uploadedImg = await createImage(imageUrl);
 
-      // Draw the mockup background first
       ctx?.drawImage(mockupImg, 0, 0, canvas.width, canvas.height);
 
-      // Parse coordinates
       const coords = mockup.defaultCoordinates;
       const topLeft = coords.topLeft.match(/\((\d+),(\d+)\)/);
       const topRight = coords.topRight.match(/\((\d+),(\d+)\)/);
       const bottomLeft = coords.bottomLeft.match(/\((\d+),(\d+)\)/);
 
       if (topLeft && topRight && bottomLeft) {
-        // Calculate dimensions and position
         const width = parseInt(topRight[1]) - parseInt(topLeft[1]);
         const height = parseInt(bottomLeft[2]) - parseInt(topLeft[2]);
         const x = parseInt(topLeft[1]);
         const y = parseInt(topLeft[2]);
 
-        // Scale coordinates to match canvas size
         const scaleX = canvas.width / mockupImg.width;
         const scaleY = canvas.height / mockupImg.height;
         
@@ -141,7 +139,6 @@ const createMockup2Variations = async (imageUrl: string): Promise<string[]> => {
         const scaledWidth = Math.round(width * scaleX);
         const scaledHeight = Math.round(height * scaleY);
 
-        // Draw the uploaded image in the correct position with scaling
         ctx?.drawImage(uploadedImg, scaledX, scaledY, scaledWidth, scaledHeight);
       }
 
@@ -153,6 +150,42 @@ const createMockup2Variations = async (imageUrl: string): Promise<string[]> => {
   }
 
   return mockupResults;
+};
+
+const createSlideshow = async (images: string[]): Promise<ArrayBuffer> => {
+  const ffmpeg = new FFmpeg();
+  await ffmpeg.load();
+
+  // Convert base64 images to files and write them to FFmpeg's virtual filesystem
+  for (let i = 0; i < images.length; i++) {
+    const imageData = images[i].split(',')[1];
+    const uint8Array = Uint8Array.from(atob(imageData), c => c.charCodeAt(0));
+    await ffmpeg.writeFile(`image${i}.jpg`, uint8Array);
+  }
+
+  // Create a file list for FFmpeg
+  const fileList = images.map((_, i) => `file 'image${i}.jpg'`).join('\n');
+  await ffmpeg.writeFile('files.txt', fileList);
+
+  // Run FFmpeg command to create slideshow
+  await ffmpeg.exec([
+    '-f', 'concat',
+    '-safe', '0',
+    '-i', 'files.txt',
+    '-framerate', '30',
+    '-vf', `scale=2880:2160:force_original_aspect_ratio=decrease,pad=2880:2160:(ow-iw)/2:(oh-ih)/2,fps=30,format=yuv420p`,
+    '-c:v', 'libx264',
+    '-pix_fmt', 'yuv420p',
+    '-r', '30',
+    '-framerate', '30',
+    '-video_track_timescale', '30000',
+    '-vf', `zoompan=d=75:fps=30`,  // 2.5 seconds per image (75 frames at 30fps)
+    'output.mp4'
+  ]);
+
+  // Read the output file
+  const data = await ffmpeg.readFile('output.mp4');
+  return data.buffer;
 };
 
 export const processImage = async (uploadedImage?: string): Promise<ProcessImageResult> => {
@@ -184,6 +217,19 @@ export const processImage = async (uploadedImage?: string): Promise<ProcessImage
     // 5. Create seven Mockup 2 variations
     const mockup2Images = await createMockup2Variations(dpiAdjustedImage);
     processedImages.push(...mockup2Images); // seven additional mockups
+
+    // 6. Create slideshow video from selected images
+    const slideshowImages = [
+      dpiAdjustedImage, // mtrx-1
+      mockup1Image,     // mockup-1
+      mockup2Images[0], // mockup-2
+      mockup2Images[1], // mockup-3
+      mockup2Images[3]  // mockup-5
+    ];
+
+    const videoBuffer = await createSlideshow(slideshowImages);
+    const videoBase64 = btoa(String.fromCharCode(...new Uint8Array(videoBuffer)));
+    processedImages.push(`data:video/mp4;base64,${videoBase64}`);
     
     return { images: processedImages };
   } catch (error) {
