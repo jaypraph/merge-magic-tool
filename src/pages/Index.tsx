@@ -118,33 +118,16 @@ const Index = () => {
     try {
       const zip = new JSZip();
       
-      // Create JPG version with 300 DPI
-      const jpgCanvas = document.createElement("canvas");
-      const jpgCtx = jpgCanvas.getContext("2d");
-      const img1 = await createImage(uploadedImage);
-      jpgCanvas.width = 3840;
-      jpgCanvas.height = 2160;
-      jpgCtx?.drawImage(img1, 0, 0, 3840, 2160);
-      const jpgImage = jpgCanvas.toDataURL("image/jpeg", 0.9);
-      
-      const dpiAdjustedImage = changeDpiDataUrl(jpgImage, 300);
-      const watermarkedImage = await createWatermarkedImage(dpiAdjustedImage);
-      const mockupImage = await createMockupImage("/lovable-uploads/e0990050-1d0a-4a84-957f-2ea4deb3af1f.png", dpiAdjustedImage);
-
-      // Add processed images to ZIP with new names
-      zip.file("mtrx-1.jpg", dpiAdjustedImage.split('base64,')[1], {base64: true});
-      zip.file("wm-1.jpg", watermarkedImage.split('base64,')[1], {base64: true});
-      zip.file("oreomock5.jpg", mockupImage.split('base64,')[1], {base64: true});
-
-      // Create and add MS (Mockup-2) images
-      const mockup2Images = await createMockup2Images(dpiAdjustedImage);
-      mockup2Images.forEach(mockup => {
-        zip.file(`mockup-${mockup.id}.png`, mockup.dataUrl.split('base64,')[1], {base64: true});
-      });
-
-      // Process video
+      // Process images and create video
       const result = await processImage();
-      if (result && result.video) {
+      
+      // Add processed images to ZIP with new names
+      if (result.images.length > 0) {
+        zip.file("mtrx-1.jpg", result.images[0].split('base64,')[1], {base64: true});
+      }
+      
+      // Add video if available
+      if (result.video) {
         zip.file("slideshow.mp4", result.video);
       }
 
