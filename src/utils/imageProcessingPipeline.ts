@@ -50,7 +50,8 @@ const createWatermarkedImage = async (imageDataUrl: string): Promise<string> => 
   ctx?.drawImage(img, 0, 0);
   
   if (ctx) {
-    const fontSize = Math.floor(canvas.height * 0.08);
+    // Doubled the fontSize by multiplying by 0.16 instead of 0.08
+    const fontSize = Math.floor(canvas.height * 0.16);
     
     ctx.font = `${fontSize}px Arial`;
     ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
