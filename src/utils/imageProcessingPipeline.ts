@@ -2,6 +2,7 @@ import { changeDpiDataUrl } from "changedpi";
 import { createSlideshow } from "./videoProcessing";
 import { createImage, createWatermarkedImage, createMockupImage } from "./imageProcessing";
 import { createMockup2Images } from "./mockupProcessing";
+import { mockupImages } from "@/constants/mockupDefaults";
 
 export interface ProcessImageResult {
   images: string[];
@@ -31,9 +32,11 @@ export const processImage = async (uploadedImage?: string): Promise<ProcessImage
       const watermarkedImage = await createWatermarkedImage(dpiAdjustedImage);
       processedImages.push(watermarkedImage);
       
-      // Create mockup version
-      const mockupImage = await createMockupImage("/lovable-uploads/e0990050-1d0a-4a84-957f-2ea4deb3af1f.png", dpiAdjustedImage);
-      processedImages.push(mockupImage);
+      // Create mockup versions for all mockup images
+      for (const mockup of mockupImages) {
+        const mockupImage = await createMockupImage(mockup.src, dpiAdjustedImage);
+        processedImages.push(mockupImage);
+      }
     }
     
     // Create video from processed images

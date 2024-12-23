@@ -19,6 +19,7 @@ const parseCoordinates = (coord: string) => {
 
 export const createMockup2Images = async (uploadedImage: string): Promise<MockupResult[]> => {
   const mockupResults = [];
+  
   for (const mockup of mockupImages) {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
@@ -59,5 +60,6 @@ export const createMockup2Images = async (uploadedImage: string): Promise<Mockup
       dataUrl: canvas.toDataURL("image/png")
     });
   }
+  
   return mockupResults;
 };

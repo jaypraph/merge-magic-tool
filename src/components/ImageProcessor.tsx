@@ -29,10 +29,13 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
       // Process images and create video
       const result = await processImage(uploadedImage);
       
-      // Add processed images to ZIP with new names
-      if (result.images.length > 0) {
-        zip.file("mtrx-1.jpg", result.images[0].split('base64,')[1], {base64: true});
-      }
+      // Add processed images to ZIP with specific names
+      result.images.forEach((image, index) => {
+        const fileName = index === 0 ? "mtrx-1.jpg" : 
+                        index === 1 ? "wm-1.jpg" : 
+                        `m${index-1}.jpg`;
+        zip.file(fileName, image.split('base64,')[1], {base64: true});
+      });
       
       // Add video if available
       if (result.video) {
