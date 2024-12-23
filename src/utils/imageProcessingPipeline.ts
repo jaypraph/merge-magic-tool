@@ -2,7 +2,7 @@ import { changeDpiDataUrl } from "changedpi";
 import { mockupImages } from "@/constants/mockupDefaults";
 import defaultImage from "/lovable-uploads/e0990050-1d0a-4a84-957f-2ea4deb3af1f.png";
 import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { fetchFile } from '@ffmpeg/util';
+import { fetchFile, toBlobURL } from '@ffmpeg/util';
 
 export interface ProcessImageResult {
   images: string[];
@@ -152,7 +152,7 @@ const createMockup2Variations = async (imageUrl: string): Promise<string[]> => {
   return mockupResults;
 };
 
-const createSlideshow = async (images: string[]): Promise<ArrayBuffer> => {
+const createSlideshow = async (images: string[]): Promise<string> => {
   const ffmpeg = new FFmpeg();
   await ffmpeg.load();
 
@@ -183,9 +183,14 @@ const createSlideshow = async (images: string[]): Promise<ArrayBuffer> => {
     'output.mp4'
   ]);
 
-  // Read the output file
+  // Read the output file and convert to base64
   const data = await ffmpeg.readFile('output.mp4');
-  return data.buffer;
+  const videoBlob = new Blob([data], { type: 'video/mp4' });
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.readAsDataURL(videoBlob);
+  });
 };
 
 export const processImage = async (uploadedImage?: string): Promise<ProcessImageResult> => {
@@ -227,9 +232,8 @@ export const processImage = async (uploadedImage?: string): Promise<ProcessImage
       mockup2Images[3]  // mockup-5
     ];
 
-    const videoBuffer = await createSlideshow(slideshowImages);
-    const videoBase64 = btoa(String.fromCharCode(...new Uint8Array(videoBuffer)));
-    processedImages.push(`data:video/mp4;base64,${videoBase64}`);
+    const videoBase64 = await createSlideshow(slideshowImages);
+    processedImages.push(videoBase64);
     
     return { images: processedImages };
   } catch (error) {
