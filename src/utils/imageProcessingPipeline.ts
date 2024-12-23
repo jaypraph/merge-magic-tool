@@ -47,6 +47,41 @@ const createMockup1 = async (imageUrl: string): Promise<string> => {
   return canvas.toDataURL("image/jpeg", 0.9);
 };
 
+const createMockup2Variations = async (imageUrl: string): Promise<string[]> => {
+  const mockupResults: string[] = [];
+
+  for (const mockup of mockupImages) {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    
+    canvas.width = 2000;
+    canvas.height = 2000;
+
+    const mockupImg = await createImage(mockup.src);
+    const uploadedImg = await createImage(imageUrl);
+
+    ctx?.drawImage(mockupImg, 0, 0, canvas.width, canvas.height);
+
+    const coords = mockup.defaultCoordinates;
+    const topLeft = coords.topLeft.match(/\((\d+),(\d+)\)/);
+    const topRight = coords.topRight.match(/\((\d+),(\d+)\)/);
+    const bottomLeft = coords.bottomLeft.match(/\((\d+),(\d+)\)/);
+
+    if (topLeft && topRight && bottomLeft) {
+      const width = parseInt(topRight[1]) - parseInt(topLeft[1]);
+      const height = parseInt(bottomLeft[2]) - parseInt(topLeft[2]);
+      const x = parseInt(topLeft[1]);
+      const y = parseInt(topLeft[2]);
+
+      ctx?.drawImage(uploadedImg, x, y, width, height);
+    }
+
+    mockupResults.push(canvas.toDataURL("image/jpeg", 0.9));
+  }
+
+  return mockupResults;
+};
+
 export const processImage = async (uploadedImage?: string): Promise<ProcessImageResult> => {
   try {
     console.log("Starting image processing pipeline...");
@@ -57,54 +92,25 @@ export const processImage = async (uploadedImage?: string): Promise<ProcessImage
 
     const processedImages: string[] = [];
     
-    // 1. Convert PNG to JPG
+    // 1. Convert PNG to JPG and resize to 4K
     const jpgImage = await convertToJpg(uploadedImage);
-    
-    // 2. Resize to 4K
     const resizedImage = await resizeTo4K(jpgImage);
     
-    // 3. Set DPI to 300 and save as mtrx-1
+    // 2. Set DPI to 300 and save as mtrx-1
     const dpiAdjustedImage = changeDpiDataUrl(resizedImage, 300);
-    processedImages.push(dpiAdjustedImage); // This will be mtrx-1
+    processedImages.push(dpiAdjustedImage); // mtrx-1
     
-    // 4. Create watermarked version (wm-1)
+    // 3. Create watermarked version (wm-1)
     const watermarkedImage = await createWatermarkedImage(dpiAdjustedImage);
-    processedImages.push(watermarkedImage);
+    processedImages.push(watermarkedImage); // wm-1
     
-    // 5. Create Mockup 1 (oreomock5)
+    // 4. Create Mockup 1 (oreomock5)
     const mockup1Image = await createMockup1(dpiAdjustedImage);
-    processedImages.push(mockup1Image);
+    processedImages.push(mockup1Image); // oreomock5
     
-    // 6. Create Mockup 2 versions (7 variations)
-    for (const mockup of mockupImages) {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      
-      canvas.width = 2000;
-      canvas.height = 2000;
-      
-      const mockupImg = await createImage(mockup.src);
-      const uploadedImg = await createImage(dpiAdjustedImage);
-      
-      ctx?.drawImage(mockupImg, 0, 0, canvas.width, canvas.height);
-      
-      const coords = mockup.defaultCoordinates;
-      const topLeft = coords.topLeft.match(/\((\d+),(\d+)\)/);
-      const topRight = coords.topRight.match(/\((\d+),(\d+)\)/);
-      const bottomLeft = coords.bottomLeft.match(/\((\d+),(\d+)\)/);
-      
-      if (topLeft && topRight && bottomLeft) {
-        const width = parseInt(topRight[1]) - parseInt(topLeft[1]);
-        const height = parseInt(bottomLeft[2]) - parseInt(topLeft[2]);
-        const x = parseInt(topLeft[1]);
-        const y = parseInt(topLeft[2]);
-        
-        ctx?.drawImage(uploadedImg, x, y, width, height);
-      }
-      
-      const mockupImage = canvas.toDataURL("image/jpeg", 0.9);
-      processedImages.push(mockupImage);
-    }
+    // 5. Create seven Mockup 2 variations
+    const mockup2Images = await createMockup2Variations(dpiAdjustedImage);
+    processedImages.push(...mockup2Images); // seven additional mockups
     
     return { images: processedImages };
   } catch (error) {
