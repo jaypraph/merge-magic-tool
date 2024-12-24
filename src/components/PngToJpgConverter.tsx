@@ -18,7 +18,6 @@ export const PngToJpgConverter = () => {
       return;
     }
 
-    // Create a canvas to convert the image
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     const img = new Image();
@@ -28,7 +27,6 @@ export const PngToJpgConverter = () => {
       canvas.height = img.height;
       ctx?.drawImage(img, 0, 0);
 
-      // Convert to JPG and download
       canvas.toBlob((blob) => {
         if (blob) {
           const url = URL.createObjectURL(blob);
@@ -52,8 +50,8 @@ export const PngToJpgConverter = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-4 space-y-8">
-      <h1 className="text-3xl font-bold text-center mb-8">PNG to JPG Converter</h1>
+    <div className="max-w-2xl mx-auto space-y-6">
+      <h1 className="text-3xl font-bold">PNG to JPG Converter</h1>
       <ImageUpload
         value={pngImage}
         onChange={setPngImage}
