@@ -49,7 +49,7 @@ const Index = () => {
         />
         <main className="w-full">
           {!activeFeature && (
-            <div className="absolute top-0 left-0 w-full h-screen flex items-center justify-center">
+            <div className="absolute top-0 left-0 w-full h-16 flex items-center justify-center pt-20">
               <ImageProcessor 
                 uploadedImage={uploadedImage}
                 onUploadClick={handleUploadClick}
