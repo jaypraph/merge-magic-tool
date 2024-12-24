@@ -6,7 +6,6 @@ import { ImageResizer } from "@/components/ImageResizer";
 import { DpiConverter } from "@/components/DpiConverter";
 import { WatermarkComponent } from "@/components/WatermarkComponent";
 import { ImageProcessor } from "@/components/ImageProcessor";
-import { SlideshowCreator } from "@/components/SlideshowCreator";
 import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -73,9 +72,6 @@ const Index = () => {
         {activeFeature === "resize" && <ImageResizer />}
         {activeFeature === "dpi" && <DpiConverter />}
         {activeFeature === "wm" && <WatermarkComponent />}
-        {activeFeature === "plus" && (
-          <SlideshowCreator onClose={() => setActiveFeature("")} />
-        )}
       </div>
     </div>
   );
