@@ -9,19 +9,18 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
   try {
+    const { slideshow_id, images } = await req.json()
+    console.log('Processing slideshow:', slideshow_id)
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
-
-    const { slideshow_id, images } = await req.json()
-    console.log('Processing slideshow:', slideshow_id)
 
     // Initialize FFmpeg
     const ffmpeg = new FFmpeg()

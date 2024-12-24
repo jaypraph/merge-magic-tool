@@ -11,7 +11,7 @@ interface SlideshowModalProps {
   allImagesUploaded: boolean;
   onCreateSlideshow: () => void;
   onDownload: () => void;
-  children: React.ReactNode;  // Added this line to fix the error
+  children: React.ReactNode;
 }
 
 export const SlideshowModal = ({
@@ -22,7 +22,7 @@ export const SlideshowModal = ({
   allImagesUploaded,
   onCreateSlideshow,
   onDownload,
-  children,  // Added this line to fix the error
+  children,
 }: SlideshowModalProps) => {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -36,7 +36,7 @@ export const SlideshowModal = ({
           </div>
         )}
 
-        {children}  {/* Added this line to render the children */}
+        {children}
 
         {videoUrl && <VideoPreview url={videoUrl} />}
 
