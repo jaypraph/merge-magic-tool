@@ -1,16 +1,11 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Play, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
 import { ImageUploadGrid } from "./ImageUploadGrid";
 import JSZip from "jszip";
-import { 
-  initializeFFmpeg, 
-  processImages, 
-  createConcatFile, 
-  createSlideshow 
-} from "@/utils/ffmpeg";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SlideshowCreatorProps {
   onClose: () => void;
@@ -23,6 +18,41 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
   const [videoUrl, setVideoUrl] = useState<string>("");
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
+  const [slideshowId, setSlideshowId] = useState<string>("");
+
+  const pollSlideshowStatus = async (id: string) => {
+    const { data, error } = await supabase
+      .from('slideshows')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error) {
+      console.error('Error polling slideshow status:', error);
+      return;
+    }
+
+    if (data.status === 'completed') {
+      setVideoUrl(data.video_path);
+      setProgress(100);
+      setIsProcessing(false);
+      toast({
+        title: "Success!",
+        description: "Your slideshow has been created. You can now preview and download it.",
+      });
+    } else if (data.status === 'error') {
+      setIsProcessing(false);
+      setProgress(0);
+      toast({
+        title: "Error",
+        description: data.error_message || "Failed to create slideshow. Please try again.",
+        variant: "destructive",
+      });
+    } else {
+      // Continue polling
+      setTimeout(() => pollSlideshowStatus(id), 2000);
+    }
+  };
 
   const handleImageUpload = (index: number) => {
     const input = document.createElement("input");
@@ -45,47 +75,41 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
 
   const handleCreateSlideshow = async () => {
     try {
-      console.log('Starting slideshow creation process...');
       setIsProcessing(true);
       setProgress(10);
-      
-      console.log('Initializing FFmpeg...');
-      const ffmpeg = await initializeFFmpeg();
-      setProgress(30);
 
-      console.log('Processing images...');
-      await processImages(ffmpeg, images);
-      setProgress(60);
+      // Create slideshow record
+      const { data: slideshow, error: insertError } = await supabase
+        .from('slideshows')
+        .insert({})
+        .select()
+        .single();
 
-      console.log('Creating concat file...');
-      await createConcatFile(ffmpeg, images.length);
-      setProgress(80);
+      if (insertError) throw insertError;
 
-      console.log('Creating final slideshow...');
-      await createSlideshow(ffmpeg);
-      setProgress(90);
+      setSlideshowId(slideshow.id);
+      setProgress(20);
 
-      console.log('Reading output file...');
-      const data = await ffmpeg.readFile('0307.mp4');
-      const outputBlob = new Blob([data], { type: 'video/mp4' });
-      const url = URL.createObjectURL(outputBlob);
-      setVideoUrl(url);
-      setProgress(100);
-
-      toast({
-        title: "Success!",
-        description: "Your slideshow has been created. You can now preview and download it.",
+      // Start processing with Edge Function
+      const { error: processError } = await supabase.functions.invoke('create-slideshow', {
+        body: { slideshow_id: slideshow.id, images }
       });
+
+      if (processError) throw processError;
+
+      setProgress(40);
+      // Start polling for status
+      pollSlideshowStatus(slideshow.id);
+
     } catch (error) {
       console.error('Error in handleCreateSlideshow:', error);
       setProgress(0);
+      setIsProcessing(false);
       toast({
         title: "Error",
         description: "Failed to create slideshow. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      setIsProcessing(false);
     }
   };
 
