@@ -10,6 +10,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { FileImage, Maximize2, Gauge, Wrench, Merge } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface AppSidebarProps {
   activeFeature: string;
@@ -17,6 +18,8 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({ activeFeature, onFeatureSelect }: AppSidebarProps) {
+  const navigate = useNavigate();
+  
   const menuItems = [
     { id: "jpg", icon: FileImage, label: "JPG" },
     { id: "resize", icon: Maximize2, label: "Resize" },
@@ -27,7 +30,12 @@ export function AppSidebar({ activeFeature, onFeatureSelect }: AppSidebarProps) 
   ];
 
   const handleItemClick = (feature: string) => {
-    onFeatureSelect(activeFeature === feature ? "" : feature);
+    if (activeFeature === feature) {
+      onFeatureSelect("");
+      navigate("/");
+    } else {
+      onFeatureSelect(feature);
+    }
   };
 
   return (
