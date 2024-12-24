@@ -1,0 +1,143 @@
+@layer base {
+  .light {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(2px);
+  }
+
+  .light::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+  }
+
+  .light-green-1 {
+    top: 20%;
+    left: 15%;
+    background: radial-gradient(circle, rgba(0, 255, 85, 0.9) 0%, rgba(0, 255, 85, 0.5) 40%, rgba(0, 255, 85, 0) 70%);
+    box-shadow: 0 0 30px #00ff55,
+                0 0 60px rgba(0, 255, 85, 0.8),
+                0 0 90px rgba(0, 255, 85, 0.6),
+                0 0 120px rgba(0, 255, 85, 0.4);
+    animation: blink 2s infinite 0.2s;
+  }
+
+  .light-green-2 {
+    top: 85%;
+    left: 25%;
+    background: radial-gradient(circle, rgba(0, 255, 85, 0.9) 0%, rgba(0, 255, 85, 0.5) 40%, rgba(0, 255, 85, 0) 70%);
+    box-shadow: 0 0 30px #00ff55,
+                0 0 60px rgba(0, 255, 85, 0.8),
+                0 0 90px rgba(0, 255, 85, 0.6),
+                0 0 120px rgba(0, 255, 85, 0.4);
+    animation: blink 2s infinite 1.7s;
+  }
+
+  .light-red-1 {
+    top: 70%;
+    right: 25%;
+    background: radial-gradient(circle, rgba(255, 0, 85, 0.9) 0%, rgba(255, 0, 85, 0.5) 40%, rgba(255, 0, 85, 0) 70%);
+    box-shadow: 0 0 30px #ff0055,
+                0 0 60px rgba(255, 0, 85, 0.8),
+                0 0 90px rgba(255, 0, 85, 0.6),
+                0 0 120px rgba(255, 0, 85, 0.4);
+    animation: blink 2s infinite 0.7s;
+  }
+
+  .light-red-2 {
+    top: 15%;
+    right: 40%;
+    background: radial-gradient(circle, rgba(255, 0, 85, 0.9) 0%, rgba(255, 0, 85, 0.5) 40%, rgba(255, 0, 85, 0) 70%);
+    box-shadow: 0 0 30px #ff0055,
+                0 0 60px rgba(255, 0, 85, 0.8),
+                0 0 90px rgba(255, 0, 85, 0.6),
+                0 0 120px rgba(255, 0, 85, 0.4);
+    animation: blink 2s infinite 1.9s;
+  }
+
+  .light-yellow-1 {
+    bottom: 30%;
+    left: 35%;
+    background: radial-gradient(circle, rgba(255, 255, 0, 0.9) 0%, rgba(255, 255, 0, 0.5) 40%, rgba(255, 255, 0, 0) 70%);
+    box-shadow: 0 0 30px #ffff00,
+                0 0 60px rgba(255, 255, 0, 0.8),
+                0 0 90px rgba(255, 255, 0, 0.6),
+                0 0 120px rgba(255, 255, 0, 0.4);
+    animation: blink 2s infinite 1.2s;
+  }
+
+  .light-yellow-2 {
+    top: 45%;
+    left: 75%;
+    background: radial-gradient(circle, rgba(255, 255, 0, 0.9) 0%, rgba(255, 255, 0, 0.5) 40%, rgba(255, 255, 0, 0) 70%);
+    box-shadow: 0 0 30px #ffff00,
+                0 0 60px rgba(255, 255, 0, 0.8),
+                0 0 90px rgba(255, 255, 0, 0.6),
+                0 0 120px rgba(255, 255, 0, 0.4);
+    animation: blink 2s infinite 0.4s;
+  }
+
+  .light-blue-1 {
+    top: 40%;
+    right: 15%;
+    background: radial-gradient(circle, rgba(0, 157, 255, 0.9) 0%, rgba(0, 157, 255, 0.5) 40%, rgba(0, 157, 255, 0) 70%);
+    box-shadow: 0 0 30px #009dff,
+                0 0 60px rgba(0, 157, 255, 0.8),
+                0 0 90px rgba(0, 157, 255, 0.6),
+                0 0 120px rgba(0, 157, 255, 0.4);
+    animation: blink 2s infinite 0.5s;
+  }
+
+  .light-blue-2 {
+    bottom: 25%;
+    right: 30%;
+    background: radial-gradient(circle, rgba(0, 157, 255, 0.9) 0%, rgba(0, 157, 255, 0.5) 40%, rgba(0, 157, 255, 0) 70%);
+    box-shadow: 0 0 30px #009dff,
+                0 0 60px rgba(0, 157, 255, 0.8),
+                0 0 90px rgba(0, 157, 255, 0.6),
+                0 0 120px rgba(0, 157, 255, 0.4);
+    animation: blink 2s infinite 1.6s;
+  }
+
+  .light-orange-1 {
+    bottom: 20%;
+    right: 45%;
+    background: radial-gradient(circle, rgba(255, 115, 0, 0.9) 0%, rgba(255, 115, 0, 0.5) 40%, rgba(255, 115, 0, 0) 70%);
+    box-shadow: 0 0 30px #ff7300,
+                0 0 60px rgba(255, 115, 0, 0.8),
+                0 0 90px rgba(255, 115, 0, 0.6),
+                0 0 120px rgba(255, 115, 0, 0.4);
+    animation: blink 2s infinite 1.5s;
+  }
+
+  .light-orange-2 {
+    top: 60%;
+    left: 55%;
+    background: radial-gradient(circle, rgba(255, 115, 0, 0.9) 0%, rgba(255, 115, 0, 0.5) 40%, rgba(255, 115, 0, 0) 70%);
+    box-shadow: 0 0 30px #ff7300,
+                0 0 60px rgba(255, 115, 0, 0.8),
+                0 0 90px rgba(255, 115, 0, 0.6),
+                0 0 120px rgba(255, 115, 0, 0.4);
+    animation: blink 2s infinite 0.9s;
+  }
+
+  @keyframes blink {
+    0%, 100% {
+      opacity: 0.3;
+      transform: scale(0.8);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+  }
+}
