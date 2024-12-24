@@ -6,20 +6,13 @@ import { toBlobURL, fetchFile } from 'https://esm.sh/@ffmpeg/util@0.12.1'
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Max-Age': '86400',
 }
 
 serve(async (req) => {
   try {
     // Handle CORS preflight requests
     if (req.method === 'OPTIONS') {
-      return new Response(null, { 
-        headers: {
-          ...corsHeaders,
-          'Content-Type': 'application/json',
-        }
-      })
+      return new Response(null, { headers: corsHeaders })
     }
 
     console.log('Starting slideshow creation process...')
@@ -36,16 +29,14 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Initialize FFmpeg with proper configuration
+    // Initialize FFmpeg with optimized configuration
     console.log('Initializing FFmpeg...')
     const ffmpeg = new FFmpeg()
     
-    // Configure FFmpeg
     ffmpeg.on('log', ({ message }) => {
       console.log('FFmpeg log:', message)
     })
 
-    // Load FFmpeg with explicit CORS settings
     await ffmpeg.load({
       coreURL: await toBlobURL(
         'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js',
@@ -68,7 +59,7 @@ serve(async (req) => {
     })
     console.log('FFmpeg initialized successfully')
 
-    // Process images
+    // Process images with optimized settings
     console.log('Processing images...')
     for (let i = 0; i < images.length; i++) {
       console.log(`Processing image ${i + 1}/${images.length}`)
@@ -76,23 +67,24 @@ serve(async (req) => {
       await ffmpeg.writeFile(`image${i}.jpg`, imageData)
     }
 
-    // Create concat file
+    // Create optimized concat file
     console.log('Creating concat file...')
     const concatContent = images.map((_, i) => {
-      return `file 'image${i}.jpg'\nduration 2.5`
+      return `file 'image${i}.jpg'\nduration 2`
     }).join('\n')
     await ffmpeg.writeFile('concat.txt', concatContent)
 
-    // Create slideshow
+    // Create slideshow with optimized settings
     console.log('Creating slideshow video...')
     await ffmpeg.exec([
       '-f', 'concat',
       '-safe', '0',
       '-i', 'concat.txt',
-      '-vf', 'scale=2880:2160:force_original_aspect_ratio=decrease,pad=2880:2160:(ow-iw)/2:(oh-ih)/2',
-      '-r', '30',
+      '-vf', 'scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2',
+      '-r', '24',
       '-c:v', 'libx264',
-      '-preset', 'ultrafast',
+      '-preset', 'veryfast',
+      '-crf', '28',
       '-pix_fmt', 'yuv420p',
       '0307.mp4'
     ])
