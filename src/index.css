@@ -137,61 +137,86 @@
                  0 0 30px hsl(144 100% 50% / 0.2);
   }
 
-  /* Blinking lights */
+  /* Blinking lights with enhanced glow effect */
   .light {
     position: fixed;
-    width: 10px;
-    height: 10px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     pointer-events: none;
+    filter: blur(2px);
+  }
+
+  .light::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
   }
 
   .light-green {
     top: 20%;
     left: 15%;
-    background: #0FA0CE;
-    box-shadow: 0 0 20px #0FA0CE;
+    background: radial-gradient(circle, rgba(15, 255, 15, 0.8) 0%, rgba(15, 255, 15, 0.4) 40%, rgba(15, 255, 15, 0) 70%);
+    box-shadow: 0 0 30px #0f0,
+                0 0 60px rgba(15, 255, 15, 0.6),
+                0 0 90px rgba(15, 255, 15, 0.4);
     animation: blink 2s infinite 0.2s;
   }
 
   .light-red {
     top: 70%;
     right: 25%;
-    background: #ea384c;
-    box-shadow: 0 0 20px #ea384c;
+    background: radial-gradient(circle, rgba(255, 15, 15, 0.8) 0%, rgba(255, 15, 15, 0.4) 40%, rgba(255, 15, 15, 0) 70%);
+    box-shadow: 0 0 30px #f00,
+                0 0 60px rgba(255, 15, 15, 0.6),
+                0 0 90px rgba(255, 15, 15, 0.4);
     animation: blink 2s infinite 0.7s;
   }
 
   .light-yellow {
     bottom: 30%;
     left: 35%;
-    background: #FEF7CD;
-    box-shadow: 0 0 20px #FEF7CD;
+    background: radial-gradient(circle, rgba(255, 255, 15, 0.8) 0%, rgba(255, 255, 15, 0.4) 40%, rgba(255, 255, 15, 0) 70%);
+    box-shadow: 0 0 30px #ff0,
+                0 0 60px rgba(255, 255, 15, 0.6),
+                0 0 90px rgba(255, 255, 15, 0.4);
     animation: blink 2s infinite 1.2s;
   }
 
   .light-blue {
     top: 40%;
     right: 15%;
-    background: #0EA5E9;
-    box-shadow: 0 0 20px #0EA5E9;
+    background: radial-gradient(circle, rgba(15, 15, 255, 0.8) 0%, rgba(15, 15, 255, 0.4) 40%, rgba(15, 15, 255, 0) 70%);
+    box-shadow: 0 0 30px #00f,
+                0 0 60px rgba(15, 15, 255, 0.6),
+                0 0 90px rgba(15, 15, 255, 0.4);
     animation: blink 2s infinite 0.5s;
   }
 
   .light-orange {
     bottom: 20%;
     right: 45%;
-    background: #F97316;
-    box-shadow: 0 0 20px #F97316;
+    background: radial-gradient(circle, rgba(255, 165, 0, 0.8) 0%, rgba(255, 165, 0, 0.4) 40%, rgba(255, 165, 0, 0) 70%);
+    box-shadow: 0 0 30px #ffa500,
+                0 0 60px rgba(255, 165, 0, 0.6),
+                0 0 90px rgba(255, 165, 0, 0.4);
     animation: blink 2s infinite 1.5s;
   }
 
   @keyframes blink {
     0%, 100% {
-      opacity: 0.2;
+      opacity: 0.3;
+      transform: scale(0.8);
     }
     50% {
       opacity: 1;
+      transform: scale(1.1);
     }
   }
 }
