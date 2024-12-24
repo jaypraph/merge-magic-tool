@@ -98,11 +98,13 @@
     margin: 0;
     padding: 0;
     min-height: 100vh;
+    min-width: 100vw;
     background-image: url('/lovable-uploads/880e1aad-df30-41d6-8cb2-6153713e2c9e.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    overflow-x: hidden;
   }
 
   .app-container {
