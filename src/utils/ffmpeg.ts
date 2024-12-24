@@ -48,10 +48,11 @@ export const processImages = async (ffmpeg: FFmpeg, images: string[]) => {
       await ffmpeg.writeFile(`image${i}.jpg`, bytes);
       console.log(`Successfully wrote image ${i}`);
 
-      // Verify the file was written
-      const files = await ffmpeg.listFiles();
-      if (!files.includes(`image${i}.jpg`)) {
-        throw new Error(`Failed to write image${i}.jpg to FFmpeg`);
+      // Verify the file was written by trying to read it
+      try {
+        await ffmpeg.readFile(`image${i}.jpg`);
+      } catch (error) {
+        throw new Error(`Failed to verify image${i}.jpg was written to FFmpeg`);
       }
     }
     console.log('All images processed successfully');
@@ -70,10 +71,11 @@ export const createConcatFile = async (ffmpeg: FFmpeg, imageCount: number) => {
     
     await ffmpeg.writeFile('concat.txt', concatContent);
     
-    // Verify the concat file was written
-    const files = await ffmpeg.listFiles();
-    if (!files.includes('concat.txt')) {
-      throw new Error('Failed to write concat.txt file');
+    // Verify the concat file was written by trying to read it
+    try {
+      await ffmpeg.readFile('concat.txt');
+    } catch (error) {
+      throw new Error('Failed to verify concat.txt was written');
     }
     
     console.log('Concat file created successfully');
@@ -100,10 +102,11 @@ export const createSlideshow = async (ffmpeg: FFmpeg) => {
     console.log('FFmpeg command:', command.join(' '));
     await ffmpeg.exec(command);
     
-    // Verify the output file was created
-    const files = await ffmpeg.listFiles();
-    if (!files.includes('0307.mp4')) {
-      throw new Error('Failed to create output video file');
+    // Verify the output file was created by trying to read it
+    try {
+      await ffmpeg.readFile('0307.mp4');
+    } catch (error) {
+      throw new Error('Failed to verify output video file was created');
     }
     
     console.log('Slideshow created successfully');
