@@ -11,7 +11,6 @@ export const initializeFFmpeg = async () => {
     await ffmpeg.load({
       coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
       wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
-      workerURL: await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, 'text/javascript'),
     });
     
     console.log('FFmpeg initialized successfully');
@@ -47,13 +46,6 @@ export const processImages = async (ffmpeg: FFmpeg, images: string[]) => {
       console.log(`Writing image ${i} to FFmpeg...`);
       await ffmpeg.writeFile(`image${i}.jpg`, bytes);
       console.log(`Successfully wrote image ${i}`);
-
-      // Verify the file was written by trying to read it
-      try {
-        await ffmpeg.readFile(`image${i}.jpg`);
-      } catch (error) {
-        throw new Error(`Failed to verify image${i}.jpg was written to FFmpeg`);
-      }
     }
     console.log('All images processed successfully');
   } catch (error) {
@@ -70,14 +62,6 @@ export const createConcatFile = async (ffmpeg: FFmpeg, imageCount: number) => {
     ).join('\n');
     
     await ffmpeg.writeFile('concat.txt', concatContent);
-    
-    // Verify the concat file was written by trying to read it
-    try {
-      await ffmpeg.readFile('concat.txt');
-    } catch (error) {
-      throw new Error('Failed to verify concat.txt was written');
-    }
-    
     console.log('Concat file created successfully');
   } catch (error) {
     console.error('Error creating concat file:', error);
@@ -101,14 +85,6 @@ export const createSlideshow = async (ffmpeg: FFmpeg) => {
     
     console.log('FFmpeg command:', command.join(' '));
     await ffmpeg.exec(command);
-    
-    // Verify the output file was created by trying to read it
-    try {
-      await ffmpeg.readFile('0307.mp4');
-    } catch (error) {
-      throw new Error('Failed to verify output video file was created');
-    }
-    
     console.log('Slideshow created successfully');
   } catch (error) {
     console.error('Error creating slideshow:', error);
