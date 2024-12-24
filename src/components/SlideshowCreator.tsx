@@ -45,22 +45,25 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
       console.log("Loading FFmpeg...");
       
       // Load FFmpeg with the correct base URL for core files
-      const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
       await ffmpeg.load({
-        coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-        wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+        coreURL: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js',
+        wasmURL: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm'
       });
       
       console.log("FFmpeg loaded successfully");
       setProgress(30);
 
-      console.log("Writing images to FFmpeg filesystem...");
+      // Process each image
       for (let i = 0; i < images.length; i++) {
         console.log(`Processing image ${i + 1}`);
-        await ffmpeg.writeFile(`image${i}.jpg`, await fetchFile(images[i]));
+        const imageData = images[i].split(',')[1]; // Remove the data URL prefix
+        const buffer = Buffer.from(imageData, 'base64');
+        await ffmpeg.writeFile(`image${i}.jpg`, buffer);
+        console.log(`Image ${i + 1} written to FFmpeg filesystem`);
         setProgress(30 + (i * 10));
       }
 
+      // Create concat file
       console.log("Creating concat file...");
       const concatContent = images.map((_, i) => 
         `file 'image${i}.jpg'\nduration 2.5`
@@ -68,6 +71,7 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
       await ffmpeg.writeFile('concat.txt', concatContent);
       setProgress(80);
 
+      // Run FFmpeg command
       console.log("Creating slideshow...");
       await ffmpeg.exec([
         '-f', 'concat',
@@ -81,6 +85,7 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
       ]);
       setProgress(90);
 
+      // Read and download the output file
       console.log("Reading output file...");
       const data = await ffmpeg.readFile('0307.mp4');
       const blob = new Blob([data], { type: 'video/mp4' });
@@ -104,6 +109,7 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
       onClose();
     } catch (error) {
       console.error('Error creating slideshow:', error);
+      setProgress(0);
       toast({
         title: "Error",
         description: "Failed to create slideshow. Please try again.",
@@ -111,7 +117,6 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
       });
     } finally {
       setIsProcessing(false);
-      setProgress(0);
     }
   };
 
