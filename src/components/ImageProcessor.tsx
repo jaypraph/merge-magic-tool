@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Upload, Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import JSZip from "jszip";
 import { processImage } from "@/utils/imageProcessingPipeline";
@@ -66,16 +65,12 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
     <div className="flex justify-center mt-4 gap-4">
       <Button
         onClick={onUploadClick}
-        className="w-12 h-12 rounded-full bg-[#ea384c] hover:bg-[#ea384c]/90 transition-all duration-200 shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none flex items-center justify-center p-0"
-      >
-        <Upload className="h-5 w-5" />
-      </Button>
+        className="w-12 h-12 rounded-full bg-[#ea384c] hover:bg-[#ea384c]/90 transition-all duration-200 shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none"
+      />
       <Button
         onClick={handleProcessImage}
-        className="w-12 h-12 rounded-full bg-green-500 hover:bg-green-600 transition-all duration-200 shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none flex items-center justify-center p-0"
-      >
-        <Play className="h-5 w-5" />
-      </Button>
+        className="w-12 h-12 rounded-full bg-green-500 hover:bg-green-600 transition-all duration-200 shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none"
+      />
     </div>
   );
 };
