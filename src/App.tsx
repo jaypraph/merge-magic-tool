@@ -27,7 +27,7 @@ const App = () => {
           title: "Error preloading images",
           description: "Some images failed to load. The app may not work as expected.",
         });
-        setImagesLoaded(true); // Continue anyway
+        setImagesLoaded(true);
       });
   }, [toast]);
 
@@ -45,21 +45,19 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <div 
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            backgroundImage: `url(${backgroundImage})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            zIndex: -1
-          }}
-        />
-        <div className="relative min-h-screen">
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundImage: `url(${backgroundImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          zIndex: -1,
+        }} />
+        <div className="relative min-h-screen bg-transparent">
           <Toaster />
           <Sonner />
           <BrowserRouter>
