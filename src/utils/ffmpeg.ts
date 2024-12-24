@@ -25,7 +25,6 @@ export const processImages = async (ffmpeg: FFmpeg, images: string[]) => {
   try {
     console.log('Starting image processing...');
     for (let i = 0; i < images.length; i++) {
-      console.log(`Processing image ${i + 1}/${images.length}`);
       if (!images[i]) {
         throw new Error(`Image ${i + 1} is empty or invalid`);
       }
@@ -36,10 +35,8 @@ export const processImages = async (ffmpeg: FFmpeg, images: string[]) => {
       }
 
       const binaryString = atob(base64Data);
-      const len = binaryString.length;
-      const bytes = new Uint8Array(len);
-      
-      for (let j = 0; j < len; j++) {
+      const bytes = new Uint8Array(binaryString.length);
+      for (let j = 0; j < binaryString.length; j++) {
         bytes[j] = binaryString.charCodeAt(j);
       }
       
