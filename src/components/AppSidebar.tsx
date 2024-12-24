@@ -8,8 +8,9 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { FileImage, Maximize2, Gauge, Wrench, Merge, Menu } from "lucide-react";
+import { FileImage, Maximize2, Gauge, Wrench, Merge, Menu, Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 interface AppSidebarProps {
   activeFeature: string;
@@ -38,11 +39,24 @@ export function AppSidebar({ activeFeature, onFeatureSelect }: AppSidebarProps) 
     }
   };
 
+  const handleHomeClick = () => {
+    onFeatureSelect("");
+    navigate("/");
+  };
+
   return (
     <>
       <SidebarTrigger className="fixed top-4 left-4 z-50">
         <Menu className="h-6 w-6" />
       </SidebarTrigger>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={handleHomeClick}
+        className="fixed top-4 right-4 z-50"
+      >
+        <Home className="h-6 w-6" />
+      </Button>
       <Sidebar side="left" variant="floating">
         <SidebarContent className="mt-16">
           <SidebarGroup>
