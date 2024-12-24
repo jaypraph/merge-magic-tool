@@ -13,6 +13,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 const Index = () => {
   const [activeFeature, setActiveFeature] = useState("");
   const [uploadedImage, setUploadedImage] = useState<string>("");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -40,7 +41,7 @@ const Index = () => {
   };
 
   return (
-    <SidebarProvider defaultOpen={false} open={false}>
+    <SidebarProvider defaultOpen={false} open={sidebarOpen} onOpenChange={setSidebarOpen}>
       <div className="min-h-screen flex w-full bg-white text-slate-900">
         <AppSidebar 
           activeFeature={activeFeature}
