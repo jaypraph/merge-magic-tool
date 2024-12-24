@@ -40,14 +40,15 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
       setIsProcessing(true);
       setProgress(10);
       
-      // Initialize FFmpeg with proper configuration
+      // Initialize FFmpeg
       const ffmpeg = new FFmpeg();
       console.log("Loading FFmpeg...");
       
-      // Load FFmpeg with the correct CORS settings
+      // Load FFmpeg with the correct base URL for core files
+      const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
       await ffmpeg.load({
-        coreURL: await toBlobURL(`/ffmpeg-core.js`, 'text/javascript'),
-        wasmURL: await toBlobURL(`/ffmpeg-core.wasm`, 'application/wasm'),
+        coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+        wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
       });
       
       console.log("FFmpeg loaded successfully");
