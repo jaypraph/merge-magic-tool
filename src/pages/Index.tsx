@@ -43,6 +43,11 @@ const Index = () => {
   return (
     <SidebarProvider defaultOpen={false} open={sidebarOpen} onOpenChange={setSidebarOpen}>
       <div className="min-h-screen w-full bg-transparent text-slate-900">
+        <div className="light light-green"></div>
+        <div className="light light-red"></div>
+        <div className="light light-yellow"></div>
+        <div className="light light-blue"></div>
+        <div className="light light-orange"></div>
         <AppSidebar 
           activeFeature={activeFeature}
           onFeatureSelect={setActiveFeature}
