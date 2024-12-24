@@ -8,7 +8,7 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { FileImage, Maximize2, Gauge, Wrench, Merge } from "lucide-react";
+import { FileImage, Maximize2, Gauge, Wrench, Merge, Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface AppSidebarProps {
