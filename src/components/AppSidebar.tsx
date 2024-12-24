@@ -46,9 +46,9 @@ export function AppSidebar({ activeFeature, onFeatureSelect }: AppSidebarProps) 
 
   return (
     <>
-      <div className="fixed top-4 left-4 z-50">
-        <div className="w-6 h-6 rounded-full bg-[#ea384c] hover:bg-[#ea384c]/90 transition-all duration-200 shadow-[0_2px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[1px] hover:shadow-none" />
-      </div>
+      <SidebarTrigger className="fixed top-4 left-4 z-50 w-6 h-6 rounded-full bg-[#ea384c] hover:bg-[#ea384c]/90 transition-all duration-200 shadow-[0_2px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[1px] hover:shadow-none p-0">
+        <span className="sr-only">Toggle Sidebar</span>
+      </SidebarTrigger>
       <Button
         variant="ghost"
         size="icon"
