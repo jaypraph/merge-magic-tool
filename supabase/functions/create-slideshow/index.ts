@@ -9,6 +9,7 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -16,6 +17,10 @@ serve(async (req) => {
   try {
     const { slideshow_id, images } = await req.json()
     console.log('Processing slideshow:', slideshow_id)
+
+    if (!images || !Array.isArray(images) || images.length === 0) {
+      throw new Error('No images provided')
+    }
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -31,18 +36,21 @@ serve(async (req) => {
     })
 
     // Process images
+    console.log('Processing images...')
     for (let i = 0; i < images.length; i++) {
       const imageData = await fetchFile(images[i])
       await ffmpeg.writeFile(`image${i}.jpg`, imageData)
     }
 
     // Create concat file
+    console.log('Creating concat file...')
     const concatContent = images.map((_, i) => {
       return `file 'image${i}.jpg'\nduration 2.5`
     }).join('\n')
     await ffmpeg.writeFile('concat.txt', concatContent)
 
     // Create slideshow
+    console.log('Creating slideshow video...')
     await ffmpeg.exec([
       '-f', 'concat',
       '-safe', '0',
@@ -55,10 +63,12 @@ serve(async (req) => {
     ])
 
     // Read the output file
+    console.log('Reading output file...')
     const data = await ffmpeg.readFile('0307.mp4')
     const videoBlob = new Blob([data], { type: 'video/mp4' })
 
     // Upload to Supabase Storage
+    console.log('Uploading to storage...')
     const filePath = `${slideshow_id}/0307.mp4`
     const { error: uploadError } = await supabase.storage
       .from('slideshows')
@@ -77,6 +87,7 @@ serve(async (req) => {
       .getPublicUrl(filePath)
 
     // Update slideshow status
+    console.log('Updating slideshow status...')
     const { error: updateError } = await supabase
       .from('slideshows')
       .update({ 
