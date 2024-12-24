@@ -12,6 +12,7 @@ interface ImageProcessorProps {
 
 export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorProps) => {
   const { toast } = useToast();
+  const [processingStatus, setProcessingStatus] = useState<string>("");
 
   const handleProcessImage = async () => {
     if (!uploadedImage) {
@@ -26,8 +27,15 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
     try {
       const zip = new JSZip();
       
+      // Update status messages during processing
+      setProcessingStatus("Converting to JPG...");
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Give UI time to update
+      
       // Process images through the pipeline
       const result = await processImage(uploadedImage);
+      
+      setProcessingStatus("Adding watermark...");
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Add processed images to ZIP with specific names
       result.images.forEach((image, index) => {
@@ -37,6 +45,9 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
                         `mockup${index-2}.jpg`;
         zip.file(fileName, image.split('base64,')[1], {base64: true});
       });
+
+      setProcessingStatus("Creating ZIP file...");
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Generate and download the ZIP file
       const content = await zip.generateAsync({type: "blob"});
@@ -49,11 +60,17 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
+      setProcessingStatus("Download complete!");
+      setTimeout(() => setProcessingStatus(""), 2000); // Clear status after 2 seconds
+
       toast({
         title: "Success!",
         description: "All images have been processed and downloaded as ZIP file.",
       });
     } catch (error) {
+      setProcessingStatus("Error occurred during processing");
+      setTimeout(() => setProcessingStatus(""), 2000);
+      
       toast({
         title: "Error",
         description: "An error occurred while processing the images",
@@ -64,21 +81,28 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
   };
 
   return (
-    <div className="flex justify-center mt-4 gap-4">
-      <Button
-        onClick={onUploadClick}
-        className="w-28 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none"
-      >
-        <Upload className="mr-2 h-5 w-5" />
-        Upload
-      </Button>
-      <Button
-        onClick={handleProcessImage}
-        className="w-28 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none"
-      >
-        <Play className="mr-2 h-5 w-5" />
-        Go
-      </Button>
+    <div className="flex flex-col items-center gap-4">
+      <div className="flex justify-center gap-4">
+        <Button
+          onClick={onUploadClick}
+          className="w-28 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none"
+        >
+          <Upload className="mr-2 h-5 w-5" />
+          Upload
+        </Button>
+        <Button
+          onClick={handleProcessImage}
+          className="w-28 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none"
+        >
+          <Play className="mr-2 h-5 w-5" />
+          Go
+        </Button>
+      </div>
+      {processingStatus && (
+        <div className="text-green-500 font-medium animate-pulse text-lg tracking-wide mt-2">
+          {processingStatus}
+        </div>
+      )}
     </div>
   );
 };
