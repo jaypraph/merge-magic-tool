@@ -4,6 +4,7 @@ import { Upload, Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile } from '@ffmpeg/util';
+import { Progress } from "@/components/ui/progress";
 
 interface SlideshowCreatorProps {
   onClose: () => void;
@@ -12,6 +13,7 @@ interface SlideshowCreatorProps {
 export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
   const [images, setImages] = useState<string[]>(Array(5).fill(""));
   const [isProcessing, setIsProcessing] = useState(false);
+  const [progress, setProgress] = useState(0);
   const { toast } = useToast();
 
   const handleImageUpload = (index: number) => {
@@ -36,22 +38,30 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
   const handleCreateSlideshow = async () => {
     try {
       setIsProcessing(true);
+      setProgress(10);
+      
       const ffmpeg = new FFmpeg();
+      console.log("Loading FFmpeg...");
       await ffmpeg.load();
+      setProgress(30);
 
+      console.log("Writing images to FFmpeg filesystem...");
       // Write each image to FFmpeg's virtual filesystem
       for (let i = 0; i < images.length; i++) {
         const imageData = images[i].split(',')[1];
-        const buffer = Buffer.from(imageData, 'base64');
-        await ffmpeg.writeFile(`image${i}.jpg`, buffer);
+        await ffmpeg.writeFile(`image${i}.jpg`, await fetchFile(images[i]));
+        setProgress(30 + (i * 10));
       }
 
+      console.log("Creating concat file...");
       // Create a concat file listing all images
       const concatContent = images.map((_, i) => 
         `file 'image${i}.jpg'\nduration 2.5`
       ).join('\n');
       await ffmpeg.writeFile('concat.txt', concatContent);
+      setProgress(80);
 
+      console.log("Creating slideshow...");
       // Create slideshow with specified parameters
       await ffmpeg.exec([
         '-f', 'concat',
@@ -63,11 +73,13 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
         '-pix_fmt', 'yuv420p',
         '0307.mp4'
       ]);
+      setProgress(90);
 
-      // Read the output file
+      console.log("Reading output file...");
       const data = await ffmpeg.readFile('0307.mp4');
       const blob = new Blob([data], { type: 'video/mp4' });
       const url = URL.createObjectURL(blob);
+      setProgress(95);
 
       // Download the video
       const a = document.createElement('a');
@@ -77,6 +89,7 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      setProgress(100);
 
       toast({
         title: "Success!",
@@ -92,6 +105,7 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
       });
     } finally {
       setIsProcessing(false);
+      setProgress(0);
     }
   };
 
@@ -106,7 +120,7 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
           {images.map((image, index) => (
             <div
               key={index}
-              className="border-2 border-dashed rounded-lg p-2 flex flex-col items-center justify-center h-[150px]"
+              className="border-2 border-dashed rounded-lg p-2 flex flex-col items-center justify-center h-[120px]"
             >
               {image ? (
                 <div className="relative w-full h-full">
@@ -136,6 +150,13 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
             </div>
           ))}
         </div>
+
+        {isProcessing && (
+          <div className="mb-6">
+            <div className="mb-2 text-sm text-gray-600">Creating slideshow...</div>
+            <Progress value={progress} className="w-full" />
+          </div>
+        )}
 
         <div className="flex justify-end gap-4">
           <Button
