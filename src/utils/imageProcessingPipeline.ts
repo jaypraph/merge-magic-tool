@@ -50,7 +50,6 @@ const createWatermarkedImage = async (imageDataUrl: string): Promise<string> => 
   ctx?.drawImage(img, 0, 0);
   
   if (ctx) {
-    // Doubled the fontSize by multiplying by 0.16 instead of 0.08
     const fontSize = Math.floor(canvas.height * 0.16);
     
     ctx.font = `${fontSize}px Arial`;
@@ -116,23 +115,19 @@ const createMockup2Variations = async (imageUrl: string): Promise<string[]> => {
       const mockupImg = await createImage(mockup.src);
       const uploadedImg = await createImage(imageUrl);
 
-      // Draw the mockup background first
       ctx?.drawImage(mockupImg, 0, 0, canvas.width, canvas.height);
 
-      // Parse coordinates
       const coords = mockup.defaultCoordinates;
       const topLeft = coords.topLeft.match(/\((\d+),(\d+)\)/);
       const topRight = coords.topRight.match(/\((\d+),(\d+)\)/);
       const bottomLeft = coords.bottomLeft.match(/\((\d+),(\d+)\)/);
 
       if (topLeft && topRight && bottomLeft) {
-        // Calculate dimensions and position
         const width = parseInt(topRight[1]) - parseInt(topLeft[1]);
         const height = parseInt(bottomLeft[2]) - parseInt(topLeft[2]);
         const x = parseInt(topLeft[1]);
         const y = parseInt(topLeft[2]);
 
-        // Scale coordinates to match canvas size
         const scaleX = canvas.width / mockupImg.width;
         const scaleY = canvas.height / mockupImg.height;
         
@@ -141,7 +136,6 @@ const createMockup2Variations = async (imageUrl: string): Promise<string[]> => {
         const scaledWidth = Math.round(width * scaleX);
         const scaledHeight = Math.round(height * scaleY);
 
-        // Draw the uploaded image in the correct position with scaling
         ctx?.drawImage(uploadedImg, scaledX, scaledY, scaledWidth, scaledHeight);
       }
 
@@ -155,10 +149,11 @@ const createMockup2Variations = async (imageUrl: string): Promise<string[]> => {
   return mockupResults;
 };
 
-export const processImage = async (uploadedImage?: string): Promise<ProcessImageResult> => {
+export const processImage = async (
+  uploadedImage?: string,
+  onStageUpdate?: (stage: string) => void
+): Promise<ProcessImageResult> => {
   try {
-    console.log("Starting image processing pipeline...");
-    
     if (!uploadedImage) {
       throw new Error("No image provided");
     }
@@ -166,24 +161,31 @@ export const processImage = async (uploadedImage?: string): Promise<ProcessImage
     const processedImages: string[] = [];
     
     // 1. Convert PNG to JPG and resize to 4K
+    onStageUpdate?.("Converting to JPG...");
     const jpgImage = await convertToJpg(uploadedImage);
+    
+    onStageUpdate?.("Resizing to 4K...");
     const resizedImage = await resizeTo4K(jpgImage);
     
     // 2. Set DPI to 300 and save as mtrx-1
+    onStageUpdate?.("Adjusting DPI...");
     const dpiAdjustedImage = changeDpiDataUrl(resizedImage, 300);
-    processedImages.push(dpiAdjustedImage); // mtrx-1
+    processedImages.push(dpiAdjustedImage);
     
     // 3. Create watermarked version (wm-1)
+    onStageUpdate?.("Adding watermark...");
     const watermarkedImage = await createWatermarkedImage(dpiAdjustedImage);
-    processedImages.push(watermarkedImage); // wm-1
+    processedImages.push(watermarkedImage);
     
     // 4. Create Mockup 1 (oreomock5)
+    onStageUpdate?.("Creating mockup 1...");
     const mockup1Image = await createMockup1(dpiAdjustedImage);
-    processedImages.push(mockup1Image); // oreomock5
+    processedImages.push(mockup1Image);
     
     // 5. Create seven Mockup 2 variations
+    onStageUpdate?.("Creating mockup variations...");
     const mockup2Images = await createMockup2Variations(dpiAdjustedImage);
-    processedImages.push(...mockup2Images); // seven additional mockups
+    processedImages.push(...mockup2Images);
     
     return { images: processedImages };
   } catch (error) {
