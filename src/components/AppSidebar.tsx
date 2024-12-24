@@ -35,7 +35,7 @@ export function AppSidebar({ activeFeature, onFeatureSelect }: AppSidebarProps) 
       <SidebarTrigger className="fixed top-4 left-4 z-50">
         <Menu className="h-6 w-6" />
       </SidebarTrigger>
-      <Sidebar side="right">
+      <Sidebar side="left">
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupContent>
