@@ -42,14 +42,14 @@ const Index = () => {
 
   return (
     <SidebarProvider defaultOpen={false} open={sidebarOpen} onOpenChange={setSidebarOpen}>
-      <div className="min-h-screen w-full bg-white text-slate-900">
+      <div className="min-h-screen w-full bg-transparent text-slate-900">
         <AppSidebar 
           activeFeature={activeFeature}
           onFeatureSelect={setActiveFeature}
         />
-        <main className="w-full">
+        <main className="w-full bg-transparent">
           {!activeFeature && (
-            <div className="absolute top-0 left-0 w-full h-16 flex items-center justify-center pt-20">
+            <div className="absolute top-0 left-0 w-full h-16 flex items-center justify-center pt-20 bg-transparent">
               <ImageProcessor 
                 uploadedImage={uploadedImage}
                 onUploadClick={handleUploadClick}
@@ -63,7 +63,7 @@ const Index = () => {
             className="hidden"
             accept="image/png"
           />
-          <div className="max-w-7xl mx-auto px-4 md:px-8 pt-8">
+          <div className="max-w-7xl mx-auto px-4 md:px-8 pt-8 bg-transparent">
             {activeFeature === "mockup" && (
               <>
                 <h1 className="text-3xl md:text-4xl font-bold mb-8">Image Merger</h1>
