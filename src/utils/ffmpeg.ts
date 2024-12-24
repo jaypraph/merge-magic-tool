@@ -63,7 +63,7 @@ export const createConcatFile = async (ffmpeg: FFmpeg, imageCount: number) => {
 export const createSlideshow = async (ffmpeg: FFmpeg) => {
   try {
     console.log('Starting slideshow creation...');
-    console.log('FFmpeg command:', [
+    const command = [
       '-f', 'concat',
       '-safe', '0',
       '-i', 'concat.txt',
@@ -72,18 +72,10 @@ export const createSlideshow = async (ffmpeg: FFmpeg) => {
       '-c:v', 'libx264',
       '-pix_fmt', 'yuv420p',
       '0307.mp4'
-    ].join(' '));
+    ];
     
-    await ffmpeg.exec([
-      '-f', 'concat',
-      '-safe', '0',
-      '-i', 'concat.txt',
-      '-vf', 'scale=2880:2160:force_original_aspect_ratio=decrease,pad=2880:2160:(ow-iw)/2:(oh-ih)/2',
-      '-r', '30',
-      '-c:v', 'libx264',
-      '-pix_fmt', 'yuv420p',
-      '0307.mp4'
-    ]);
+    console.log('FFmpeg command:', command.join(' '));
+    await ffmpeg.exec(command);
     console.log('Slideshow created successfully');
   } catch (error) {
     console.error('Error creating slideshow:', error);

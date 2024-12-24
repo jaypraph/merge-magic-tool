@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Play } from "lucide-react";
+import { Play, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
 import { ImageUploadGrid } from "./ImageUploadGrid";
+import JSZip from "jszip";
 import { 
   initializeFFmpeg, 
   processImages, 
@@ -19,6 +20,8 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
   const [images, setImages] = useState<string[]>(Array(5).fill(""));
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [videoUrl, setVideoUrl] = useState<string>("");
+  const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
 
   const handleImageUpload = (index: number) => {
@@ -66,23 +69,13 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
       const data = await ffmpeg.readFile('0307.mp4');
       const outputBlob = new Blob([data], { type: 'video/mp4' });
       const url = URL.createObjectURL(outputBlob);
-      setProgress(95);
-
-      console.log('Initiating download...');
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = '0307.mp4';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      setVideoUrl(url);
       setProgress(100);
 
       toast({
         title: "Success!",
-        description: "Your slideshow has been created and downloaded.",
+        description: "Your slideshow has been created. You can now preview and download it.",
       });
-      onClose();
     } catch (error) {
       console.error('Error in handleCreateSlideshow:', error);
       setProgress(0);
@@ -96,11 +89,45 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
     }
   };
 
+  const handleDownload = async () => {
+    try {
+      const response = await fetch(videoUrl);
+      const videoBlob = await response.blob();
+      
+      const zip = new JSZip();
+      zip.file("0307.mp4", videoBlob);
+      
+      const content = await zip.generateAsync({ type: "blob" });
+      const zipUrl = URL.createObjectURL(content);
+      
+      const a = document.createElement('a');
+      a.href = zipUrl;
+      a.download = '0307.zip';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      
+      URL.revokeObjectURL(zipUrl);
+      
+      toast({
+        title: "Success!",
+        description: "Your slideshow has been downloaded.",
+      });
+    } catch (error) {
+      console.error('Error downloading slideshow:', error);
+      toast({
+        title: "Error",
+        description: "Failed to download slideshow. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const allImagesUploaded = !images.some(img => !img);
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white p-8 rounded-lg shadow-xl max-w-4xl w-full mx-4">
+      <div className="bg-white p-8 rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <h2 className="text-2xl font-bold mb-6">Create Slideshow</h2>
         
         <ImageUploadGrid 
@@ -116,6 +143,20 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
           </div>
         )}
 
+        {videoUrl && (
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-2">Preview</h3>
+            <video 
+              ref={videoRef}
+              src={videoUrl}
+              controls
+              className="w-full rounded-lg shadow-md"
+            >
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        )}
+
         <div className="flex justify-end gap-4">
           <Button
             onClick={onClose}
@@ -124,7 +165,7 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
           >
             Cancel
           </Button>
-          {allImagesUploaded && (
+          {allImagesUploaded && !videoUrl && (
             <Button
               onClick={handleCreateSlideshow}
               className="bg-blue-600 hover:bg-blue-700"
@@ -138,6 +179,15 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
                   Create Slideshow
                 </>
               )}
+            </Button>
+          )}
+          {videoUrl && (
+            <Button
+              onClick={handleDownload}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              <Download className="mr-2 h-4 w-4" />
+              Download ZIP
             </Button>
           )}
         </div>
