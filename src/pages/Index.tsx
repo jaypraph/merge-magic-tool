@@ -39,37 +39,39 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white text-slate-900">
+    <div className="min-h-screen flex w-full bg-white text-slate-900">
       <AppSidebar />
-      <div className="max-w-7xl mx-auto p-4 md:p-8 pt-20">
-        <ImageProcessor 
-          uploadedImage={uploadedImage}
-          onUploadClick={handleUploadClick}
-        />
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          className="hidden"
-          accept="image/png"
-        />
-        <div className="mt-8">
-          {activeFeature === "mockup" && (
-            <>
-              <h1 className="text-3xl md:text-4xl font-bold text-center mb-8">Image Merger</h1>
-              <ImageEditor />
-            </>
-          )}
-          {activeFeature === "mockup2" && (
-            <>
-              <h1 className="text-3xl md:text-4xl font-bold text-center mb-8">Image Merger 2</h1>
-              <ImageEditor2 />
-            </>
-          )}
-          {activeFeature === "jpg" && <PngToJpgConverter />}
-          {activeFeature === "resize" && <ImageResizer />}
-          {activeFeature === "dpi" && <DpiConverter />}
-          {activeFeature === "wm" && <WatermarkComponent />}
+      <div className="flex-1">
+        <div className="max-w-7xl mx-auto p-4 md:p-8 pt-20">
+          <ImageProcessor 
+            uploadedImage={uploadedImage}
+            onUploadClick={handleUploadClick}
+          />
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
+            accept="image/png"
+          />
+          <div className="mt-8">
+            {activeFeature === "mockup" && (
+              <>
+                <h1 className="text-3xl md:text-4xl font-bold text-center mb-8">Image Merger</h1>
+                <ImageEditor />
+              </>
+            )}
+            {activeFeature === "mockup2" && (
+              <>
+                <h1 className="text-3xl md:text-4xl font-bold text-center mb-8">Image Merger 2</h1>
+                <ImageEditor2 />
+              </>
+            )}
+            {activeFeature === "jpg" && <PngToJpgConverter />}
+            {activeFeature === "resize" && <ImageResizer />}
+            {activeFeature === "dpi" && <DpiConverter />}
+            {activeFeature === "wm" && <WatermarkComponent />}
+          </div>
         </div>
       </div>
     </div>
