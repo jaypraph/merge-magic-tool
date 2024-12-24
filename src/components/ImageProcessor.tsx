@@ -71,12 +71,16 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
       <div className="flex justify-center gap-4">
         <Button
           onClick={onUploadClick}
-          className="w-12 h-12 rounded-full bg-[#ea384c] hover:bg-[#ea384c]/90 transition-all duration-200 shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none"
-        />
+          className="w-12 h-12 rounded-full bg-[#ea384c] hover:bg-[#ea384c]/90 transition-all duration-200 shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none text-white font-bold"
+        >
+          U
+        </Button>
         <Button
           onClick={handleProcessImage}
-          className="w-12 h-12 rounded-full bg-green-500 hover:bg-green-600 transition-all duration-200 shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none"
-        />
+          className="w-12 h-12 rounded-full bg-green-500 hover:bg-green-600 transition-all duration-200 shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none text-white font-bold"
+        >
+          G
+        </Button>
       </div>
       {isProcessing && (
         <div className="flex gap-2">
