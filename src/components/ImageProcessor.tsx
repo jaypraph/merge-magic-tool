@@ -27,15 +27,10 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
     try {
       const zip = new JSZip();
       
-      // Update status messages during processing
-      setProcessingStatus("Converting to JPG...");
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Give UI time to update
+      setProcessingStatus("Please Wait...");
       
       // Process images through the pipeline
       const result = await processImage(uploadedImage);
-      
-      setProcessingStatus("Adding watermark...");
-      await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Add processed images to ZIP with specific names
       result.images.forEach((image, index) => {
@@ -45,9 +40,6 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
                         `mockup${index-2}.jpg`;
         zip.file(fileName, image.split('base64,')[1], {base64: true});
       });
-
-      setProcessingStatus("Creating ZIP file...");
-      await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Generate and download the ZIP file
       const content = await zip.generateAsync({type: "blob"});
@@ -61,7 +53,7 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
       URL.revokeObjectURL(url);
 
       setProcessingStatus("Download complete!");
-      setTimeout(() => setProcessingStatus(""), 2000); // Clear status after 2 seconds
+      setTimeout(() => setProcessingStatus(""), 2000);
 
       toast({
         title: "Success!",
@@ -99,7 +91,7 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
         </Button>
       </div>
       {processingStatus && (
-        <div className="text-green-500 font-medium animate-pulse text-lg tracking-wide mt-2">
+        <div className="text-green-500 font-medium animate-pulse text-lg tracking-wide mt-2 drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]">
           {processingStatus}
         </div>
       )}
