@@ -47,13 +47,13 @@ export function AppSidebar({ activeFeature, onFeatureSelect }: AppSidebarProps) 
   return (
     <>
       <SidebarTrigger className="fixed top-4 left-4 z-50">
-        <div className="w-12 h-12 rounded-full bg-[#ea384c] hover:bg-[#ea384c]/90 transition-all duration-200 shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none" />
+        <div className="w-6 h-6 rounded-full bg-[#ea384c] hover:bg-[#ea384c]/90 transition-all duration-200 shadow-[0_2px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[1px] hover:shadow-none" />
       </SidebarTrigger>
       <Button
         variant="ghost"
         size="icon"
         onClick={handleHomeClick}
-        className="fixed top-4 right-4 z-50 w-12 h-12 rounded-full bg-green-500 hover:bg-green-600 transition-all duration-200 shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none p-0"
+        className="fixed top-4 right-4 z-50 w-6 h-6 rounded-full bg-green-500 hover:bg-green-600 transition-all duration-200 shadow-[0_2px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[1px] hover:shadow-none p-0"
       />
       <Sidebar side="left" variant="floating">
         <SidebarContent className="mt-16">
