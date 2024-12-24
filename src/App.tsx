@@ -46,22 +46,10 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <div 
-          style={{ 
-            backgroundImage: `url(${backgroundImage})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            width: '100vw',
-            height: '100vh',
-            zIndex: -1
-          }}
+          className="fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat -z-10"
+          style={{ backgroundImage: `url(${backgroundImage})` }}
         />
-        <div className="min-h-screen">
+        <div className="relative min-h-screen">
           <Toaster />
           <Sonner />
           <BrowserRouter>
