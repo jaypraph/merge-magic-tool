@@ -29,7 +29,7 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Initialize FFmpeg with optimized configuration
+    // Initialize FFmpeg with minimal configuration
     console.log('Initializing FFmpeg...')
     const ffmpeg = new FFmpeg()
     
@@ -59,7 +59,7 @@ serve(async (req) => {
     })
     console.log('FFmpeg initialized successfully')
 
-    // Process images with optimized settings
+    // Process images with maximum optimization
     console.log('Processing images...')
     for (let i = 0; i < images.length; i++) {
       console.log(`Processing image ${i + 1}/${images.length}`)
@@ -67,24 +67,26 @@ serve(async (req) => {
       await ffmpeg.writeFile(`image${i}.jpg`, imageData)
     }
 
-    // Create optimized concat file
+    // Create minimal concat file
     console.log('Creating concat file...')
     const concatContent = images.map((_, i) => {
-      return `file 'image${i}.jpg'\nduration 2`
+      return `file 'image${i}.jpg'\nduration 1.5`
     }).join('\n')
     await ffmpeg.writeFile('concat.txt', concatContent)
 
-    // Create slideshow with optimized settings
+    // Create slideshow with maximum optimization
     console.log('Creating slideshow video...')
     await ffmpeg.exec([
       '-f', 'concat',
       '-safe', '0',
       '-i', 'concat.txt',
-      '-vf', 'scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2',
-      '-r', '24',
+      '-vf', 'scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2',
+      '-r', '20',
       '-c:v', 'libx264',
-      '-preset', 'veryfast',
-      '-crf', '28',
+      '-preset', 'ultrafast',
+      '-crf', '35',
+      '-tune', 'fastdecode',
+      '-movflags', '+faststart',
       '-pix_fmt', 'yuv420p',
       '0307.mp4'
     ])
