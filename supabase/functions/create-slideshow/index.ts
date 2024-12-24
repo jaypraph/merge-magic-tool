@@ -29,7 +29,7 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Initialize FFmpeg with absolute minimum configuration
+    // Initialize FFmpeg with bare minimum settings
     console.log('Initializing FFmpeg...')
     const ffmpeg = new FFmpeg()
     
@@ -59,7 +59,7 @@ serve(async (req) => {
     })
     console.log('FFmpeg initialized successfully')
 
-    // Process images with absolute minimum settings
+    // Process images with minimal settings
     console.log('Processing images...')
     for (let i = 0; i < images.length; i++) {
       console.log(`Processing image ${i + 1}/${images.length}`)
@@ -67,30 +67,32 @@ serve(async (req) => {
       await ffmpeg.writeFile(`image${i}.jpg`, imageData)
     }
 
-    // Create minimal concat file with shortest possible duration
+    // Create concat file with minimum duration
     console.log('Creating concat file...')
     const concatContent = images.map((_, i) => {
-      return `file 'image${i}.jpg'\nduration 0.8`
+      return `file 'image${i}.jpg'\nduration 0.5`
     }).join('\n')
     await ffmpeg.writeFile('concat.txt', concatContent)
 
-    // Create slideshow with absolute minimum settings and maximum compression
+    // Create slideshow with absolute minimum settings for resource usage
     console.log('Creating slideshow video...')
     await ffmpeg.exec([
       '-f', 'concat',
       '-safe', '0',
       '-i', 'concat.txt',
-      '-vf', 'scale=640:360:force_original_aspect_ratio=decrease,pad=640:360:(ow-iw)/2:(oh-ih)/2',
-      '-r', '12',
+      '-vf', 'scale=480:270:force_original_aspect_ratio=decrease,pad=480:270:(ow-iw)/2:(oh-ih)/2',
+      '-r', '10',
       '-c:v', 'libx264',
       '-preset', 'ultrafast',
-      '-crf', '45',
+      '-crf', '51',
       '-tune', 'fastdecode,zerolatency',
       '-movflags', '+faststart',
       '-pix_fmt', 'yuv420p',
       '-threads', '1',
-      '-maxrate', '500k',
-      '-bufsize', '1000k',
+      '-maxrate', '250k',
+      '-bufsize', '500k',
+      '-profile:v', 'baseline',
+      '-level', '3.0',
       '0307.mp4'
     ])
 
