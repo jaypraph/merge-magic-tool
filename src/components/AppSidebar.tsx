@@ -8,7 +8,7 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { FileImage, Maximize2, Gauge, Wrench, Merge } from "lucide-react";
+import { FileImage, Maximize2, Gauge, Wrench, Merge, Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
@@ -54,7 +54,9 @@ export function AppSidebar({ activeFeature, onFeatureSelect }: AppSidebarProps) 
         size="icon"
         onClick={handleHomeClick}
         className="fixed top-4 right-4 z-50 w-6 h-6 rounded-full bg-green-500 hover:bg-green-600 transition-all duration-200 shadow-[0_2px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[1px] hover:shadow-none p-0"
-      />
+      >
+        <Home className="h-3 w-3 text-white" />
+      </Button>
       <Sidebar side="left" variant="floating">
         <SidebarContent className="mt-16">
           <SidebarGroup>
