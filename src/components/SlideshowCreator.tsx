@@ -44,10 +44,10 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
       const ffmpeg = new FFmpeg();
       console.log("Loading FFmpeg...");
       
-      // Load FFmpeg with the correct base URL for core files
+      const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
       await ffmpeg.load({
-        coreURL: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js',
-        wasmURL: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm'
+        coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+        wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
       });
       
       console.log("FFmpeg loaded successfully");
@@ -56,9 +56,11 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
       // Process each image
       for (let i = 0; i < images.length; i++) {
         console.log(`Processing image ${i + 1}`);
-        const imageData = images[i].split(',')[1]; // Remove the data URL prefix
-        const buffer = Buffer.from(imageData, 'base64');
-        await ffmpeg.writeFile(`image${i}.jpg`, buffer);
+        const response = await fetch(images[i]);
+        const blob = await response.blob();
+        const arrayBuffer = await blob.arrayBuffer();
+        const uint8Array = new Uint8Array(arrayBuffer);
+        await ffmpeg.writeFile(`image${i}.jpg`, uint8Array);
         console.log(`Image ${i + 1} written to FFmpeg filesystem`);
         setProgress(30 + (i * 10));
       }
@@ -88,8 +90,8 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
       // Read and download the output file
       console.log("Reading output file...");
       const data = await ffmpeg.readFile('0307.mp4');
-      const blob = new Blob([data], { type: 'video/mp4' });
-      const url = URL.createObjectURL(blob);
+      const outputBlob = new Blob([data], { type: 'video/mp4' });
+      const url = URL.createObjectURL(outputBlob);
       setProgress(95);
 
       // Download the video
