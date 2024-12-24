@@ -42,26 +42,33 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
 
   const handleCreateSlideshow = async () => {
     try {
+      console.log('Starting slideshow creation process...');
       setIsProcessing(true);
       setProgress(10);
       
+      console.log('Initializing FFmpeg...');
       const ffmpeg = await initializeFFmpeg();
       setProgress(30);
 
+      console.log('Processing images...');
       await processImages(ffmpeg, images);
       setProgress(60);
 
+      console.log('Creating concat file...');
       await createConcatFile(ffmpeg, images.length);
       setProgress(80);
 
+      console.log('Creating final slideshow...');
       await createSlideshow(ffmpeg);
       setProgress(90);
 
+      console.log('Reading output file...');
       const data = await ffmpeg.readFile('0307.mp4');
       const outputBlob = new Blob([data], { type: 'video/mp4' });
       const url = URL.createObjectURL(outputBlob);
       setProgress(95);
 
+      console.log('Initiating download...');
       const a = document.createElement('a');
       a.href = url;
       a.download = '0307.mp4';
@@ -77,7 +84,7 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
       });
       onClose();
     } catch (error) {
-      console.error('Error creating slideshow:', error);
+      console.error('Error in handleCreateSlideshow:', error);
       setProgress(0);
       toast({
         title: "Error",
