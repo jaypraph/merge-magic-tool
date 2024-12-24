@@ -1,10 +1,15 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Upload, Play } from "lucide-react";
+import { Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { fetchFile, toBlobURL } from '@ffmpeg/util';
 import { Progress } from "@/components/ui/progress";
+import { ImageUploadGrid } from "./ImageUploadGrid";
+import { 
+  initializeFFmpeg, 
+  processImages, 
+  createConcatFile, 
+  createSlideshow 
+} from "@/utils/ffmpeg";
 
 interface SlideshowCreatorProps {
   onClose: () => void;
@@ -40,61 +45,23 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
       setIsProcessing(true);
       setProgress(10);
       
-      // Initialize FFmpeg
-      const ffmpeg = new FFmpeg();
-      console.log("Loading FFmpeg...");
-      
-      const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
-      await ffmpeg.load({
-        coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-        wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
-      });
-      
-      console.log("FFmpeg loaded successfully");
+      const ffmpeg = await initializeFFmpeg();
       setProgress(30);
 
-      // Process each image
-      for (let i = 0; i < images.length; i++) {
-        console.log(`Processing image ${i + 1}`);
-        const response = await fetch(images[i]);
-        const blob = await response.blob();
-        const arrayBuffer = await blob.arrayBuffer();
-        const uint8Array = new Uint8Array(arrayBuffer);
-        await ffmpeg.writeFile(`image${i}.jpg`, uint8Array);
-        console.log(`Image ${i + 1} written to FFmpeg filesystem`);
-        setProgress(30 + (i * 10));
-      }
+      await processImages(ffmpeg, images);
+      setProgress(60);
 
-      // Create concat file
-      console.log("Creating concat file...");
-      const concatContent = images.map((_, i) => 
-        `file 'image${i}.jpg'\nduration 2.5`
-      ).join('\n');
-      await ffmpeg.writeFile('concat.txt', concatContent);
+      await createConcatFile(ffmpeg, images.length);
       setProgress(80);
 
-      // Run FFmpeg command
-      console.log("Creating slideshow...");
-      await ffmpeg.exec([
-        '-f', 'concat',
-        '-safe', '0',
-        '-i', 'concat.txt',
-        '-vf', 'scale=2880:2160:force_original_aspect_ratio=decrease,pad=2880:2160:(ow-iw)/2:(oh-ih)/2',
-        '-r', '30',
-        '-c:v', 'libx264',
-        '-pix_fmt', 'yuv420p',
-        '0307.mp4'
-      ]);
+      await createSlideshow(ffmpeg);
       setProgress(90);
 
-      // Read and download the output file
-      console.log("Reading output file...");
       const data = await ffmpeg.readFile('0307.mp4');
       const outputBlob = new Blob([data], { type: 'video/mp4' });
       const url = URL.createObjectURL(outputBlob);
       setProgress(95);
 
-      // Download the video
       const a = document.createElement('a');
       a.href = url;
       a.download = '0307.mp4';
@@ -129,40 +96,11 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
       <div className="bg-white p-8 rounded-lg shadow-xl max-w-4xl w-full mx-4">
         <h2 className="text-2xl font-bold mb-6">Create Slideshow</h2>
         
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
-          {images.map((image, index) => (
-            <div
-              key={index}
-              className="border-2 border-dashed rounded-lg p-2 flex flex-col items-center justify-center h-[120px]"
-            >
-              {image ? (
-                <div className="relative w-full h-full">
-                  <img
-                    src={image}
-                    alt={`Slide ${index + 1}`}
-                    className="w-full h-full object-contain"
-                  />
-                  <Button
-                    onClick={() => handleImageUpload(index)}
-                    className="absolute bottom-1 right-1 h-6 text-xs"
-                    variant="secondary"
-                  >
-                    Change
-                  </Button>
-                </div>
-              ) : (
-                <Button
-                  onClick={() => handleImageUpload(index)}
-                  className="w-full h-full flex flex-col gap-2"
-                  variant="outline"
-                >
-                  <Upload className="h-4 w-4" />
-                  <span className="text-xs">Image {index + 1}</span>
-                </Button>
-              )}
-            </div>
-          ))}
-        </div>
+        <ImageUploadGrid 
+          images={images}
+          onImageUpload={handleImageUpload}
+          isProcessing={isProcessing}
+        />
 
         {isProcessing && (
           <div className="mb-6">
