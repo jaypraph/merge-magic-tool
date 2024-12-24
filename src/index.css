@@ -128,4 +128,12 @@
     border: none !important;
     outline: none !important;
   }
+
+  /* Add neon glow effect to all feature text */
+  h1, h2, h3, h4, h5, h6, p, label, span {
+    color: hsl(144 100% 50%);
+    text-shadow: 0 0 10px hsl(144 100% 50% / 0.5),
+                 0 0 20px hsl(144 100% 50% / 0.3),
+                 0 0 30px hsl(144 100% 50% / 0.2);
+  }
 }
