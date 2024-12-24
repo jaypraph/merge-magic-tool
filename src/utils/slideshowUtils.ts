@@ -30,6 +30,11 @@ export const pollSlideshowStatus = async (
   try {
     console.log('Polling slideshow status for ID:', id);
     
+    const { data: session } = await supabase.auth.getSession();
+    if (!session?.session) {
+      throw new Error('Authentication required');
+    }
+    
     const { data, error } = await supabase
       .from('slideshows')
       .select('*')
@@ -51,7 +56,6 @@ export const pollSlideshowStatus = async (
       onError(data.error_message || "Failed to create slideshow");
     } else {
       onProgress(40);
-      // Continue polling
       setTimeout(() => pollSlideshowStatus(id, onSuccess, onError, onProgress), 2000);
     }
   } catch (error) {
@@ -68,6 +72,11 @@ export const createSlideshow = async (
   onProgress(10);
 
   try {
+    const { data: session } = await supabase.auth.getSession();
+    if (!session?.session) {
+      throw new Error('Authentication required');
+    }
+
     // Create slideshow record
     const { data: slideshow, error: insertError } = await supabase
       .from('slideshows')
