@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Upload, Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { fetchFile } from '@ffmpeg/util';
+import { fetchFile, toBlobURL } from '@ffmpeg/util';
 import { Progress } from "@/components/ui/progress";
 
 interface SlideshowCreatorProps {
@@ -40,21 +40,27 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
       setIsProcessing(true);
       setProgress(10);
       
+      // Initialize FFmpeg with proper configuration
       const ffmpeg = new FFmpeg();
       console.log("Loading FFmpeg...");
-      await ffmpeg.load();
+      
+      // Load FFmpeg with the correct CORS settings
+      await ffmpeg.load({
+        coreURL: await toBlobURL(`/ffmpeg-core.js`, 'text/javascript'),
+        wasmURL: await toBlobURL(`/ffmpeg-core.wasm`, 'application/wasm'),
+      });
+      
+      console.log("FFmpeg loaded successfully");
       setProgress(30);
 
       console.log("Writing images to FFmpeg filesystem...");
-      // Write each image to FFmpeg's virtual filesystem
       for (let i = 0; i < images.length; i++) {
-        const imageData = images[i].split(',')[1];
+        console.log(`Processing image ${i + 1}`);
         await ffmpeg.writeFile(`image${i}.jpg`, await fetchFile(images[i]));
         setProgress(30 + (i * 10));
       }
 
       console.log("Creating concat file...");
-      // Create a concat file listing all images
       const concatContent = images.map((_, i) => 
         `file 'image${i}.jpg'\nduration 2.5`
       ).join('\n');
@@ -62,7 +68,6 @@ export const SlideshowCreator = ({ onClose }: SlideshowCreatorProps) => {
       setProgress(80);
 
       console.log("Creating slideshow...");
-      // Create slideshow with specified parameters
       await ffmpeg.exec([
         '-f', 'concat',
         '-safe', '0',
