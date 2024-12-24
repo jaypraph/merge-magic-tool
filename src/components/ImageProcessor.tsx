@@ -12,7 +12,6 @@ interface ImageProcessorProps {
 
 export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorProps) => {
   const { toast } = useToast();
-  const [processingStatus, setProcessingStatus] = useState<string>("");
 
   const handleProcessImage = async () => {
     if (!uploadedImage) {
@@ -26,8 +25,6 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
 
     try {
       const zip = new JSZip();
-      
-      setProcessingStatus("Please Wait...");
       
       // Process images through the pipeline
       const result = await processImage(uploadedImage);
@@ -52,17 +49,11 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      setProcessingStatus("Download complete!");
-      setTimeout(() => setProcessingStatus(""), 2000);
-
       toast({
         title: "Success!",
         description: "All images have been processed and downloaded as ZIP file.",
       });
     } catch (error) {
-      setProcessingStatus("Error occurred during processing");
-      setTimeout(() => setProcessingStatus(""), 2000);
-      
       toast({
         title: "Error",
         description: "An error occurred while processing the images",
@@ -73,28 +64,21 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
   };
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="flex justify-center gap-4">
-        <Button
-          onClick={onUploadClick}
-          className="w-28 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none"
-        >
-          <Upload className="mr-2 h-5 w-5" />
-          Upload
-        </Button>
-        <Button
-          onClick={handleProcessImage}
-          className="w-28 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none"
-        >
-          <Play className="mr-2 h-5 w-5" />
-          Go
-        </Button>
-      </div>
-      {processingStatus && (
-        <div className="text-green-500 font-medium animate-pulse text-lg tracking-wide mt-2 drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]">
-          {processingStatus}
-        </div>
-      )}
+    <div className="flex justify-center mt-4 gap-4">
+      <Button
+        onClick={onUploadClick}
+        className="w-28 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none"
+      >
+        <Upload className="mr-2 h-5 w-5" />
+        Upload
+      </Button>
+      <Button
+        onClick={handleProcessImage}
+        className="w-28 h-12 text-xl font-bold transition-all duration-200 bg-slate-800 text-white shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none"
+      >
+        <Play className="mr-2 h-5 w-5" />
+        Go
+      </Button>
     </div>
   );
 };
