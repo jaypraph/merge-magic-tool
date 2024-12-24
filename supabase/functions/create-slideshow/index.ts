@@ -36,14 +36,35 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Initialize FFmpeg
+    // Initialize FFmpeg with proper configuration
     console.log('Initializing FFmpeg...')
     const ffmpeg = new FFmpeg()
-    const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd'
     
+    // Configure FFmpeg
+    ffmpeg.on('log', ({ message }) => {
+      console.log('FFmpeg log:', message)
+    })
+
+    // Load FFmpeg with explicit CORS settings
     await ffmpeg.load({
-      coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-      wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+      coreURL: await toBlobURL(
+        'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js',
+        'text/javascript',
+        {
+          headers: {
+            'Cross-Origin-Resource-Policy': 'cross-origin',
+          },
+        }
+      ),
+      wasmURL: await toBlobURL(
+        'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm',
+        'application/wasm',
+        {
+          headers: {
+            'Cross-Origin-Resource-Policy': 'cross-origin',
+          },
+        }
+      ),
     })
     console.log('FFmpeg initialized successfully')
 
@@ -71,7 +92,7 @@ serve(async (req) => {
       '-vf', 'scale=2880:2160:force_original_aspect_ratio=decrease,pad=2880:2160:(ow-iw)/2:(oh-ih)/2',
       '-r', '30',
       '-c:v', 'libx264',
-      '-preset', 'ultrafast', // Speed up encoding
+      '-preset', 'ultrafast',
       '-pix_fmt', 'yuv420p',
       '0307.mp4'
     ])
