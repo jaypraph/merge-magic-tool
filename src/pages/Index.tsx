@@ -42,12 +42,12 @@ const Index = () => {
 
   return (
     <SidebarProvider defaultOpen={false} open={sidebarOpen} onOpenChange={setSidebarOpen}>
-      <div className="min-h-screen flex w-full bg-white text-slate-900">
+      <div className="min-h-screen w-full bg-white text-slate-900">
         <AppSidebar 
           activeFeature={activeFeature}
           onFeatureSelect={setActiveFeature}
         />
-        <main className="flex-1">
+        <main className="w-full">
           <ImageProcessor 
             uploadedImage={uploadedImage}
             onUploadClick={handleUploadClick}

@@ -35,8 +35,8 @@ export function AppSidebar({ activeFeature, onFeatureSelect }: AppSidebarProps) 
       <SidebarTrigger className="fixed top-4 left-4 z-50">
         <Menu className="h-6 w-6" />
       </SidebarTrigger>
-      <Sidebar side="left">
-        <SidebarContent>
+      <Sidebar side="left" variant="floating">
+        <SidebarContent className="mt-16">
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu>
