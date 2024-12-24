@@ -6,38 +6,51 @@ import { toBlobURL, fetchFile } from 'https://esm.sh/@ffmpeg/util@0.12.1'
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Max-Age': '86400',
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
-  }
-
   try {
+    // Handle CORS preflight requests
+    if (req.method === 'OPTIONS') {
+      return new Response(null, { 
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'application/json',
+        }
+      })
+    }
+
+    console.log('Starting slideshow creation process...')
     const { slideshow_id, images } = await req.json()
-    console.log('Processing slideshow:', slideshow_id)
+    console.log('Received request for slideshow:', slideshow_id)
 
     if (!images || !Array.isArray(images) || images.length === 0) {
       throw new Error('No images provided')
     }
 
+    console.log('Creating Supabase client...')
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
     // Initialize FFmpeg
+    console.log('Initializing FFmpeg...')
     const ffmpeg = new FFmpeg()
     const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd'
+    
     await ffmpeg.load({
       coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
       wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
     })
+    console.log('FFmpeg initialized successfully')
 
     // Process images
     console.log('Processing images...')
     for (let i = 0; i < images.length; i++) {
+      console.log(`Processing image ${i + 1}/${images.length}`)
       const imageData = await fetchFile(images[i])
       await ffmpeg.writeFile(`image${i}.jpg`, imageData)
     }
@@ -58,6 +71,7 @@ serve(async (req) => {
       '-vf', 'scale=2880:2160:force_original_aspect_ratio=decrease,pad=2880:2160:(ow-iw)/2:(oh-ih)/2',
       '-r', '30',
       '-c:v', 'libx264',
+      '-preset', 'ultrafast', // Speed up encoding
       '-pix_fmt', 'yuv420p',
       '0307.mp4'
     ])
@@ -78,6 +92,7 @@ serve(async (req) => {
       })
 
     if (uploadError) {
+      console.error('Upload error:', uploadError)
       throw uploadError
     }
 
@@ -97,30 +112,42 @@ serve(async (req) => {
       .eq('id', slideshow_id)
 
     if (updateError) {
+      console.error('Update error:', updateError)
       throw updateError
     }
 
+    console.log('Slideshow creation completed successfully')
     return new Response(
       JSON.stringify({ success: true, video_url: publicUrl }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { 
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json'
+        } 
+      }
     )
 
   } catch (error) {
     console.error('Error processing slideshow:', error)
 
-    // Update slideshow status with error
+    // Create Supabase client for error handling
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    await supabase
-      .from('slideshows')
-      .update({ 
-        status: 'error',
-        error_message: error.message
-      })
-      .eq('id', (await req.json()).slideshow_id)
+    try {
+      // Update slideshow status with error
+      await supabase
+        .from('slideshows')
+        .update({ 
+          status: 'error',
+          error_message: error.message
+        })
+        .eq('id', (await req.json()).slideshow_id)
+    } catch (updateError) {
+      console.error('Error updating slideshow status:', updateError)
+    }
 
     return new Response(
       JSON.stringify({ 
@@ -128,7 +155,10 @@ serve(async (req) => {
         details: error.message
       }),
       { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json'
+        },
         status: 500
       }
     )
