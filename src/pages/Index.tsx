@@ -47,11 +47,13 @@ const Index = () => {
           activeFeature={activeFeature}
           onFeatureSelect={setActiveFeature}
         />
-        <main className="w-full">
-          <ImageProcessor 
-            uploadedImage={uploadedImage}
-            onUploadClick={handleUploadClick}
-          />
+        <main className="w-full flex flex-col items-center justify-center min-h-screen">
+          <div className="absolute top-0 left-0 w-full">
+            <ImageProcessor 
+              uploadedImage={uploadedImage}
+              onUploadClick={handleUploadClick}
+            />
+          </div>
           <input
             type="file"
             ref={fileInputRef}
