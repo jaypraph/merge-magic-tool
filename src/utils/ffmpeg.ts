@@ -11,13 +11,14 @@ export const initializeFFmpeg = async () => {
     await ffmpeg.load({
       coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
       wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+      workerURL: await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, 'text/javascript'),
     });
     
     console.log('FFmpeg initialized successfully');
     return ffmpeg;
   } catch (error) {
     console.error('FFmpeg initialization failed:', error);
-    throw new Error('Failed to initialize FFmpeg');
+    throw new Error(`Failed to initialize FFmpeg: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
 
@@ -26,7 +27,15 @@ export const processImages = async (ffmpeg: FFmpeg, images: string[]) => {
     console.log('Starting image processing...');
     for (let i = 0; i < images.length; i++) {
       console.log(`Processing image ${i + 1}/${images.length}`);
+      if (!images[i]) {
+        throw new Error(`Image ${i + 1} is empty or invalid`);
+      }
+      
       const base64Data = images[i].split(',')[1];
+      if (!base64Data) {
+        throw new Error(`Invalid base64 data for image ${i + 1}`);
+      }
+
       const binaryString = atob(base64Data);
       const len = binaryString.length;
       const bytes = new Uint8Array(len);
@@ -38,11 +47,17 @@ export const processImages = async (ffmpeg: FFmpeg, images: string[]) => {
       console.log(`Writing image ${i} to FFmpeg...`);
       await ffmpeg.writeFile(`image${i}.jpg`, bytes);
       console.log(`Successfully wrote image ${i}`);
+
+      // Verify the file was written
+      const files = await ffmpeg.listFiles();
+      if (!files.includes(`image${i}.jpg`)) {
+        throw new Error(`Failed to write image${i}.jpg to FFmpeg`);
+      }
     }
     console.log('All images processed successfully');
   } catch (error) {
     console.error('Error processing images:', error);
-    throw new Error('Failed to process images');
+    throw new Error(`Failed to process images: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
 
@@ -52,11 +67,19 @@ export const createConcatFile = async (ffmpeg: FFmpeg, imageCount: number) => {
     const concatContent = Array.from({ length: imageCount }, (_, i) => 
       `file 'image${i}.jpg'\nduration 2.5`
     ).join('\n');
+    
     await ffmpeg.writeFile('concat.txt', concatContent);
+    
+    // Verify the concat file was written
+    const files = await ffmpeg.listFiles();
+    if (!files.includes('concat.txt')) {
+      throw new Error('Failed to write concat.txt file');
+    }
+    
     console.log('Concat file created successfully');
   } catch (error) {
     console.error('Error creating concat file:', error);
-    throw new Error('Failed to create concat file');
+    throw new Error(`Failed to create concat file: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
 
@@ -76,9 +99,16 @@ export const createSlideshow = async (ffmpeg: FFmpeg) => {
     
     console.log('FFmpeg command:', command.join(' '));
     await ffmpeg.exec(command);
+    
+    // Verify the output file was created
+    const files = await ffmpeg.listFiles();
+    if (!files.includes('0307.mp4')) {
+      throw new Error('Failed to create output video file');
+    }
+    
     console.log('Slideshow created successfully');
   } catch (error) {
     console.error('Error creating slideshow:', error);
-    throw new Error('Failed to create slideshow');
+    throw new Error(`Failed to create slideshow: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
