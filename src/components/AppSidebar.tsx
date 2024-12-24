@@ -1,4 +1,3 @@
-import { Menu } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -35,6 +34,7 @@ export function AppSidebar({ activeFeature, onFeatureSelect }: AppSidebarProps) 
       navigate("/");
     } else {
       onFeatureSelect(feature);
+      navigate(`/${feature}`);
     }
   };
 
