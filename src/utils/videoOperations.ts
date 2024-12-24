@@ -10,9 +10,10 @@ export const createSlideshow = async (
   
   try {
     console.log("Loading FFmpeg...");
+    // Load FFmpeg with correct paths
     await ffmpeg.load({
-      coreURL: await toBlobURL(`/ffmpeg-core.js`, 'text/javascript'),
-      wasmURL: await toBlobURL(`/ffmpeg-core.wasm`, 'application/wasm'),
+      coreURL: '/ffmpeg-core.js',
+      wasmURL: '/ffmpeg-core.wasm'
     });
     
     console.log("FFmpeg loaded successfully");
@@ -27,6 +28,7 @@ export const createSlideshow = async (
       setProgress(10 + ((i + 1) / images.length) * 30);
     }
 
+    // Create a file list for concatenation
     const fileList = images.map((_, i) => `file 'image${i}.jpg'`).join('\n');
     await ffmpeg.writeFile('files.txt', fileList);
     console.log("File list created");
@@ -39,28 +41,30 @@ export const createSlideshow = async (
     });
 
     console.log("Starting FFmpeg command execution");
+    // Create video with transition effects
     await ffmpeg.exec([
       '-f', 'concat',
       '-safe', '0',
       '-i', 'files.txt',
-      '-framerate', '30',
-      '-vf', `scale=2880:2160:force_original_aspect_ratio=decrease,pad=2880:2160:(ow-iw)/2:(oh-ih)/2,fps=30,format=yuv420p`,
+      '-vf', 'scale=2880:2160:force_original_aspect_ratio=decrease,pad=2880:2160:(ow-iw)/2:(oh-ih)/2,fps=30,format=yuv420p,zoompan=d=75:fps=30:zoom=1.1',
       '-c:v', 'libx264',
+      '-preset', 'medium',
+      '-crf', '23',
+      '-movflags', '+faststart',
       '-pix_fmt', 'yuv420p',
       '-r', '30',
-      '-framerate', '30',
-      '-video_track_timescale', '30000',
-      '-vf', `zoompan=d=75:fps=30`,
       'output.mp4'
     ]);
 
     console.log("FFmpeg command executed successfully");
     setProgress(90);
 
+    // Read the output file
     const data = await ffmpeg.readFile('output.mp4');
     console.log("Video file read successfully");
     setProgress(95);
 
+    // Convert to base64
     const videoBlob = new Blob([data], { type: 'video/mp4' });
     return new Promise((resolve) => {
       const reader = new FileReader();
