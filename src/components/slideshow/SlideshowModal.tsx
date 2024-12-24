@@ -11,6 +11,7 @@ interface SlideshowModalProps {
   allImagesUploaded: boolean;
   onCreateSlideshow: () => void;
   onDownload: () => void;
+  children: React.ReactNode;  // Added this line to fix the error
 }
 
 export const SlideshowModal = ({
@@ -21,6 +22,7 @@ export const SlideshowModal = ({
   allImagesUploaded,
   onCreateSlideshow,
   onDownload,
+  children,  // Added this line to fix the error
 }: SlideshowModalProps) => {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -33,6 +35,8 @@ export const SlideshowModal = ({
             <Progress value={progress} className="w-full" />
           </div>
         )}
+
+        {children}  {/* Added this line to render the children */}
 
         {videoUrl && <VideoPreview url={videoUrl} />}
 
