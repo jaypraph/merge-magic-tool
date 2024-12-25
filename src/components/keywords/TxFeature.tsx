@@ -3,6 +3,9 @@ import { KeywordDashboard } from "./KeywordDashboard";
 import { CategoriesPage } from "./CategoriesPage";
 import { KeywordsPage } from "./KeywordsPage";
 import { KeywordVisualization } from "./KeywordVisualization";
+import { ImportExportPage } from "./ImportExportPage";
+import { SettingsPage } from "./SettingsPage";
+import { HelpPage } from "./HelpPage";
 
 export function TxFeature() {
   return (
@@ -33,23 +36,14 @@ export function TxFeature() {
         <TabsContent value="visualization" className="h-full">
           <KeywordVisualization />
         </TabsContent>
-        <TabsContent value="import">
-          <div className="container mx-auto p-6">
-            <h2 className="text-2xl font-bold text-black mb-4">Import/Export</h2>
-            <p className="text-black">Import/Export feature coming soon...</p>
-          </div>
+        <TabsContent value="import" className="h-full">
+          <ImportExportPage />
         </TabsContent>
-        <TabsContent value="settings">
-          <div className="container mx-auto p-6">
-            <h2 className="text-2xl font-bold text-black mb-4">Settings</h2>
-            <p className="text-black">Settings feature coming soon...</p>
-          </div>
+        <TabsContent value="settings" className="h-full">
+          <SettingsPage />
         </TabsContent>
-        <TabsContent value="help">
-          <div className="container mx-auto p-6">
-            <h2 className="text-2xl font-bold text-black mb-4">Help</h2>
-            <p className="text-black">Help feature coming soon...</p>
-          </div>
+        <TabsContent value="help" className="h-full">
+          <HelpPage />
         </TabsContent>
       </Tabs>
     </div>
