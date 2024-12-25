@@ -3,6 +3,7 @@ import { useToast } from "@/hooks/use-toast";
 import JSZip from "jszip";
 import { processImage } from "@/utils/imageProcessingPipeline";
 import { useState } from "react";
+import confetti from 'canvas-confetti';
 
 interface ImageProcessorProps {
   uploadedImage: string;
@@ -12,6 +13,24 @@ interface ImageProcessorProps {
 export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorProps) => {
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
+
+  const triggerConfetti = () => {
+    const end = Date.now() + (3 * 1000); // 3 seconds duration
+
+    // Create a confetti animation interval
+    const interval = setInterval(() => {
+      if (Date.now() > end) {
+        return clearInterval(interval);
+      }
+
+      confetti({
+        particleCount: 50,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#ea384c', '#40a9ff', '#52c41a', '#faad14', '#722ed1']
+      });
+    }, 250);
+  };
 
   const handleProcessImage = async () => {
     if (!uploadedImage) {
@@ -49,6 +68,9 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+
+      // Trigger confetti after successful download
+      triggerConfetti();
 
       toast({
         title: "Success!",
