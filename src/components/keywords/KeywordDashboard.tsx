@@ -20,10 +20,10 @@ export function KeywordDashboard() {
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-        <h1 className="text-3xl font-bold">Keyword Dashboard</h1>
+        <h1 className="text-3xl font-bold text-black">Keyword Dashboard</h1>
         <div className="relative w-full md:w-96">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search keywords..." className="pl-8" />
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-black" />
+          <Input placeholder="Search keywords..." className="pl-8 text-black placeholder:text-black/60" />
         </div>
       </div>
 
@@ -31,11 +31,11 @@ export function KeywordDashboard() {
         {categories.map((category) => (
           <Card key={category.name}>
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg">{category.name}</CardTitle>
+              <CardTitle className="text-lg text-black">{category.name}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold">{category.count}</p>
-              <p className="text-sm text-muted-foreground">Keywords</p>
+              <p className="text-2xl font-bold text-black">{category.count}</p>
+              <p className="text-sm text-black">Keywords</p>
             </CardContent>
           </Card>
         ))}
@@ -44,27 +44,27 @@ export function KeywordDashboard() {
       <div className="flex flex-col md:flex-row gap-6">
         <Card className="flex-1">
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
+            <CardTitle className="text-black">Quick Actions</CardTitle>
           </CardHeader>
           <CardContent className="flex gap-4">
-            <Button>Add Category</Button>
-            <Button variant="outline">Add Keyword</Button>
+            <Button className="text-black">Add Category</Button>
+            <Button variant="outline" className="text-black">Add Keyword</Button>
           </CardContent>
         </Card>
 
         <Card className="flex-1">
           <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
+            <CardTitle className="text-black">Recent Activity</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-4">
               {recentActivity.map((activity, index) => (
                 <li key={index} className="flex justify-between items-center">
                   <div>
-                    <p className="font-medium">{activity.action}</p>
-                    <p className="text-sm text-muted-foreground">{activity.item}</p>
+                    <p className="font-medium text-black">{activity.action}</p>
+                    <p className="text-sm text-black">{activity.item}</p>
                   </div>
-                  <span className="text-sm text-muted-foreground">{activity.time}</span>
+                  <span className="text-sm text-black">{activity.time}</span>
                 </li>
               ))}
             </ul>
