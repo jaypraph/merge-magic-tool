@@ -25,24 +25,28 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
         return clearInterval(interval);
       }
 
-      // Random position for each firework
-      const position = {
-        x: Math.random(),
-        y: Math.random() * 0.5
-      };
+      // Random positions for multiple fireworks
+      const positions = [
+        { x: Math.random(), y: Math.random() * 0.5 },
+        { x: Math.random(), y: Math.random() * 0.3 },
+        { x: Math.random(), y: Math.random() * 0.7 }
+      ];
 
-      // Launch firework
-      confetti({
-        particleCount: 30,
-        spread: 360,
-        startVelocity: 30,
-        origin: position,
-        colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff'],
-        ticks: 200,
-        scalar: 1.2,
-        gravity: 1.2,
-        drift: 0,
-        shapes: ['star']
+      // Launch multiple fireworks
+      positions.forEach(position => {
+        confetti({
+          particleCount: 50,
+          spread: 360,
+          startVelocity: 45,
+          origin: position,
+          colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'],
+          ticks: 200,
+          scalar: 1.2,
+          gravity: 1.2,
+          drift: 0,
+          shapes: ['circle', 'square', 'star'],
+          zIndex: 200
+        });
       });
     }, 250);
   };
