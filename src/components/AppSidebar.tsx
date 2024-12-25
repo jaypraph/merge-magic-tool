@@ -8,7 +8,7 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { FileImage, Maximize2, Gauge, Wrench, Merge, Home } from "lucide-react";
+import { FileImage, Maximize2, Gauge, Wrench, Merge, Home, Database } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
@@ -27,6 +27,7 @@ export function AppSidebar({ activeFeature, onFeatureSelect }: AppSidebarProps) 
     { id: "wm", icon: Wrench, label: "WM" },
     { id: "mockup", icon: Merge, label: "M" },
     { id: "mockup2", icon: Merge, label: "MS" },
+    { id: "tx", icon: Database, label: "TX" },
   ];
 
   const handleItemClick = (feature: string) => {
