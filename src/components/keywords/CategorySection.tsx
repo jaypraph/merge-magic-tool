@@ -16,21 +16,23 @@ interface CategorySectionProps {
 export function CategorySection({ subcategories, activeDropdown, onDropdownToggle }: CategorySectionProps) {
   return (
     <div className="space-y-4">
-      {subcategories.map((subcategory) => (
-        <div key={subcategory.name} className="relative">
-          <SubcategoryButton
-            name={subcategory.name}
-            onClick={() => onDropdownToggle(subcategory.name)}
-          />
-          
-          {activeDropdown === subcategory.name && (
-            <KeywordList
-              keywords={subcategory.keywords}
-              subcategoryName={subcategory.name}
+      <div className="flex flex-wrap gap-4">
+        {subcategories.map((subcategory) => (
+          <div key={subcategory.name} className="relative">
+            <SubcategoryButton
+              name={subcategory.name}
+              onClick={() => onDropdownToggle(subcategory.name)}
             />
-          )}
-        </div>
-      ))}
+            
+            {activeDropdown === subcategory.name && (
+              <KeywordList
+                keywords={subcategory.keywords}
+                subcategoryName={subcategory.name}
+              />
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
