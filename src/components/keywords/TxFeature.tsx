@@ -1,5 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { KeywordDashboard } from "./KeywordDashboard";
+import { CategoriesPage } from "./CategoriesPage";
 
 export function TxFeature() {
   return (
@@ -21,13 +22,39 @@ export function TxFeature() {
         <TabsContent value="dashboard" className="h-full">
           <KeywordDashboard />
         </TabsContent>
-        <TabsContent value="categories">
+        <TabsContent value="categories" className="h-full">
+          <CategoriesPage />
+        </TabsContent>
+        <TabsContent value="keywords">
           <div className="container mx-auto p-6">
-            <h2 className="text-2xl font-bold text-black mb-4">Categories</h2>
-            <p className="text-black">Categories feature coming soon...</p>
+            <h2 className="text-2xl font-bold text-black mb-4">Keywords</h2>
+            <p className="text-black">Keywords feature coming soon...</p>
           </div>
         </TabsContent>
-        {/* Other tab contents will be implemented similarly */}
+        <TabsContent value="visualization">
+          <div className="container mx-auto p-6">
+            <h2 className="text-2xl font-bold text-black mb-4">Visualization</h2>
+            <p className="text-black">Visualization feature coming soon...</p>
+          </div>
+        </TabsContent>
+        <TabsContent value="import">
+          <div className="container mx-auto p-6">
+            <h2 className="text-2xl font-bold text-black mb-4">Import/Export</h2>
+            <p className="text-black">Import/Export feature coming soon...</p>
+          </div>
+        </TabsContent>
+        <TabsContent value="settings">
+          <div className="container mx-auto p-6">
+            <h2 className="text-2xl font-bold text-black mb-4">Settings</h2>
+            <p className="text-black">Settings feature coming soon...</p>
+          </div>
+        </TabsContent>
+        <TabsContent value="help">
+          <div className="container mx-auto p-6">
+            <h2 className="text-2xl font-bold text-black mb-4">Help</h2>
+            <p className="text-black">Help feature coming soon...</p>
+          </div>
+        </TabsContent>
       </Tabs>
     </div>
   );
