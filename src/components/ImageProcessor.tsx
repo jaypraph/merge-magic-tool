@@ -14,6 +14,39 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
 
+  const triggerFireworks = () => {
+    const duration = 3 * 1000;
+    const animationEnd = Date.now() + duration;
+
+    const interval = setInterval(() => {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      // Random position for each firework
+      const position = {
+        x: Math.random(),
+        y: Math.random() * 0.5
+      };
+
+      // Launch firework
+      confetti({
+        particleCount: 30,
+        spread: 360,
+        startVelocity: 30,
+        origin: position,
+        colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff'],
+        ticks: 200,
+        scalar: 1.2,
+        gravity: 1.2,
+        drift: 0,
+        shapes: ['star']
+      });
+    }, 250);
+  };
+
   const triggerConfetti = () => {
     const end = Date.now() + (3 * 1000); // 3 seconds duration
 
@@ -69,8 +102,9 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      // Trigger confetti after successful download
+      // Trigger both confetti and fireworks after successful download
       triggerConfetti();
+      triggerFireworks();
 
       toast({
         title: "Success!",
