@@ -3,7 +3,11 @@ import { useToast } from "@/hooks/use-toast";
 import JSZip from "jszip";
 import { processImage } from "@/utils/imageProcessingPipeline";
 import { useState } from "react";
-import confetti from 'canvas-confetti';
+import { 
+  triggerClassicFireworks, 
+  triggerColorfulStars, 
+  triggerModernFireworks 
+} from "@/utils/celebrationEffects";
 
 interface ImageProcessorProps {
   uploadedImage: string;
@@ -13,61 +17,6 @@ interface ImageProcessorProps {
 export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorProps) => {
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
-
-  const triggerFireworks = () => {
-    const duration = 3 * 1000;
-    const animationEnd = Date.now() + duration;
-
-    const interval = setInterval(() => {
-      const timeLeft = animationEnd - Date.now();
-
-      if (timeLeft <= 0) {
-        return clearInterval(interval);
-      }
-
-      // Random positions for multiple fireworks
-      const positions = [
-        { x: Math.random(), y: Math.random() * 0.5 },
-        { x: Math.random(), y: Math.random() * 0.3 },
-        { x: Math.random(), y: Math.random() * 0.7 }
-      ];
-
-      // Launch multiple fireworks
-      positions.forEach(position => {
-        confetti({
-          particleCount: 50,
-          spread: 360,
-          startVelocity: 45,
-          origin: position,
-          colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'],
-          ticks: 200,
-          scalar: 1.2,
-          gravity: 1.2,
-          drift: 0,
-          shapes: ['circle', 'square', 'star'],
-          zIndex: 200
-        });
-      });
-    }, 250);
-  };
-
-  const triggerConfetti = () => {
-    const end = Date.now() + (3 * 1000); // 3 seconds duration
-
-    // Create a confetti animation interval
-    const interval = setInterval(() => {
-      if (Date.now() > end) {
-        return clearInterval(interval);
-      }
-
-      confetti({
-        particleCount: 50,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#ea384c', '#40a9ff', '#52c41a', '#faad14', '#722ed1']
-      });
-    }, 250);
-  };
 
   const handleProcessImage = async () => {
     if (!uploadedImage) {
@@ -106,9 +55,10 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      // Trigger both confetti and fireworks after successful download
-      triggerConfetti();
-      triggerFireworks();
+      // Trigger all celebration effects
+      triggerColorfulStars();
+      triggerModernFireworks();
+      triggerClassicFireworks();
 
       toast({
         title: "Success!",
