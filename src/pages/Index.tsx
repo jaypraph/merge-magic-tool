@@ -5,7 +5,6 @@ import { ImageResizer } from "@/components/ImageResizer";
 import { DpiConverter } from "@/components/DpiConverter";
 import { WatermarkComponent } from "@/components/WatermarkComponent";
 import { ImageProcessor } from "@/components/ImageProcessor";
-import { TxComponent } from "@/components/TxComponent";
 import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -91,7 +90,6 @@ const Index = () => {
             {activeFeature === "resize" && <ImageResizer />}
             {activeFeature === "dpi" && <DpiConverter />}
             {activeFeature === "wm" && <WatermarkComponent />}
-            {activeFeature === "tx" && <TxComponent />}
           </div>
         </main>
       </div>
