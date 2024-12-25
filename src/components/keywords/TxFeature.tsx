@@ -2,6 +2,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { KeywordDashboard } from "./KeywordDashboard";
 import { CategoriesPage } from "./CategoriesPage";
 import { KeywordsPage } from "./KeywordsPage";
+import { KeywordVisualization } from "./KeywordVisualization";
 
 export function TxFeature() {
   return (
@@ -29,11 +30,8 @@ export function TxFeature() {
         <TabsContent value="keywords" className="h-full">
           <KeywordsPage />
         </TabsContent>
-        <TabsContent value="visualization">
-          <div className="container mx-auto p-6">
-            <h2 className="text-2xl font-bold text-black mb-4">Visualization</h2>
-            <p className="text-black">Visualization feature coming soon...</p>
-          </div>
+        <TabsContent value="visualization" className="h-full">
+          <KeywordVisualization />
         </TabsContent>
         <TabsContent value="import">
           <div className="container mx-auto p-6">
