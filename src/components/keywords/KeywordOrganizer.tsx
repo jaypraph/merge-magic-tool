@@ -19,10 +19,34 @@ const INITIAL_DATA: Category[] = [
       {
         name: 'Nature',
         keywords: [
-          'Forest', 'Clouds', 'Mountains', 'Flowers', 'Bird',
-          'Poppy flowers', 'Swan lake', 'Nature', 'Sky', 'Hills',
-          'Rolling hills', 'Lake', 'Path', 'Trees', 'Orange',
-          'Golden hour'
+          'Forest', 'Clouds', 'Sky', 'Bird', 'Flowers',
+          'Poppy', 'Poppy flowers', 'Lake', 'Lake view',
+          'Trees', 'Path', 'Golden hour', 'Nature', 'Hills',
+          'Rolling hills'
+        ]
+      },
+      {
+        name: 'Places',
+        keywords: [
+          'Grand Canyon', 'Capetown South Africa', 'Colorado River',
+          'English countryside', 'Yosemite', 'Paris', 'Switzerland',
+          'Dolomites', 'Alps', 'Castle', 'National park', 'Amsterdam'
+        ]
+      },
+      {
+        name: 'Seasonal & Weather',
+        keywords: [
+          'Snow', 'Snowflake', 'Snowbird', 'Ice', 'Winter',
+          'Dark night', 'Northern lights', 'Autumn leaves',
+          'Sunrise', 'Morning', 'Morning sun', 'Starry sky'
+        ]
+      },
+      {
+        name: 'Structures',
+        keywords: [
+          'Bridge', 'Wooden bridge', 'Church', 'Christ church',
+          'Castle', 'Village', 'Holiday village', 'Road',
+          'House', 'Wooden house'
         ]
       }
     ]
@@ -37,6 +61,29 @@ const INITIAL_DATA: Category[] = [
           'Santa Claus', 'Mrs Claus', 'Santa Claus Tracker',
           'Santa Claus Sleigh', 'Reindeer', 'Rudolph', 'Snow',
           'Snowflake', 'Christmas Eve'
+        ]
+      },
+      {
+        name: 'Decorations',
+        keywords: [
+          'Christmas Tree', 'Christmas Ornaments', 'Christmas Wreath',
+          'Mistletoe', 'Pine Tree', 'Holly Leaves', 'Poinsettias',
+          'Christmas Garland', 'Red Ribbon'
+        ]
+      },
+      {
+        name: 'Trains',
+        keywords: [
+          'Polar Express', 'Steam Train', 'Thomas Train',
+          'Choo Choo Train', 'Orient Express', 'Toy Train'
+        ]
+      },
+      {
+        name: 'Food & Sweets',
+        keywords: [
+          'Gingerbread', 'Gingerbread House', 'Chocolate Strawberry',
+          'Strawberries', 'Mulberries', 'Holly Berries',
+          'Wild Berries', 'Christmas Dinner'
         ]
       }
     ]
