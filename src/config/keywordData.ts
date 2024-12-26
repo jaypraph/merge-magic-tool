@@ -18,6 +18,7 @@ import { alcoholCategory } from './categories/alcohol';
 import { thanksgivingCategory } from './categories/thanksgiving';
 import { skyCloudsCategory } from './categories/sky-clouds';
 import { salvadorDaliCategory } from './categories/salvador-dali';
+import { portraitCategory } from './categories/portrait';
 
 export type { Category, Subcategory } from './categories/types';
 
@@ -40,5 +41,6 @@ export const INITIAL_DATA: Category[] = [
   alcoholCategory,
   thanksgivingCategory,
   skyCloudsCategory,
-  salvadorDaliCategory
+  salvadorDaliCategory,
+  portraitCategory
 ];
