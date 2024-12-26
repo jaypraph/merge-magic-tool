@@ -1,4 +1,4 @@
-import { Category } from './types';
+import { Category } from './categories/types';
 import { landscapesCategory } from './categories/landscapes';
 import { christmasCategory } from './categories/christmas';
 import { stillLifeCategory } from './categories/stilllife';
