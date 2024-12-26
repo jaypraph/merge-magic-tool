@@ -14,6 +14,7 @@ import { cityscapeCategory } from './categories/cityscape';
 import { greeceCategory } from './categories/greece';
 import { greenFnCategory } from './categories/green-fn';
 import { f1Category } from './categories/f1';
+import { alcoholCategory } from './categories/alcohol';
 
 export type { Category, Subcategory } from './categories/types';
 
@@ -32,5 +33,6 @@ export const INITIAL_DATA: Category[] = [
   cityscapeCategory,
   greeceCategory,
   greenFnCategory,
-  f1Category
+  f1Category,
+  alcoholCategory
 ];
