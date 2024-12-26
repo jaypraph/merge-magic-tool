@@ -1,4 +1,3 @@
-import { Category } from './categories/types';
 import { landscapesCategory } from './categories/landscapes';
 import { christmasCategory } from './categories/christmas';
 import { stillLifeCategory } from './categories/stilllife';
@@ -19,6 +18,7 @@ import { thanksgivingCategory } from './categories/thanksgiving';
 import { skyCloudsCategory } from './categories/sky-clouds';
 import { salvadorDaliCategory } from './categories/salvador-dali';
 import { portraitCategory } from './categories/portrait';
+import { birdsCategory } from './categories/birds';
 
 export type { Category, Subcategory } from './categories/types';
 
@@ -42,5 +42,6 @@ export const INITIAL_DATA: Category[] = [
   thanksgivingCategory,
   skyCloudsCategory,
   salvadorDaliCategory,
-  portraitCategory
+  portraitCategory,
+  birdsCategory
 ];
