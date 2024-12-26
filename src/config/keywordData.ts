@@ -24,6 +24,7 @@ import { hockeyCategory } from './categories/hockey';
 import { skiCategory } from './categories/ski';
 import { saintPatricksCategory } from './categories/saint-patricks';
 import { womanReadingCategory } from './categories/woman-reading';
+import { booksCategory } from './categories/books';
 import type { Category, Subcategory } from './categories/types';
 
 export type { Category, Subcategory };
@@ -54,5 +55,6 @@ export const INITIAL_DATA: Category[] = [
   hockeyCategory,
   skiCategory,
   saintPatricksCategory,
-  womanReadingCategory
+  womanReadingCategory,
+  booksCategory
 ];
