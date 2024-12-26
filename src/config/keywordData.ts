@@ -7,6 +7,7 @@ import { flowersCategory } from './categories/flowers';
 import { rosesCategory } from './categories/roses';
 import { treesCategory } from './categories/trees';
 import { abstractCategory } from './categories/abstract';
+import { poppiesDaisiesCategory } from './categories/poppies-daisies';
 
 export type { Category, Subcategory } from './categories/types';
 
@@ -18,5 +19,6 @@ export const INITIAL_DATA: Category[] = [
   flowersCategory,
   rosesCategory,
   treesCategory,
-  abstractCategory
+  abstractCategory,
+  poppiesDaisiesCategory
 ];
