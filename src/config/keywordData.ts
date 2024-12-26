@@ -19,8 +19,9 @@ import { skyCloudsCategory } from './categories/sky-clouds';
 import { salvadorDaliCategory } from './categories/salvador-dali';
 import { portraitCategory } from './categories/portrait';
 import { birdsCategory } from './categories/birds';
+import type { Category, Subcategory } from './categories/types';
 
-export type { Category, Subcategory } from './categories/types';
+export type { Category, Subcategory };
 
 export const INITIAL_DATA: Category[] = [
   landscapesCategory,
