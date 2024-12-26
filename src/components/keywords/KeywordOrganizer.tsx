@@ -16,6 +16,12 @@ export function KeywordOrganizer() {
     setActiveDropdown(activeDropdown === subcategoryName ? null : subcategoryName);
   };
 
+  const calculateCategoryKeywordCount = (categoryId: string) => {
+    const category = INITIAL_DATA.find(cat => cat.id === categoryId);
+    if (!category) return 0;
+    return category.subcategories.reduce((total, sub) => total + sub.keywords.length, 0);
+  };
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <div className="flex flex-wrap gap-4 mb-6">
@@ -23,6 +29,7 @@ export function KeywordOrganizer() {
           <CategoryButton
             key={category.id}
             name={category.name}
+            keywordCount={calculateCategoryKeywordCount(category.id)}
             isActive={activeCategory === category.id}
             onClick={() => toggleCategory(category.id)}
           />

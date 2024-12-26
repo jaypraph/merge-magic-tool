@@ -14,13 +14,19 @@ interface CategorySectionProps {
 }
 
 export function CategorySection({ subcategories, activeDropdown, onDropdownToggle }: CategorySectionProps) {
+  const totalKeywords = subcategories.reduce((total, sub) => total + sub.keywords.length, 0);
+
   return (
     <div className="space-y-4">
+      <div className="flex justify-between items-center mb-4">
+        <p className="text-lg font-semibold text-black">Total Keywords: {totalKeywords}</p>
+      </div>
       <div className="flex flex-wrap gap-4">
         {subcategories.map((subcategory) => (
           <div key={subcategory.name} className="relative">
             <SubcategoryButton
               name={subcategory.name}
+              keywordCount={subcategory.keywords.length}
               onClick={() => onDropdownToggle(subcategory.name)}
             />
             
