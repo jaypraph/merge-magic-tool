@@ -20,6 +20,7 @@ import { salvadorDaliCategory } from './categories/salvador-dali';
 import { portraitCategory } from './categories/portrait';
 import { birdsCategory } from './categories/birds';
 import { birthdayPartyCategory } from './categories/birthday-party';
+import { hockeyCategory } from './categories/hockey';
 import type { Category, Subcategory } from './categories/types';
 
 export type { Category, Subcategory };
@@ -46,5 +47,6 @@ export const INITIAL_DATA: Category[] = [
   salvadorDaliCategory,
   portraitCategory,
   birdsCategory,
-  birthdayPartyCategory
+  birthdayPartyCategory,
+  hockeyCategory
 ];
