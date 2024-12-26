@@ -22,6 +22,7 @@ import { birdsCategory } from './categories/birds';
 import { birthdayPartyCategory } from './categories/birthday-party';
 import { hockeyCategory } from './categories/hockey';
 import { skiCategory } from './categories/ski';
+import { saintPatricksCategory } from './categories/saint-patricks';
 import type { Category, Subcategory } from './categories/types';
 
 export type { Category, Subcategory };
@@ -50,5 +51,6 @@ export const INITIAL_DATA: Category[] = [
   birdsCategory,
   birthdayPartyCategory,
   hockeyCategory,
-  skiCategory
+  skiCategory,
+  saintPatricksCategory
 ];
