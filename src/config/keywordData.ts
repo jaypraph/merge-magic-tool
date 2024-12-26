@@ -16,6 +16,7 @@ import { greenFnCategory } from './categories/green-fn';
 import { f1Category } from './categories/f1';
 import { alcoholCategory } from './categories/alcohol';
 import { thanksgivingCategory } from './categories/thanksgiving';
+import { skyCloudsCategory } from './categories/sky-clouds';
 
 export type { Category, Subcategory } from './categories/types';
 
@@ -36,5 +37,6 @@ export const INITIAL_DATA: Category[] = [
   greenFnCategory,
   f1Category,
   alcoholCategory,
-  thanksgivingCategory
+  thanksgivingCategory,
+  skyCloudsCategory
 ];
