@@ -20,7 +20,7 @@ export function CategoryButton({ name, keywordCount, isActive, onClick }: Catego
       )}
     >
       <span className="text-white">{name}</span>
-      <span className="bg-yellow-200 px-2 py-0.5 rounded-full text-sm text-blue-500">
+      <span className="bg-[#FEC6A1] border-2 border-[#0EA5E9] inline-flex items-center justify-center h-5 min-w-5 px-1 rounded-full text-sm text-blue-500">
         {keywordCount}
       </span>
     </button>
