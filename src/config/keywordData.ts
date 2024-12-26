@@ -11,6 +11,7 @@ import { poppiesDaisiesCategory } from './categories/poppies-daisies';
 import { seascapesCategory } from './categories/seascapes';
 import { valentinesCategory } from './categories/valentines';
 import { cityscapeCategory } from './categories/cityscape';
+import { greeceCategory } from './categories/greece';
 
 export type { Category, Subcategory } from './categories/types';
 
@@ -26,5 +27,6 @@ export const INITIAL_DATA: Category[] = [
   poppiesDaisiesCategory,
   seascapesCategory,
   valentinesCategory,
-  cityscapeCategory
+  cityscapeCategory,
+  greeceCategory
 ];
