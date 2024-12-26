@@ -13,7 +13,7 @@ export function CategoryButton({ name, keywordCount, isActive, onClick }: Catego
     <button
       onClick={onClick}
       className={cn(
-        "px-6 py-3 text-white font-semibold rounded-lg transition-all duration-300 transform flex items-center gap-2",
+        "px-6 py-3 text-blue-500 font-semibold rounded-lg transition-all duration-300 transform flex items-center gap-2",
         isActive 
           ? "bg-green-700 shadow-none scale-95"
           : "bg-green-500 shadow-lg hover:shadow-xl hover:bg-green-600"
