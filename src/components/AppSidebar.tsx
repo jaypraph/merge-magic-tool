@@ -21,13 +21,13 @@ export function AppSidebar({ activeFeature, onFeatureSelect }: AppSidebarProps) 
   const navigate = useNavigate();
   
   const menuItems = [
+    { id: "tx", icon: Database, label: "KW" },
     { id: "jpg", icon: FileImage, label: "JPG" },
     { id: "resize", icon: Maximize2, label: "Resize" },
     { id: "dpi", icon: Gauge, label: "DPI" },
     { id: "wm", icon: Wrench, label: "WM" },
     { id: "mockup", icon: Merge, label: "M" },
     { id: "mockup2", icon: Merge, label: "MS" },
-    { id: "tx", icon: Database, label: "TX" },
   ];
 
   const handleItemClick = (feature: string) => {
