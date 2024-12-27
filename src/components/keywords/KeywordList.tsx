@@ -8,7 +8,7 @@ interface KeywordListProps {
 export function KeywordList({ keywords, subcategoryName }: KeywordListProps) {
   return (
     <div className="mt-2 p-4 bg-white border border-gray-200 rounded-lg shadow-lg">
-      <p className="font-semibold mb-2">{subcategoryName} Keywords:</p>
+      <p className="font-semibold mb-2 text-black">{subcategoryName} Keywords:</p>
       <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
         {keywords.map((keyword) => (
           <li
