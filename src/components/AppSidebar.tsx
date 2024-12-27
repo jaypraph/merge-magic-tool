@@ -71,7 +71,7 @@ export function AppSidebar({ activeFeature, onFeatureSelect }: AppSidebarProps) 
                       tooltip={item.label}
                     >
                       <item.icon className="h-4 w-4" />
-                      <span>{item.label}</span>
+                      <span className="text-black">{item.label}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
