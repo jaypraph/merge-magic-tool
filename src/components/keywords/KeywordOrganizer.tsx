@@ -28,8 +28,10 @@ export function KeywordOrganizer() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <div className="mb-6 text-lg font-semibold text-black">
-        Total Keywords: {totalKeywords}
+      <div className="flex justify-center mb-6">
+        <div className="inline-flex items-center justify-center bg-white rounded-full h-8 w-8 text-sm font-medium text-black">
+          {totalKeywords}
+        </div>
       </div>
       <div className="flex flex-wrap gap-4 mb-6">
         {INITIAL_DATA.map((category) => (
