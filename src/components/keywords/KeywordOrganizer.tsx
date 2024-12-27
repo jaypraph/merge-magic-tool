@@ -40,14 +40,23 @@ export function KeywordOrganizer() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <div className="flex justify-center mb-6">
+      <div className="flex justify-center mb-8">
         <div 
           className="inline-flex items-center justify-center bg-white rounded-full 
-                     h-8 w-8 text-sm font-medium text-black border border-black
-                     shadow-lg transform hover:scale-105 transition-all duration-300
-                     animate-float"
+                     h-12 w-12 text-lg font-bold text-black border-2 border-black
+                     shadow-lg transform transition-all duration-300
+                     hover:scale-105"
           style={{
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1), 0 8px 12px rgba(0, 0, 0, 0.1)',
+            boxShadow: `
+              0 4px 6px rgba(0, 0, 0, 0.1),
+              0 8px 12px rgba(0, 0, 0, 0.1),
+              inset 0 -2px 4px rgba(0, 0, 0, 0.2),
+              inset 0 2px 4px rgba(255, 255, 255, 0.5)
+            `,
+            textShadow: `
+              0px 1px 1px rgba(255, 255, 255, 0.5),
+              0px -1px 1px rgba(0, 0, 0, 0.3)
+            `,
             transform: 'translateY(-2px)',
           }}
         >
