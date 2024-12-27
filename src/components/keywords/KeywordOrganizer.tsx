@@ -22,8 +22,15 @@ export function KeywordOrganizer() {
     return category.subcategories.reduce((total, sub) => total + sub.keywords.length, 0);
   };
 
+  const totalKeywords = INITIAL_DATA.reduce((total, category) => {
+    return total + calculateCategoryKeywordCount(category.id);
+  }, 0);
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
+      <div className="mb-6 text-lg font-semibold text-black">
+        Total Keywords: {totalKeywords}
+      </div>
       <div className="flex flex-wrap gap-4 mb-6">
         {INITIAL_DATA.map((category) => (
           <CategoryButton
