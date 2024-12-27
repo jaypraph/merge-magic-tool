@@ -29,7 +29,7 @@ export function KeywordOrganizer() {
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <div className="flex justify-center mb-6">
-        <div className="inline-flex items-center justify-center bg-white rounded-full h-8 w-8 text-sm font-medium text-black">
+        <div className="inline-flex items-center justify-center bg-white rounded-full h-8 w-8 text-sm font-medium text-black border border-black">
           {totalKeywords}
         </div>
       </div>
