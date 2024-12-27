@@ -29,7 +29,16 @@ export function KeywordOrganizer() {
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <div className="flex justify-center mb-6">
-        <div className="inline-flex items-center justify-center bg-white rounded-full h-8 w-8 text-sm font-medium text-black border border-black">
+        <div 
+          className="inline-flex items-center justify-center bg-white rounded-full 
+                     h-8 w-8 text-sm font-medium text-black border border-black
+                     shadow-lg transform hover:scale-105 transition-all duration-300
+                     animate-float"
+          style={{
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1), 0 8px 12px rgba(0, 0, 0, 0.1)',
+            transform: 'translateY(-2px)',
+          }}
+        >
           {totalKeywords}
         </div>
       </div>
