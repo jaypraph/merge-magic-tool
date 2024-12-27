@@ -42,22 +42,23 @@ export function KeywordOrganizer() {
     <div className="p-6 max-w-4xl mx-auto">
       <div className="flex justify-center mb-8">
         <div 
-          className="inline-flex items-center justify-center bg-white rounded-full 
-                     h-12 w-12 text-lg font-bold text-black border-2 border-black
-                     shadow-lg transform transition-all duration-300
-                     hover:scale-105"
+          className="inline-flex items-center justify-center bg-black rounded-md 
+                     h-14 w-20 text-2xl font-bold border-2 border-[#0FA0CE]
+                     shadow-lg transform transition-all duration-300"
           style={{
+            fontFamily: "'Digital-7', monospace",
+            color: '#0FA0CE',
             boxShadow: `
-              0 4px 6px rgba(0, 0, 0, 0.1),
-              0 8px 12px rgba(0, 0, 0, 0.1),
-              inset 0 -2px 4px rgba(0, 0, 0, 0.2),
-              inset 0 2px 4px rgba(255, 255, 255, 0.5)
+              0 0 5px #0FA0CE,
+              0 0 10px #0FA0CE,
+              0 0 15px #0FA0CE,
+              inset 0 0 5px #0FA0CE
             `,
             textShadow: `
-              0px 1px 1px rgba(255, 255, 255, 0.5),
-              0px -1px 1px rgba(0, 0, 0, 0.3)
+              0 0 5px #0FA0CE,
+              0 0 10px #0FA0CE,
+              0 0 15px #0FA0CE
             `,
-            transform: 'translateY(-2px)',
           }}
         >
           {totalKeywords}
