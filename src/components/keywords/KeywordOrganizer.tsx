@@ -15,6 +15,13 @@ export function KeywordOrganizer() {
     setActiveDropdown(null);
   };
 
+  const handleDialogClose = (open: boolean) => {
+    setIsDialogOpen(open);
+    if (!open) {
+      setActiveCategory(null);
+    }
+  };
+
   const toggleDropdown = (subcategoryName: string) => {
     setActiveDropdown(activeDropdown === subcategoryName ? null : subcategoryName);
   };
@@ -60,7 +67,7 @@ export function KeywordOrganizer() {
         ))}
       </div>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-black">
