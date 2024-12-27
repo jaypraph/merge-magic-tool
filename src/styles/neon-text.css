@@ -12,13 +12,16 @@
   [data-sidebar="menu-button"]:hover,
   [data-sidebar="menu-button"]:focus,
   [data-sidebar="menu-button"][data-active="true"] {
-    text-shadow: 0 0 20px hsl(144 100% 50%),
+    text-shadow: 0 0 10px hsl(144 100% 50%),
+                 0 0 20px hsl(144 100% 50%),
                  0 0 40px hsl(144 100% 50%),
                  0 0 80px hsl(144 100% 50%),
                  0 0 120px hsl(144 100% 50%),
                  0 0 160px hsl(144 100% 50%),
-                 0 0 200px hsl(144 100% 50%);
-    color: hsl(144 100% 50%) !important;
+                 0 0 200px hsl(144 100% 50%),
+                 0 0 250px hsl(144 100% 50%),
+                 0 0 300px hsl(144 100% 50%);
+    color: hsl(144 100% 90%) !important;
     background: transparent !important;
     border: none !important;
     outline: none !important;
@@ -34,11 +37,15 @@
 
   [data-sidebar] span:hover,
   [data-sidebar] label:hover {
-    text-shadow: 0 0 20px hsl(144 100% 50%),
+    text-shadow: 0 0 10px hsl(144 100% 50%),
+                 0 0 20px hsl(144 100% 50%),
                  0 0 40px hsl(144 100% 50%),
                  0 0 80px hsl(144 100% 50%),
                  0 0 120px hsl(144 100% 50%),
                  0 0 160px hsl(144 100% 50%),
-                 0 0 200px hsl(144 100% 50%);
+                 0 0 200px hsl(144 100% 50%),
+                 0 0 250px hsl(144 100% 50%),
+                 0 0 300px hsl(144 100% 50%);
+    color: hsl(144 100% 90%) !important;
   }
 }
