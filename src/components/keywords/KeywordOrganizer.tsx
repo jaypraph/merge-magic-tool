@@ -8,6 +8,10 @@ export function KeywordOrganizer() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [activeCategoryGroup, setActiveCategoryGroup] = useState<'primary' | 'secondary' | null>(null);
+
+  const primaryCategories = INITIAL_DATA.slice(0, 12); // Landscapes to Cityscape
+  const secondaryCategories = INITIAL_DATA.slice(12); // Greece to Other
 
   const toggleCategory = (categoryId: string) => {
     setActiveCategory(categoryId);
@@ -38,6 +42,10 @@ export function KeywordOrganizer() {
 
   const activeCategoryData = INITIAL_DATA.find(cat => cat.id === activeCategory);
 
+  const toggleCategoryGroup = (group: 'primary' | 'secondary') => {
+    setActiveCategoryGroup(activeCategoryGroup === group ? null : group);
+  };
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <div className="flex justify-center mb-8">
@@ -64,9 +72,49 @@ export function KeywordOrganizer() {
           {totalKeywords}
         </div>
       </div>
+
+      <div className="flex justify-center gap-4 mb-6">
+        <button
+          onClick={() => toggleCategoryGroup('primary')}
+          className={`px-6 py-3 font-semibold rounded-lg transition-all duration-300 transform
+                     ${activeCategoryGroup === 'primary' 
+                       ? 'bg-blue-700 shadow-none scale-95 translate-y-0.5'
+                       : 'bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 hover:scale-105'}`}
+          style={{
+            boxShadow: activeCategoryGroup === 'primary'
+              ? 'none'
+              : '0 4px 6px rgba(0, 0, 0, 0.1), 0 8px 15px rgba(0, 0, 0, 0.1), 0 -2px 4px rgba(255, 255, 255, 0.1)',
+          }}
+        >
+          <span className="text-white">PRIMARY</span>
+        </button>
+        <button
+          onClick={() => toggleCategoryGroup('secondary')}
+          className={`px-6 py-3 font-semibold rounded-lg transition-all duration-300 transform
+                     ${activeCategoryGroup === 'secondary'
+                       ? 'bg-blue-700 shadow-none scale-95 translate-y-0.5'
+                       : 'bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 hover:scale-105'}`}
+          style={{
+            boxShadow: activeCategoryGroup === 'secondary'
+              ? 'none'
+              : '0 4px 6px rgba(0, 0, 0, 0.1), 0 8px 15px rgba(0, 0, 0, 0.1), 0 -2px 4px rgba(255, 255, 255, 0.1)',
+          }}
+        >
+          <span className="text-white">SECONDARY</span>
+        </button>
+      </div>
       
       <div className="flex flex-wrap gap-4 mb-6">
-        {INITIAL_DATA.map((category) => (
+        {activeCategoryGroup === 'primary' && primaryCategories.map((category) => (
+          <CategoryButton
+            key={category.id}
+            name={category.name}
+            keywordCount={calculateCategoryKeywordCount(category.id)}
+            isActive={activeCategory === category.id}
+            onClick={() => toggleCategory(category.id)}
+          />
+        ))}
+        {activeCategoryGroup === 'secondary' && secondaryCategories.map((category) => (
           <CategoryButton
             key={category.id}
             name={category.name}
