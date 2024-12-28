@@ -69,6 +69,9 @@ export function KeywordOrganizer() {
     setActiveCategoryGroup(activeCategoryGroup === group ? null : group);
   };
 
+  const shouldHighlightPrimary = searchQuery && primaryCategories.some(findKeywordInCategory);
+  const shouldHighlightSecondary = searchQuery && secondaryCategories.some(findKeywordInCategory);
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-8">
@@ -110,7 +113,7 @@ export function KeywordOrganizer() {
                      ${activeCategoryGroup === 'primary' 
                        ? 'bg-blue-700 shadow-none scale-95 translate-y-0.5'
                        : 'bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 hover:scale-105'}
-                     ${searchQuery && primaryCategories.some(findKeywordInCategory) ? 'ring-4 ring-yellow-400' : ''}`}
+                     ${shouldHighlightPrimary ? 'ring-4 ring-yellow-400' : ''}`}
           style={{
             boxShadow: activeCategoryGroup === 'primary'
               ? 'none'
@@ -125,7 +128,7 @@ export function KeywordOrganizer() {
                      ${activeCategoryGroup === 'secondary'
                        ? 'bg-blue-700 shadow-none scale-95 translate-y-0.5'
                        : 'bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 hover:scale-105'}
-                     ${searchQuery && secondaryCategories.some(findKeywordInCategory) ? 'ring-4 ring-yellow-400' : ''}`}
+                     ${shouldHighlightSecondary ? 'ring-4 ring-yellow-400' : ''}`}
           style={{
             boxShadow: activeCategoryGroup === 'secondary'
               ? 'none'
