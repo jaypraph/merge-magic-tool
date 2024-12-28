@@ -11,10 +11,17 @@ interface CategorySectionProps {
   subcategories: Subcategory[];
   activeDropdown: string | null;
   onDropdownToggle: (name: string) => void;
+  searchTerm: string;
 }
 
-export function CategorySection({ subcategories, activeDropdown, onDropdownToggle }: CategorySectionProps) {
+export function CategorySection({ subcategories, activeDropdown, onDropdownToggle, searchTerm }: CategorySectionProps) {
   const totalKeywords = subcategories.reduce((total, sub) => total + sub.keywords.length, 0);
+
+  const findKeywordInSubcategory = (subcategory: Subcategory) => {
+    return subcategory.keywords.some(keyword => 
+      keyword.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -28,12 +35,14 @@ export function CategorySection({ subcategories, activeDropdown, onDropdownToggl
               name={subcategory.name}
               keywordCount={subcategory.keywords.length}
               onClick={() => onDropdownToggle(subcategory.name)}
+              isHighlighted={searchTerm && findKeywordInSubcategory(subcategory)}
             />
             
             {activeDropdown === subcategory.name && (
               <KeywordList
                 keywords={subcategory.keywords}
                 subcategoryName={subcategory.name}
+                searchTerm={searchTerm}
               />
             )}
           </div>

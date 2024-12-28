@@ -5,10 +5,11 @@ interface CategoryButtonProps {
   name: string;
   keywordCount: number;
   isActive: boolean;
+  isHighlighted?: boolean;
   onClick: () => void;
 }
 
-export function CategoryButton({ name, keywordCount, isActive, onClick }: CategoryButtonProps) {
+export function CategoryButton({ name, keywordCount, isActive, isHighlighted, onClick }: CategoryButtonProps) {
   return (
     <button
       onClick={onClick}
@@ -17,7 +18,8 @@ export function CategoryButton({ name, keywordCount, isActive, onClick }: Catego
         "hover:-translate-y-1 hover:scale-105",
         isActive 
           ? "bg-green-700 shadow-none scale-95 translate-y-0.5"
-          : "bg-green-500 hover:bg-green-600"
+          : "bg-green-500 hover:bg-green-600",
+        isHighlighted && "ring-4 ring-yellow-400"
       )}
       style={{
         boxShadow: isActive 

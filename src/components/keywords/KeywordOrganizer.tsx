@@ -3,15 +3,32 @@ import { CategoryButton } from './CategoryButton';
 import { CategorySection } from './CategorySection';
 import { INITIAL_DATA } from '@/config/keywordData';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
 export function KeywordOrganizer() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [activeCategoryGroup, setActiveCategoryGroup] = useState<'primary' | 'secondary' | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const primaryCategories = INITIAL_DATA.slice(0, 12); // Landscapes to Cityscape
   const secondaryCategories = INITIAL_DATA.slice(12); // Greece to Other
+
+  const findKeywordInCategory = (category: any) => {
+    return category.subcategories.some(sub => 
+      sub.keywords.some(keyword => 
+        keyword.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
+  };
+
+  const findKeywordInSubcategory = (subcategory: any) => {
+    return subcategory.keywords.some(keyword => 
+      keyword.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  };
 
   const toggleCategory = (categoryId: string) => {
     setActiveCategory(categoryId);
@@ -48,7 +65,8 @@ export function KeywordOrganizer() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <div className="flex justify-center mb-8">
+      <div className="flex justify-between items-center mb-8">
+        <div className="flex-1"></div>
         <div 
           className="inline-flex items-center justify-center bg-black rounded-md 
                      h-14 w-20 text-2xl font-bold border-2 border-[#0FA0CE]
@@ -71,6 +89,18 @@ export function KeywordOrganizer() {
         >
           {totalKeywords}
         </div>
+        <div className="flex-1 flex justify-end">
+          <div className="relative w-64">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
+            <Input
+              type="text"
+              placeholder="Search keywords..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-8 pr-4 py-2 w-full border rounded-md"
+            />
+          </div>
+        </div>
       </div>
 
       <div className="flex justify-center gap-4 mb-6">
@@ -79,7 +109,8 @@ export function KeywordOrganizer() {
           className={`px-6 py-3 font-semibold rounded-lg transition-all duration-300 transform
                      ${activeCategoryGroup === 'primary' 
                        ? 'bg-blue-700 shadow-none scale-95 translate-y-0.5'
-                       : 'bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 hover:scale-105'}`}
+                       : 'bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 hover:scale-105'}
+                     ${searchTerm && primaryCategories.some(findKeywordInCategory) ? 'ring-4 ring-yellow-400' : ''}`}
           style={{
             boxShadow: activeCategoryGroup === 'primary'
               ? 'none'
@@ -93,7 +124,8 @@ export function KeywordOrganizer() {
           className={`px-6 py-3 font-semibold rounded-lg transition-all duration-300 transform
                      ${activeCategoryGroup === 'secondary'
                        ? 'bg-blue-700 shadow-none scale-95 translate-y-0.5'
-                       : 'bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 hover:scale-105'}`}
+                       : 'bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 hover:scale-105'}
+                     ${searchTerm && secondaryCategories.some(findKeywordInCategory) ? 'ring-4 ring-yellow-400' : ''}`}
           style={{
             boxShadow: activeCategoryGroup === 'secondary'
               ? 'none'
@@ -112,6 +144,7 @@ export function KeywordOrganizer() {
             keywordCount={calculateCategoryKeywordCount(category.id)}
             isActive={activeCategory === category.id}
             onClick={() => toggleCategory(category.id)}
+            isHighlighted={searchTerm && findKeywordInCategory(category)}
           />
         ))}
         {activeCategoryGroup === 'secondary' && secondaryCategories.map((category) => (
@@ -121,6 +154,7 @@ export function KeywordOrganizer() {
             keywordCount={calculateCategoryKeywordCount(category.id)}
             isActive={activeCategory === category.id}
             onClick={() => toggleCategory(category.id)}
+            isHighlighted={searchTerm && findKeywordInCategory(category)}
           />
         ))}
       </div>
@@ -138,6 +172,7 @@ export function KeywordOrganizer() {
               subcategories={activeCategoryData.subcategories}
               activeDropdown={activeDropdown}
               onDropdownToggle={toggleDropdown}
+              searchTerm={searchTerm}
             />
           )}
         </DialogContent>

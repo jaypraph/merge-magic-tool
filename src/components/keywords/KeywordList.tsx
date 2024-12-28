@@ -4,9 +4,10 @@ import { useToast } from "@/components/ui/use-toast";
 interface KeywordListProps {
   keywords: string[];
   subcategoryName: string;
+  searchTerm: string;
 }
 
-export function KeywordList({ keywords, subcategoryName }: KeywordListProps) {
+export function KeywordList({ keywords, subcategoryName, searchTerm }: KeywordListProps) {
   const [selectedKeyword, setSelectedKeyword] = useState<string | null>(null);
   const { toast } = useToast();
 
@@ -19,7 +20,6 @@ export function KeywordList({ keywords, subcategoryName }: KeywordListProps) {
         duration: 2000,
       });
 
-      // Reset the highlight after copying
       setTimeout(() => {
         setSelectedKeyword(null);
       }, 2000);
@@ -30,6 +30,17 @@ export function KeywordList({ keywords, subcategoryName }: KeywordListProps) {
         duration: 2000,
       });
     }
+  };
+
+  const highlightSearchTerm = (keyword: string) => {
+    if (!searchTerm) return keyword;
+    
+    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    const parts = keyword.split(regex);
+    
+    return parts.map((part, i) => 
+      regex.test(part) ? <mark key={i} className="bg-yellow-200">{part}</mark> : part
+    );
   };
 
   return (
@@ -46,7 +57,7 @@ export function KeywordList({ keywords, subcategoryName }: KeywordListProps) {
                         : 'bg-gray-50 hover:bg-gray-100'
                       }`}
           >
-            {keyword}
+            {highlightSearchTerm(keyword)}
           </li>
         ))}
       </ul>
