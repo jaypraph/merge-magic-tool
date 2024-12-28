@@ -5,6 +5,7 @@ import { INITIAL_DATA } from '@/config/keywordData';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function KeywordOrganizer() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -12,6 +13,7 @@ export function KeywordOrganizer() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [activeCategoryGroup, setActiveCategoryGroup] = useState<'primary' | 'secondary' | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const primaryCategories = INITIAL_DATA.slice(0, 12); // Landscapes to Cityscape
   const secondaryCategories = INITIAL_DATA.slice(12); // Greece to Other
@@ -19,15 +21,19 @@ export function KeywordOrganizer() {
   const findKeywordInCategory = (category: any) => {
     return category.subcategories.some(sub => 
       sub.keywords.some(keyword => 
-        keyword.toLowerCase().includes(searchTerm.toLowerCase())
+        keyword.toLowerCase().includes(searchQuery.toLowerCase())
       )
     );
   };
 
   const findKeywordInSubcategory = (subcategory: any) => {
     return subcategory.keywords.some(keyword => 
-      keyword.toLowerCase().includes(searchTerm.toLowerCase())
+      keyword.toLowerCase().includes(searchQuery.toLowerCase())
     );
+  };
+
+  const handleSearch = () => {
+    setSearchQuery(searchTerm);
   };
 
   const toggleCategory = (categoryId: string) => {
@@ -69,27 +75,15 @@ export function KeywordOrganizer() {
         <div className="flex-1"></div>
         <div 
           className="inline-flex items-center justify-center bg-black rounded-md 
-                     h-14 w-20 text-2xl font-bold border-2 border-[#0FA0CE]
-                     shadow-lg transform transition-all duration-300"
+                     h-14 w-20 text-2xl font-bold"
           style={{
-            fontFamily: "'Digital-7', monospace",
+            fontFamily: "'Digital-7 Mono', monospace",
             color: '#0FA0CE',
-            boxShadow: `
-              0 0 5px #0FA0CE,
-              0 0 10px #0FA0CE,
-              0 0 15px #0FA0CE,
-              inset 0 0 5px #0FA0CE
-            `,
-            textShadow: `
-              0 0 5px #0FA0CE,
-              0 0 10px #0FA0CE,
-              0 0 15px #0FA0CE
-            `,
           }}
         >
           {totalKeywords}
         </div>
-        <div className="flex-1 flex justify-end">
+        <div className="flex-1 flex justify-end gap-2">
           <div className="relative w-64">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
             <Input
@@ -100,6 +94,12 @@ export function KeywordOrganizer() {
               className="pl-8 pr-4 py-2 w-full border rounded-md"
             />
           </div>
+          <Button 
+            onClick={handleSearch}
+            className="bg-blue-500 hover:bg-blue-600 text-white"
+          >
+            GO
+          </Button>
         </div>
       </div>
 
@@ -110,7 +110,7 @@ export function KeywordOrganizer() {
                      ${activeCategoryGroup === 'primary' 
                        ? 'bg-blue-700 shadow-none scale-95 translate-y-0.5'
                        : 'bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 hover:scale-105'}
-                     ${searchTerm && primaryCategories.some(findKeywordInCategory) ? 'ring-4 ring-yellow-400' : ''}`}
+                     ${searchQuery && primaryCategories.some(findKeywordInCategory) ? 'ring-4 ring-yellow-400' : ''}`}
           style={{
             boxShadow: activeCategoryGroup === 'primary'
               ? 'none'
@@ -125,7 +125,7 @@ export function KeywordOrganizer() {
                      ${activeCategoryGroup === 'secondary'
                        ? 'bg-blue-700 shadow-none scale-95 translate-y-0.5'
                        : 'bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 hover:scale-105'}
-                     ${searchTerm && secondaryCategories.some(findKeywordInCategory) ? 'ring-4 ring-yellow-400' : ''}`}
+                     ${searchQuery && secondaryCategories.some(findKeywordInCategory) ? 'ring-4 ring-yellow-400' : ''}`}
           style={{
             boxShadow: activeCategoryGroup === 'secondary'
               ? 'none'
@@ -144,7 +144,7 @@ export function KeywordOrganizer() {
             keywordCount={calculateCategoryKeywordCount(category.id)}
             isActive={activeCategory === category.id}
             onClick={() => toggleCategory(category.id)}
-            isHighlighted={searchTerm && findKeywordInCategory(category)}
+            isHighlighted={searchQuery && findKeywordInCategory(category)}
           />
         ))}
         {activeCategoryGroup === 'secondary' && secondaryCategories.map((category) => (
@@ -154,7 +154,7 @@ export function KeywordOrganizer() {
             keywordCount={calculateCategoryKeywordCount(category.id)}
             isActive={activeCategory === category.id}
             onClick={() => toggleCategory(category.id)}
-            isHighlighted={searchTerm && findKeywordInCategory(category)}
+            isHighlighted={searchQuery && findKeywordInCategory(category)}
           />
         ))}
       </div>
@@ -172,7 +172,7 @@ export function KeywordOrganizer() {
               subcategories={activeCategoryData.subcategories}
               activeDropdown={activeDropdown}
               onDropdownToggle={toggleDropdown}
-              searchTerm={searchTerm}
+              searchTerm={searchQuery}
             />
           )}
         </DialogContent>
