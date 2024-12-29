@@ -35,8 +35,13 @@ export function KeywordOrganizer() {
   };
 
   const toggleCategory = (categoryId: string) => {
-    setActiveCategory(categoryId);
-    setIsDialogOpen(true);
+    if (activeCategory === categoryId) {
+      setActiveCategory(null);
+      setIsDialogOpen(false);
+    } else {
+      setActiveCategory(categoryId);
+      setIsDialogOpen(true);
+    }
     setActiveDropdown(null);
   };
 
@@ -53,7 +58,13 @@ export function KeywordOrganizer() {
   const activeCategoryData = INITIAL_DATA.find(cat => cat.id === activeCategory);
 
   const toggleCategoryGroup = (group: 'primary' | 'secondary') => {
-    setActiveCategoryGroup(activeCategoryGroup === group ? null : group);
+    if (activeCategoryGroup === group) {
+      setActiveCategoryGroup(null);
+      setActiveCategory(null);
+      setIsDialogOpen(false);
+    } else {
+      setActiveCategoryGroup(group);
+    }
   };
 
   const handleKeywordSelect = (keyword: string) => {

@@ -29,16 +29,17 @@ export function TopControls({
         {/* 13 Button */}
         <Button
           onClick={onKeywordInputOpen}
-          className="w-16 h-16 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-xl font-bold"
+          className="w-6 h-6 rounded-full bg-blue-500 hover:bg-blue-600 transition-all duration-200 
+                   shadow-[0_2px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[1px] hover:shadow-none p-0"
         >
-          13
+          <span className="text-xs text-white">13</span>
         </Button>
 
-        {/* Counter */}
-        <div className="flex flex-col items-center">
+        {/* Counter and Switch */}
+        <div className="flex items-center gap-4">
           <div 
             className="inline-flex items-center justify-center bg-black rounded-md 
-                     h-14 w-20 text-2xl font-bold mb-2"
+                     h-14 w-20 text-2xl font-bold"
             style={{
               fontFamily: "'Digital-7 Mono', monospace",
               color: '#0FA0CE',
@@ -47,11 +48,11 @@ export function TopControls({
             {totalKeywords}
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-sm">AutoFill</span>
             <Switch
               checked={autoFillEnabled}
               onCheckedChange={setAutoFillEnabled}
             />
+            <span className="text-sm">AutoFill</span>
           </div>
         </div>
 
