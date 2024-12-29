@@ -16,7 +16,6 @@ export function KeywordInputDialog({ open, onOpenChange, selectedKeyword }: Keyw
 
   useEffect(() => {
     if (selectedKeyword) {
-      // Find the first empty slot
       const emptyIndex = keywords.findIndex(k => k === '');
       if (emptyIndex !== -1) {
         const newKeywords = [...keywords];
@@ -40,6 +39,13 @@ export function KeywordInputDialog({ open, onOpenChange, selectedKeyword }: Keyw
     setKeywords(newKeywords);
   };
 
+  const handleClearAll = () => {
+    setKeywords(Array(13).fill(''));
+    toast({
+      description: "All keywords cleared!",
+    });
+  };
+
   const handleCopy = () => {
     const nonEmptyKeywords = keywords.filter(k => k.trim() !== '');
     if (nonEmptyKeywords.length > 0) {
@@ -61,8 +67,15 @@ export function KeywordInputDialog({ open, onOpenChange, selectedKeyword }: Keyw
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
-        <DialogHeader>
+        <DialogHeader className="flex flex-row items-center justify-between">
           <DialogTitle>Keyword Input</DialogTitle>
+          <Button 
+            variant="destructive" 
+            size="sm"
+            onClick={handleClearAll}
+          >
+            Clear All
+          </Button>
         </DialogHeader>
         <div className="space-y-2 max-h-[60vh] overflow-y-auto">
           {keywords.map((keyword, index) => (
