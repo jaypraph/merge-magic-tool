@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,11 +7,24 @@ import { useToast } from "@/components/ui/use-toast";
 interface KeywordInputDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  selectedKeyword?: string;
 }
 
-export function KeywordInputDialog({ open, onOpenChange }: KeywordInputDialogProps) {
+export function KeywordInputDialog({ open, onOpenChange, selectedKeyword }: KeywordInputDialogProps) {
   const [keywords, setKeywords] = useState<string[]>(Array(13).fill(''));
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (selectedKeyword) {
+      // Find the first empty slot
+      const emptyIndex = keywords.findIndex(k => k === '');
+      if (emptyIndex !== -1) {
+        const newKeywords = [...keywords];
+        newKeywords[emptyIndex] = selectedKeyword;
+        setKeywords(newKeywords);
+      }
+    }
+  }, [selectedKeyword]);
 
   const handleKeywordChange = (index: number, value: string) => {
     if (value.length <= 20) {

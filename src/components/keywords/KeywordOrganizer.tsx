@@ -16,6 +16,7 @@ export function KeywordOrganizer() {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [autoFillEnabled, setAutoFillEnabled] = useState(false);
+  const [selectedKeyword, setSelectedKeyword] = useState<string>('');
   const { toast } = useToast();
 
   const primaryCategories = INITIAL_DATA.slice(0, 12);
@@ -55,6 +56,15 @@ export function KeywordOrganizer() {
     setActiveCategoryGroup(activeCategoryGroup === group ? null : group);
   };
 
+  const handleKeywordSelect = (keyword: string) => {
+    if (autoFillEnabled) {
+      setSelectedKeyword(keyword);
+      if (!isKeywordInputOpen) {
+        setIsKeywordInputOpen(true);
+      }
+    }
+  };
+
   const shouldHighlightPrimary = searchQuery && primaryCategories.some(findKeywordInCategory);
   const shouldHighlightSecondary = searchQuery && secondaryCategories.some(findKeywordInCategory);
 
@@ -68,7 +78,10 @@ export function KeywordOrganizer() {
           totalKeywords={totalKeywords}
           autoFillEnabled={autoFillEnabled}
           setAutoFillEnabled={setAutoFillEnabled}
-          onKeywordInputOpen={() => setIsKeywordInputOpen(true)}
+          onKeywordInputOpen={() => {
+            setSelectedKeyword('');
+            setIsKeywordInputOpen(true);
+          }}
         />
 
         {/* Main Layout */}
@@ -109,13 +122,7 @@ export function KeywordOrganizer() {
                 onDropdownToggle={setActiveDropdown}
                 searchTerm={searchQuery}
                 autoFillEnabled={autoFillEnabled}
-                onKeywordSelect={(keyword) => {
-                  if (autoFillEnabled) {
-                    toast({
-                      description: `Keyword "${keyword}" selected for autofill`,
-                    });
-                  }
-                }}
+                onKeywordSelect={handleKeywordSelect}
               />
             )}
           </div>
@@ -152,6 +159,7 @@ export function KeywordOrganizer() {
         <KeywordInputDialog
           open={isKeywordInputOpen}
           onOpenChange={setIsKeywordInputOpen}
+          selectedKeyword={selectedKeyword}
         />
       </div>
     </div>
