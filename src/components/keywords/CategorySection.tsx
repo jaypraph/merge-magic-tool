@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SubcategoryButton } from './SubcategoryButton';
 import { KeywordList } from './KeywordList';
 
@@ -24,6 +24,7 @@ export function CategorySection({
   autoFillEnabled,
   onKeywordSelect 
 }: CategorySectionProps) {
+  const [openDialog, setOpenDialog] = useState<string | null>(null);
   const totalKeywords = subcategories.reduce((total, sub) => total + sub.keywords.length, 0);
 
   const findKeywordInSubcategory = (subcategory: Subcategory) => {
@@ -43,19 +44,25 @@ export function CategorySection({
             <SubcategoryButton
               name={subcategory.name}
               keywordCount={subcategory.keywords.length}
-              onClick={() => onDropdownToggle(subcategory.name)}
+              onClick={() => {
+                onDropdownToggle(subcategory.name);
+                setOpenDialog(subcategory.name);
+              }}
               isHighlighted={searchTerm && findKeywordInSubcategory(subcategory)}
             />
             
-            {activeDropdown === subcategory.name && (
-              <KeywordList
-                keywords={subcategory.keywords}
-                subcategoryName={subcategory.name}
-                searchTerm={searchTerm}
-                autoFillEnabled={autoFillEnabled}
-                onKeywordSelect={onKeywordSelect}
-              />
-            )}
+            <KeywordList
+              keywords={subcategory.keywords}
+              subcategoryName={subcategory.name}
+              searchTerm={searchTerm}
+              autoFillEnabled={autoFillEnabled}
+              onKeywordSelect={onKeywordSelect}
+              isOpen={openDialog === subcategory.name}
+              onClose={() => {
+                setOpenDialog(null);
+                onDropdownToggle(null);
+              }}
+            />
           </div>
         ))}
       </div>
