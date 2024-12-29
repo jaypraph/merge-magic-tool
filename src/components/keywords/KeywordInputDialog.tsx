@@ -51,19 +51,20 @@ export function KeywordInputDialog({ open, onOpenChange }: KeywordInputDialogPro
         <DialogHeader>
           <DialogTitle>Keyword Input</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
+        <div className="space-y-2 max-h-[60vh] overflow-y-auto">
           {keywords.map((keyword, index) => (
             <div key={index} className="flex items-center gap-2">
-              <span className="w-6 text-sm text-gray-500">{index + 1}.</span>
+              <span className="w-4 text-xs text-gray-500">{index + 1}.</span>
               <Input
                 value={keyword}
                 onChange={(e) => handleKeywordChange(index, e.target.value)}
                 placeholder={`Keyword ${index + 1}`}
                 maxLength={20}
+                className="text-sm"
               />
               <Button
                 onClick={() => handleDelete(index)}
-                className="rounded-full w-8 h-8 p-0 bg-black hover:bg-gray-800"
+                className="rounded-full w-6 h-6 p-0 bg-black hover:bg-gray-800 text-xs"
               >
                 D
               </Button>

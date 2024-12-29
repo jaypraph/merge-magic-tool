@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useToast } from "@/components/ui/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface KeywordListProps {
   keywords: string[];
@@ -7,6 +8,8 @@ interface KeywordListProps {
   searchTerm: string;
   autoFillEnabled?: boolean;
   onKeywordSelect?: (keyword: string) => void;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 export function KeywordList({ 
@@ -14,7 +17,9 @@ export function KeywordList({
   subcategoryName, 
   searchTerm,
   autoFillEnabled,
-  onKeywordSelect 
+  onKeywordSelect,
+  isOpen,
+  onClose
 }: KeywordListProps) {
   const [selectedKeyword, setSelectedKeyword] = useState<string | null>(null);
   const { toast } = useToast();
@@ -57,23 +62,29 @@ export function KeywordList({
   };
 
   return (
-    <div className="mt-2 p-4 bg-white border border-gray-200 rounded-lg shadow-lg">
-      <p className="font-semibold mb-2 text-black">{subcategoryName} Keywords:</p>
-      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-        {keywords.map((keyword) => (
-          <li
-            key={keyword}
-            onClick={() => handleKeywordClick(keyword)}
-            className={`px-3 py-2 rounded-md cursor-pointer transition-all duration-200
-                      ${selectedKeyword === keyword 
-                        ? 'bg-green-500 text-white' 
-                        : 'bg-gray-50 hover:bg-gray-100'
-                      }`}
-          >
-            {highlightSearchTerm(keyword)}
-          </li>
-        ))}
-      </ul>
-    </div>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-3xl">
+        <DialogHeader>
+          <DialogTitle>{subcategoryName} Keywords</DialogTitle>
+        </DialogHeader>
+        <div className="mt-2">
+          <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+            {keywords.map((keyword) => (
+              <li
+                key={keyword}
+                onClick={() => handleKeywordClick(keyword)}
+                className={`px-3 py-2 rounded-md cursor-pointer transition-all duration-200
+                          ${selectedKeyword === keyword 
+                            ? 'bg-green-500 text-white' 
+                            : 'bg-gray-50 hover:bg-gray-100'
+                          }`}
+              >
+                {highlightSearchTerm(keyword)}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

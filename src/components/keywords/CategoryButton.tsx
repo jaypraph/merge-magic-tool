@@ -10,11 +10,14 @@ interface CategoryButtonProps {
 }
 
 export function CategoryButton({ name, keywordCount, isActive, isHighlighted, onClick }: CategoryButtonProps) {
+  // Shorten specific category names
+  const displayName = name === "RED POPPIES WHITE DAISIES" ? "RED P. WHITE D." : name;
+
   return (
     <button
       onClick={onClick}
       className={cn(
-        "px-6 py-3 font-semibold rounded-lg transition-all duration-300 transform",
+        "px-4 py-2 font-semibold rounded-lg transition-all duration-300 transform text-sm",
         "hover:-translate-y-1 hover:scale-105",
         isActive 
           ? "bg-green-700 shadow-none scale-95 translate-y-0.5"
@@ -29,10 +32,10 @@ export function CategoryButton({ name, keywordCount, isActive, isHighlighted, on
       }}
     >
       <div className="flex items-center gap-2">
-        <span className="text-white relative z-10">{name}</span>
+        <span className="text-white relative z-10">{displayName}</span>
         <span 
-          className="bg-white inline-flex items-center justify-center h-5 min-w-5 px-1 
-                     rounded-full text-sm text-black relative z-10"
+          className="bg-white inline-flex items-center justify-center h-4 min-w-4 px-1 
+                     rounded-full text-xs text-black relative z-10"
         >
           {keywordCount}
         </span>
