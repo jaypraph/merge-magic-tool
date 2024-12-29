@@ -12,9 +12,18 @@ interface CategorySectionProps {
   activeDropdown: string | null;
   onDropdownToggle: (name: string) => void;
   searchTerm: string;
+  autoFillEnabled?: boolean;
+  onKeywordSelect?: (keyword: string) => void;
 }
 
-export function CategorySection({ subcategories, activeDropdown, onDropdownToggle, searchTerm }: CategorySectionProps) {
+export function CategorySection({ 
+  subcategories, 
+  activeDropdown, 
+  onDropdownToggle, 
+  searchTerm,
+  autoFillEnabled,
+  onKeywordSelect 
+}: CategorySectionProps) {
   const totalKeywords = subcategories.reduce((total, sub) => total + sub.keywords.length, 0);
 
   const findKeywordInSubcategory = (subcategory: Subcategory) => {
@@ -43,6 +52,8 @@ export function CategorySection({ subcategories, activeDropdown, onDropdownToggl
                 keywords={subcategory.keywords}
                 subcategoryName={subcategory.name}
                 searchTerm={searchTerm}
+                autoFillEnabled={autoFillEnabled}
+                onKeywordSelect={onKeywordSelect}
               />
             )}
           </div>

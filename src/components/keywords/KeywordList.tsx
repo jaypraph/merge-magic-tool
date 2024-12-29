@@ -5,9 +5,17 @@ interface KeywordListProps {
   keywords: string[];
   subcategoryName: string;
   searchTerm: string;
+  autoFillEnabled?: boolean;
+  onKeywordSelect?: (keyword: string) => void;
 }
 
-export function KeywordList({ keywords, subcategoryName, searchTerm }: KeywordListProps) {
+export function KeywordList({ 
+  keywords, 
+  subcategoryName, 
+  searchTerm,
+  autoFillEnabled,
+  onKeywordSelect 
+}: KeywordListProps) {
   const [selectedKeyword, setSelectedKeyword] = useState<string | null>(null);
   const { toast } = useToast();
 
@@ -15,10 +23,15 @@ export function KeywordList({ keywords, subcategoryName, searchTerm }: KeywordLi
     try {
       await navigator.clipboard.writeText(keyword);
       setSelectedKeyword(keyword);
-      toast({
-        description: "Keyword copied to clipboard!",
-        duration: 2000,
-      });
+      
+      if (autoFillEnabled && onKeywordSelect) {
+        onKeywordSelect(keyword);
+      } else {
+        toast({
+          description: "Keyword copied to clipboard!",
+          duration: 2000,
+        });
+      }
 
       setTimeout(() => {
         setSelectedKeyword(null);
@@ -53,7 +66,7 @@ export function KeywordList({ keywords, subcategoryName, searchTerm }: KeywordLi
             onClick={() => handleKeywordClick(keyword)}
             className={`px-3 py-2 rounded-md cursor-pointer transition-all duration-200
                       ${selectedKeyword === keyword 
-                        ? 'bg-blue-500 text-white' 
+                        ? 'bg-green-500 text-white' 
                         : 'bg-gray-50 hover:bg-gray-100'
                       }`}
           >
