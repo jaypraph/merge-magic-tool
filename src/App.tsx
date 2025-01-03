@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import Index from "./pages/Index";
+import { SlideshowEditor } from "./pages/SlideshowEditor";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/slideshow" element={<SlideshowEditor />} />
               <Route path="/:feature" element={<Index />} />
               {/* Catch all route - redirect to home */}
               <Route path="*" element={<Navigate to="/" replace />} />
