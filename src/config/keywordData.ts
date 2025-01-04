@@ -30,6 +30,7 @@ import { cannabisCategory } from './categories/cannabis';
 import { leavesCategory } from './categories/leaves';
 import { otherCategory } from './categories/other';
 import { memesCategory } from './categories/memes';
+import { addedCategory } from './categories/added';
 import type { Category, Subcategory } from './categories/types';
 
 export type { Category, Subcategory };
@@ -66,5 +67,6 @@ export const INITIAL_DATA: Category[] = [
   cannabisCategory,
   leavesCategory,
   memesCategory,
-  otherCategory
+  otherCategory,
+  addedCategory
 ];

@@ -6,11 +6,18 @@ interface CategoryButtonProps {
   keywordCount: number;
   isActive: boolean;
   isHighlighted?: boolean;
+  isAdded?: boolean;
   onClick: () => void;
 }
 
-export function CategoryButton({ name, keywordCount, isActive, isHighlighted, onClick }: CategoryButtonProps) {
-  // Shorten specific category names
+export function CategoryButton({ 
+  name, 
+  keywordCount, 
+  isActive, 
+  isHighlighted,
+  isAdded,
+  onClick 
+}: CategoryButtonProps) {
   const displayName = name === "RED POPPIES WHITE DAISIES" ? "RED P. WHITE D." : name;
 
   return (
@@ -20,9 +27,12 @@ export function CategoryButton({ name, keywordCount, isActive, isHighlighted, on
         "px-4 py-2 font-semibold rounded-lg transition-all duration-300 transform text-sm",
         "hover:-translate-y-1 hover:scale-105",
         isActive 
-          ? "bg-green-700 shadow-none scale-95 translate-y-0.5"
-          : "bg-green-500 hover:bg-green-600",
-        isHighlighted && "ring-4 ring-yellow-400"
+          ? "shadow-none scale-95 translate-y-0.5"
+          : "hover:bg-opacity-90",
+        isHighlighted && "ring-4 ring-yellow-400",
+        isAdded 
+          ? "bg-orange-500 hover:bg-orange-600" 
+          : "bg-green-500 hover:bg-green-600"
       )}
       style={{
         boxShadow: isActive 
