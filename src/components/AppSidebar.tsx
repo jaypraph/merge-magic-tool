@@ -8,7 +8,7 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { FileImage, Maximize2, Gauge, Wrench, Merge, Home, Database } from "lucide-react";
+import { FileImage, Maximize2, Gauge, Wrench, Merge, Home, Database, Presentation } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
@@ -28,6 +28,7 @@ export function AppSidebar({ activeFeature, onFeatureSelect }: AppSidebarProps) 
     { id: "wm", icon: Wrench, label: "WM" },
     { id: "mockup", icon: Merge, label: "M" },
     { id: "mockup2", icon: Merge, label: "MS" },
+    { id: "slideshow", icon: Presentation, label: "SL" },
   ];
 
   const handleItemClick = (feature: string) => {
@@ -36,7 +37,11 @@ export function AppSidebar({ activeFeature, onFeatureSelect }: AppSidebarProps) 
       navigate("/");
     } else {
       onFeatureSelect(feature);
-      navigate(`/${feature}`);
+      if (feature === "slideshow") {
+        navigate("/slideshow");
+      } else {
+        navigate(`/${feature}`);
+      }
     }
   };
 
