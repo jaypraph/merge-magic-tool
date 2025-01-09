@@ -19,6 +19,7 @@ interface TopControlsProps {
   onAddKeywords?: (keywords: string[]) => void;
   keywordCount: number;
   setKeywordCount: (count: number) => void;
+  onAllClick: () => void;
 }
 
 export function TopControls({
@@ -32,9 +33,9 @@ export function TopControls({
   onAddKeywords,
   keywordCount,
   setKeywordCount,
+  onAllClick,
 }: TopControlsProps) {
   const [isAddTagsOpen, setIsAddTagsOpen] = useState(false);
-  const [isAllKeywordsOpen, setIsAllKeywordsOpen] = useState(false);
   const [newKeywords, setNewKeywords] = useState('');
   const { toast } = useToast();
 
@@ -69,7 +70,7 @@ export function TopControls({
           
           {/* All Button */}
           <Button
-            onClick={() => setIsAllKeywordsOpen(true)}
+            onClick={onAllClick}
             className="w-6 h-6 rounded-full bg-blue-500 hover:bg-blue-600 transition-all duration-200 
                      shadow-[0_2px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[1px] hover:shadow-none p-0"
           >
@@ -94,7 +95,7 @@ export function TopControls({
                             0 0 30px hsl(144 100% 50% / 0.2)`,
                 border: '2px solid hsl(144 100% 50%)',
                 boxShadow: `0 0 10px hsl(144 100% 50% / 0.2),
-                           0 0 20px hsl(144 100% 50% / 0.1)`
+                           0 0 20px hsl(144 100% 50%)`
               }}
             >
               {totalKeywords}
