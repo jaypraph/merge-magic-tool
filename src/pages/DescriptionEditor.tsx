@@ -11,7 +11,11 @@ export function DescriptionEditor() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeFeature, setActiveFeature] = useState("dsc");
   const editableParts = ["Blue Fantasy Island", "Oil Painting", "Medieval City", "Japanese Art"];
-  const sentenceTemplate = `JPG file for | Tv Frame Art | Blue Fantasy Island, Oil Painting, Medieval City, Japanese Art. Designed specifically for the Samsung TV Frame with dimensions of 3840x2160 pixels; not intended for printing purposes.`;
+  const sentenceTemplate = `JPG file for | Tv Frame Art | Blue Fantasy Island, Oil Painting, Medieval City, Japanese Art. Designed specifically for the Samsung TV Frame with dimensions of 3840x2160 pixels; not intended for printing purposes.
+
+Download this painting specifically designed for TV Frame. This digital file, optimized for screen display, comes in a high-resolution JPG format with dimensions of 3840x2160 pixels, suitable for any 16:9 ratio displays. Please note that this file is intended for digital use only and is not suitable for physical printing. Keep in mind that colors may vary based on your screen display settings.
+
+Upon purchase, you'll receive an instant download link. No physical items will be shipped. To receive assistance in adding this file to your TV, please visit: https://www.samsung.com/us/support/answer/ANS00076727/`;
 
   const handleTextAreaChange = (index: number, value: string) => {
     const newTextAreas = [...textAreas];
