@@ -6,6 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
+import { AllKeywordsDialog } from './AllKeywordsDialog';
 
 interface TopControlsProps {
   searchTerm: string;
@@ -33,6 +34,7 @@ export function TopControls({
   setKeywordCount,
 }: TopControlsProps) {
   const [isAddTagsOpen, setIsAddTagsOpen] = useState(false);
+  const [isAllKeywordsOpen, setIsAllKeywordsOpen] = useState(false);
   const [newKeywords, setNewKeywords] = useState('');
   const { toast } = useToast();
 
@@ -55,14 +57,25 @@ export function TopControls({
   return (
     <div className="mb-8">
       <div className="flex justify-between items-center gap-4">
-        {/* 13 Button */}
-        <Button
-          onClick={onKeywordInputOpen}
-          className="w-6 h-6 rounded-full bg-blue-500 hover:bg-blue-600 transition-all duration-200 
-                   shadow-[0_2px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[1px] hover:shadow-none p-0"
-        >
-          <span className="text-xs text-white">13</span>
-        </Button>
+        <div className="flex gap-2">
+          {/* 13 Button */}
+          <Button
+            onClick={onKeywordInputOpen}
+            className="w-6 h-6 rounded-full bg-blue-500 hover:bg-blue-600 transition-all duration-200 
+                     shadow-[0_2px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[1px] hover:shadow-none p-0"
+          >
+            <span className="text-xs text-white">13</span>
+          </Button>
+          
+          {/* All Button */}
+          <Button
+            onClick={() => setIsAllKeywordsOpen(true)}
+            className="w-6 h-6 rounded-full bg-blue-500 hover:bg-blue-600 transition-all duration-200 
+                     shadow-[0_2px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[1px] hover:shadow-none p-0"
+          >
+            <span className="text-xs text-white">All</span>
+          </Button>
+        </div>
 
         {/* Counter and Controls */}
         <div className="flex items-center gap-4">
@@ -165,6 +178,12 @@ export function TopControls({
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* All Keywords Dialog */}
+      <AllKeywordsDialog
+        open={isAllKeywordsOpen}
+        onOpenChange={setIsAllKeywordsOpen}
+      />
     </div>
   );
 }
