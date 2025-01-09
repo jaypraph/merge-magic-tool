@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import Index from "./pages/Index";
 import { SlideshowEditor } from "./pages/SlideshowEditor";
+import { TitleEditor } from "./pages/TitleEditor";
+import { DescriptionEditor } from "./pages/DescriptionEditor";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +28,8 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/slideshow" element={<SlideshowEditor />} />
+              <Route path="/ttl" element={<TitleEditor />} />
+              <Route path="/dsc" element={<DescriptionEditor />} />
               <Route path="/:feature" element={<Index />} />
               {/* Catch all route - redirect to home */}
               <Route path="*" element={<Navigate to="/" replace />} />
