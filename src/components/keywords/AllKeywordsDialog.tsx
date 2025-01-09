@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { INITIAL_DATA } from '@/config/keywordData';
 import { SubcategoryButton } from './SubcategoryButton';
-import { KeywordList } from './KeywordList';
 
 interface AllKeywordsDialogProps {
   open: boolean;
@@ -37,14 +36,26 @@ export function AllKeywordsDialog({ open, onOpenChange }: AllKeywordsDialogProps
                   onClick={() => setActiveSubcategory(subcategory.name)}
                 />
                 
-                <KeywordList
-                  keywords={subcategory.keywords}
-                  subcategoryName={subcategory.name}
-                  searchTerm={searchTerm}
-                  autoFillEnabled={true}
-                  isOpen={activeSubcategory === subcategory.name}
-                  onClose={() => setActiveSubcategory(null)}
-                />
+                {activeSubcategory === subcategory.name && (
+                  <div className="mt-2 p-2 bg-white rounded-lg shadow-lg">
+                    <ul className="space-y-1">
+                      {subcategory.keywords.map((keyword) => (
+                        <li
+                          key={keyword}
+                          className="px-3 py-2 bg-gray-50 rounded-md text-sm text-black hover:bg-gray-100 cursor-pointer flex justify-between items-center group"
+                          onClick={() => {
+                            navigator.clipboard.writeText(keyword);
+                          }}
+                        >
+                          <span>{keyword}</span>
+                          <span className="text-xs text-gray-500 opacity-0 group-hover:opacity-100">
+                            Click to copy
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             ))}
           </div>
