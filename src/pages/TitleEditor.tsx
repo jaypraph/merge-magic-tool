@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { Download } from "lucide-react";
 
 export function TitleEditor() {
   const [textAreas, setTextAreas] = useState(["", "", "", ""]);
@@ -26,6 +27,20 @@ export function TitleEditor() {
   const handleClear = () => {
     setTextAreas(["", "", "", ""]);
     setOutput("");
+  };
+
+  const handleDownload = () => {
+    if (!output) return;
+    
+    const blob = new Blob([output], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "TITLE.txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -54,8 +69,14 @@ export function TitleEditor() {
           </div>
 
           {output && (
-            <div className="mt-6 p-4 bg-muted rounded-lg">
-              {output}
+            <div className="mt-6 space-y-4">
+              <div className="p-4 bg-muted rounded-lg">
+                {output}
+              </div>
+              <Button onClick={handleDownload} variant="outline">
+                <Download className="mr-2 h-4 w-4" />
+                Download Title
+              </Button>
             </div>
           )}
 
