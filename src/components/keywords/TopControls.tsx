@@ -37,6 +37,7 @@ export function TopControls({
 }: TopControlsProps) {
   const [isAddTagsOpen, setIsAddTagsOpen] = useState(false);
   const [newKeywords, setNewKeywords] = useState('');
+  const [isAllKeywordsOpen, setIsAllKeywordsOpen] = useState(false);
   const { toast } = useToast();
 
   const handleAddKeywords = () => {
