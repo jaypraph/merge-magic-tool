@@ -18,6 +18,7 @@ export function KeywordOrganizer() {
   const [autoFillEnabled, setAutoFillEnabled] = useState(false);
   const [selectedKeyword, setSelectedKeyword] = useState<string>('');
   const { toast } = useToast();
+  const [keywordCount, setKeywordCount] = useState(0);
 
   const primaryCategories = INITIAL_DATA.slice(0, 12);
   const secondaryCategories = INITIAL_DATA.slice(12);
@@ -70,9 +71,7 @@ export function KeywordOrganizer() {
   const handleKeywordSelect = (keyword: string) => {
     if (autoFillEnabled) {
       setSelectedKeyword(keyword);
-      if (!isKeywordInputOpen) {
-        setIsKeywordInputOpen(true);
-      }
+      setKeywordCount(prev => prev + 1);
     }
   };
 
@@ -93,6 +92,8 @@ export function KeywordOrganizer() {
             setSelectedKeyword('');
             setIsKeywordInputOpen(true);
           }}
+          keywordCount={keywordCount}
+          setKeywordCount={setKeywordCount}
         />
 
         {/* Main Layout */}

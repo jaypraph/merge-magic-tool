@@ -16,6 +16,8 @@ interface TopControlsProps {
   setAutoFillEnabled: (enabled: boolean) => void;
   onKeywordInputOpen: () => void;
   onAddKeywords?: (keywords: string[]) => void;
+  keywordCount: number;
+  setKeywordCount: (count: number) => void;
 }
 
 export function TopControls({
@@ -27,6 +29,8 @@ export function TopControls({
   setAutoFillEnabled,
   onKeywordInputOpen,
   onAddKeywords,
+  keywordCount,
+  setKeywordCount,
 }: TopControlsProps) {
   const [isAddTagsOpen, setIsAddTagsOpen] = useState(false);
   const [newKeywords, setNewKeywords] = useState('');
@@ -62,29 +66,51 @@ export function TopControls({
 
         {/* Counter and Controls */}
         <div className="flex items-center gap-4">
-          <Button
-            onClick={onKeywordInputOpen}
-            className="inline-flex items-center justify-center bg-black rounded-full 
-                     h-14 px-6 text-2xl font-bold transition-all duration-200
-                     shadow-[0_4px_6px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,150,0,0.1)]
-                     hover:shadow-none active:transform active:translate-y-1"
-            style={{
-              fontFamily: "'Digital-7 Mono', monospace",
-              color: 'hsl(144 100% 50%)',
-              textShadow: `0 0 10px hsl(144 100% 50% / 0.5),
-                          0 0 20px hsl(144 100% 50% / 0.3),
-                          0 0 30px hsl(144 100% 50% / 0.2)`,
-              border: '2px solid hsl(144 100% 50%)',
-              boxShadow: `0 0 10px hsl(144 100% 50% / 0.2),
-                         0 0 20px hsl(144 100% 50% / 0.1)`
-            }}
-          >
-            {totalKeywords}
-          </Button>
+          {!autoFillEnabled ? (
+            <Button
+              onClick={onKeywordInputOpen}
+              className="inline-flex items-center justify-center bg-black rounded-full 
+                       h-14 px-6 text-2xl font-bold transition-all duration-200
+                       shadow-[0_4px_6px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,150,0,0.1)]
+                       hover:shadow-none active:transform active:translate-y-1"
+              style={{
+                fontFamily: "'Digital-7 Mono', monospace",
+                color: 'hsl(144 100% 50%)',
+                textShadow: `0 0 10px hsl(144 100% 50% / 0.5),
+                            0 0 20px hsl(144 100% 50% / 0.3),
+                            0 0 30px hsl(144 100% 50% / 0.2)`,
+                border: '2px solid hsl(144 100% 50%)',
+                boxShadow: `0 0 10px hsl(144 100% 50% / 0.2),
+                           0 0 20px hsl(144 100% 50% / 0.1)`
+              }}
+            >
+              {totalKeywords}
+            </Button>
+          ) : (
+            <Button
+              onClick={onKeywordInputOpen}
+              className="inline-flex items-center justify-center bg-black rounded-full 
+                       h-14 px-6 text-2xl font-bold transition-all duration-200
+                       hover:shadow-none active:transform active:translate-y-1"
+              style={{
+                fontFamily: "'Digital-7 Mono', monospace",
+                color: 'hsl(144 100% 50%)',
+                textShadow: `0 0 10px hsl(144 100% 50% / 0.5)`,
+                border: '2px solid hsl(144 100% 50%)',
+              }}
+            >
+              {keywordCount}
+            </Button>
+          )}
           <div className="flex items-center gap-2">
             <Switch
               checked={autoFillEnabled}
-              onCheckedChange={setAutoFillEnabled}
+              onCheckedChange={(checked) => {
+                setAutoFillEnabled(checked);
+                if (!checked) {
+                  setKeywordCount(0);
+                }
+              }}
             />
             <span className="text-sm">AutoFill</span>
           </div>

@@ -26,21 +26,19 @@ export function KeywordList({
 
   const handleKeywordClick = async (keyword: string) => {
     try {
-      await navigator.clipboard.writeText(keyword);
-      setSelectedKeyword(keyword);
-      
       if (autoFillEnabled && onKeywordSelect) {
         onKeywordSelect(keyword);
       } else {
+        await navigator.clipboard.writeText(keyword);
+        setSelectedKeyword(keyword);
         toast({
           description: "Keyword copied to clipboard!",
           duration: 2000,
         });
+        setTimeout(() => {
+          setSelectedKeyword(null);
+        }, 2000);
       }
-
-      setTimeout(() => {
-        setSelectedKeyword(null);
-      }, 2000);
     } catch (err) {
       toast({
         variant: "destructive",
