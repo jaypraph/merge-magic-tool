@@ -31,8 +31,7 @@ const App = () => {
               <Route path="/ttl" element={<TitleEditor />} />
               <Route path="/dsc" element={<DescriptionEditor />} />
               <Route path="/:feature" element={<Index />} />
-              {/* Catch all route - redirect to home */}
-              <Route path="*" element={<Navigate to="/" replace />} />
+              <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </BrowserRouter>
         </div>
