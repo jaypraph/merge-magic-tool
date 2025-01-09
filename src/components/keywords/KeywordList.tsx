@@ -61,11 +61,11 @@ export function KeywordList({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="max-w-3xl max-h-[80vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle>{subcategoryName} Keywords</DialogTitle>
         </DialogHeader>
-        <div className="mt-2">
+        <div className="mt-2 overflow-y-auto max-h-[60vh] pr-2">
           <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
             {keywords.map((keyword) => (
               <li
