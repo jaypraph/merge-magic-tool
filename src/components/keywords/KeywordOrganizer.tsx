@@ -6,8 +6,6 @@ import { KeywordInputDialog } from './KeywordInputDialog';
 import { TopControls } from './TopControls';
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-import { SubcategoryButton } from './SubcategoryButton';
-import { KeywordList } from './KeywordList';
 
 export function KeywordOrganizer() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -21,8 +19,6 @@ export function KeywordOrganizer() {
   const [selectedKeyword, setSelectedKeyword] = useState<string>('');
   const { toast } = useToast();
   const [keywordCount, setKeywordCount] = useState(0);
-  const [showAllCategories, setShowAllCategories] = useState(false);
-  const [selectedSubcategory, setSelectedSubcategory] = useState<{name: string, keywords: string[]} | null>(null);
 
   const primaryCategories = INITIAL_DATA.slice(0, 12);
   const secondaryCategories = INITIAL_DATA.slice(12);
@@ -82,20 +78,6 @@ export function KeywordOrganizer() {
   const shouldHighlightPrimary = searchQuery && primaryCategories.some(findKeywordInCategory);
   const shouldHighlightSecondary = searchQuery && secondaryCategories.some(findKeywordInCategory);
 
-  // Flatten all subcategories for the "All" view
-  const allSubcategories = INITIAL_DATA.flatMap(category => 
-    category.subcategories.map(sub => ({
-      ...sub,
-      categoryName: category.name
-    }))
-  );
-
-  const handleAllButtonClick = () => {
-    setShowAllCategories(true);
-    setActiveCategory(null);
-    setActiveCategoryGroup(null);
-  };
-
   return (
     <div className="p-6 flex justify-center items-start">
       <div className="border-2 border-gray-300 rounded-lg p-4 w-full max-w-6xl">
@@ -112,7 +94,6 @@ export function KeywordOrganizer() {
           }}
           keywordCount={keywordCount}
           setKeywordCount={setKeywordCount}
-          onAllClick={handleAllButtonClick}
         />
 
         {/* Main Layout */}
@@ -146,28 +127,15 @@ export function KeywordOrganizer() {
 
           {/* Central Content Area */}
           <div className="border-2 border-gray-300 rounded-lg p-4">
-            {showAllCategories ? (
-              <div className="space-y-2">
-                {allSubcategories.map((subcategory) => (
-                  <SubcategoryButton
-                    key={`${subcategory.categoryName}-${subcategory.name}`}
-                    name={`${subcategory.categoryName} - ${subcategory.name}`}
-                    keywordCount={subcategory.keywords.length}
-                    onClick={() => setSelectedSubcategory(subcategory)}
-                  />
-                ))}
-              </div>
-            ) : (
-              activeCategoryData && (
-                <CategorySection
-                  subcategories={activeCategoryData.subcategories}
-                  activeDropdown={activeDropdown}
-                  onDropdownToggle={setActiveDropdown}
-                  searchTerm={searchQuery}
-                  autoFillEnabled={autoFillEnabled}
-                  onKeywordSelect={handleKeywordSelect}
-                />
-              )
+            {activeCategoryData && (
+              <CategorySection
+                subcategories={activeCategoryData.subcategories}
+                activeDropdown={activeDropdown}
+                onDropdownToggle={setActiveDropdown}
+                searchTerm={searchQuery}
+                autoFillEnabled={autoFillEnabled}
+                onKeywordSelect={handleKeywordSelect}
+              />
             )}
           </div>
 
@@ -205,19 +173,6 @@ export function KeywordOrganizer() {
           onOpenChange={setIsKeywordInputOpen}
           selectedKeyword={selectedKeyword}
         />
-
-        {/* Keywords List Dialog */}
-        {selectedSubcategory && (
-          <KeywordList
-            keywords={selectedSubcategory.keywords}
-            subcategoryName={selectedSubcategory.name}
-            searchTerm=""
-            autoFillEnabled={autoFillEnabled}
-            onKeywordSelect={handleKeywordSelect}
-            isOpen={!!selectedSubcategory}
-            onClose={() => setSelectedSubcategory(null)}
-          />
-        )}
       </div>
     </div>
   );
