@@ -1,5 +1,4 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { KeywordInputDialog } from "./keywords/KeywordInputDialog";
 
 interface TextFeaturesDialogProps {
   open: boolean;
@@ -9,10 +8,10 @@ interface TextFeaturesDialogProps {
 export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[90vw] h-[90vh] overflow-hidden">
-        <div className="flex justify-center p-4">
-          <div className="w-full max-w-md">
-            <KeywordInputDialog open={true} onOpenChange={() => {}} />
+      <DialogContent className="max-w-[90vw] h-[90vh]">
+        <div className="flex justify-center items-center h-full">
+          <div className="bg-background p-6 rounded-lg">
+            {/* Content will be added in next step */}
           </div>
         </div>
       </DialogContent>

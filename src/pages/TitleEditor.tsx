@@ -51,15 +51,14 @@ export function TitleEditor() {
           onFeatureSelect={setActiveFeature}
         />
         <div className="p-6 max-w-4xl mx-auto">
-          <div className="space-y-4">
+          <div className="space-y-2">
             {textAreas.map((text, index) => (
               <Textarea
                 key={index}
                 value={text}
                 onChange={(e) => handleTextAreaChange(index, e.target.value)}
                 placeholder=""
-                className="w-full text-sm"
-                style={{ width: '50ch', height: '10em' }}
+                className="min-h-[80px] text-sm"
               />
             ))}
           </div>
