@@ -58,7 +58,8 @@ export function TitleEditor() {
                 value={text}
                 onChange={(e) => handleTextAreaChange(index, e.target.value)}
                 placeholder=""
-                className="w-full"
+                className="w-full cols-50 rows-10"
+                style={{ width: '50ch', height: '10em' }}
               />
             ))}
           </div>
@@ -79,12 +80,6 @@ export function TitleEditor() {
               </Button>
             </div>
           )}
-
-          <div className="mt-6 text-sm">
-            <p>
-              "Blue Fantasy Island, Oil Painting, Medieval City, Japanese Art, Tv Frame Art, Television Picture Frame, Canvas, Samsung Frame Tv"
-            </p>
-          </div>
         </div>
       </div>
     </SidebarProvider>

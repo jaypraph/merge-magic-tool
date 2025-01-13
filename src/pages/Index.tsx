@@ -10,11 +10,14 @@ import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { TextFeaturesDialog } from "@/components/TextFeaturesDialog";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const [activeFeature, setActiveFeature] = useState("");
   const [uploadedImage, setUploadedImage] = useState<string>("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [textFeaturesOpen, setTextFeaturesOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -60,11 +63,17 @@ const Index = () => {
         />
         <main className="w-full bg-transparent">
           {!activeFeature && (
-            <div className="absolute top-0 left-0 w-full h-16 flex items-center justify-center pt-20 bg-transparent">
+            <div className="absolute top-0 left-0 w-full h-screen flex flex-col items-center justify-center bg-transparent">
               <ImageProcessor 
                 uploadedImage={uploadedImage}
                 onUploadClick={handleUploadClick}
               />
+              <Button
+                onClick={() => setTextFeaturesOpen(true)}
+                className="mt-8 w-12 h-12 rounded-full bg-blue-500 hover:bg-blue-600 transition-all duration-200 shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none text-white text-2xl font-light tracking-wider"
+              >
+                TXT
+              </Button>
             </div>
           )}
           <input
@@ -95,6 +104,10 @@ const Index = () => {
           </div>
         </main>
       </div>
+      <TextFeaturesDialog 
+        open={textFeaturesOpen}
+        onOpenChange={setTextFeaturesOpen}
+      />
     </SidebarProvider>
   );
 };
