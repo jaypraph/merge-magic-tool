@@ -58,7 +58,7 @@ export function TitleEditor() {
                 value={text}
                 onChange={(e) => handleTextAreaChange(index, e.target.value)}
                 placeholder=""
-                className="w-full cols-50 rows-10"
+                className="w-full text-sm"
                 style={{ width: '50ch', height: '10em' }}
               />
             ))}

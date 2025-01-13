@@ -10,6 +10,7 @@ export function DescriptionEditor() {
   const [output, setOutput] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeFeature, setActiveFeature] = useState("dsc");
+
   const editableParts = ["Blue Fantasy Island", "Oil Painting", "Medieval City", "Japanese Art"];
   const sentenceTemplate = `JPG file for | Tv Frame Art | Blue Fantasy Island, Oil Painting, Medieval City, Japanese Art. Designed specifically for the Samsung TV Frame with dimensions of 3840x2160 pixels; not intended for printing purposes.
 
@@ -70,7 +71,7 @@ Upon purchase, you'll receive an instant download link. No physical items will b
                 value={text}
                 onChange={(e) => handleTextAreaChange(index, e.target.value)}
                 placeholder=""
-                className="w-full"
+                className="w-full text-sm"
                 style={{ width: '50ch', height: '10em' }}
               />
             ))}
