@@ -19,6 +19,7 @@ interface TopControlsProps {
   onAddKeywords?: (keywords: string[]) => void;
   keywordCount: number;
   setKeywordCount: (count: number) => void;
+  onAllClick: () => void;
 }
 
 export function TopControls({
@@ -32,10 +33,12 @@ export function TopControls({
   onAddKeywords,
   keywordCount,
   setKeywordCount,
+  onAllClick,
 }: TopControlsProps) {
   const [isAddTagsOpen, setIsAddTagsOpen] = useState(false);
-  const [isAllKeywordsOpen, setIsAllKeywordsOpen] = useState(false);
   const [newKeywords, setNewKeywords] = useState('');
+  const [isAllKeywordsOpen, setIsAllKeywordsOpen] = useState(false);
+  const [isButtonPressed, setIsButtonPressed] = useState(false);
   const { toast } = useToast();
 
   const handleAddKeywords = () => {
@@ -67,14 +70,36 @@ export function TopControls({
             <span className="text-xs text-white">13</span>
           </Button>
           
-          {/* All Button */}
-          <Button
-            onClick={() => setIsAllKeywordsOpen(true)}
-            className="w-6 h-6 rounded-full bg-blue-500 hover:bg-blue-600 transition-all duration-200 
-                     shadow-[0_2px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[1px] hover:shadow-none p-0"
+          {/* All Button with new design */}
+          <button
+            onClick={() => {
+              setIsButtonPressed(true);
+              onAllClick();
+              setTimeout(() => setIsButtonPressed(false), 200);
+            }}
+            className="relative w-16 h-16 focus:outline-none"
+            style={{
+              background: `url('/lovable-uploads/d572e530-7426-42da-ac0c-7ed338126034.png')`,
+              backgroundSize: 'contain',
+              backgroundRepeat: 'no-repeat',
+              transition: 'background-image 0.2s ease-in-out'
+            }}
+            onMouseDown={() => {
+              const button = document.getElementById('all-button');
+              if (button) {
+                button.style.backgroundImage = "url('/lovable-uploads/721bf845-f080-4f04-ad6d-e5e5dd75466b.png')";
+              }
+            }}
+            onMouseUp={() => {
+              const button = document.getElementById('all-button');
+              if (button) {
+                button.style.backgroundImage = "url('/lovable-uploads/d572e530-7426-42da-ac0c-7ed338126034.png')";
+              }
+            }}
+            id="all-button"
           >
-            <span className="text-xs text-white">All</span>
-          </Button>
+            <span className="sr-only">All Keywords</span>
+          </button>
         </div>
 
         {/* Counter and Controls */}
@@ -94,7 +119,7 @@ export function TopControls({
                             0 0 30px hsl(144 100% 50% / 0.2)`,
                 border: '2px solid hsl(144 100% 50%)',
                 boxShadow: `0 0 10px hsl(144 100% 50% / 0.2),
-                           0 0 20px hsl(144 100% 50% / 0.1)`
+                           0 0 20px hsl(144 100% 50%)`
               }}
             >
               {totalKeywords}
