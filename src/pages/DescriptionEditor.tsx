@@ -77,7 +77,7 @@ Upon purchase, you'll receive an instant download link. No physical items will b
                 value={text}
                 onChange={(e) => handleTextAreaChange(index, e.target.value)}
                 placeholder=""
-                className="w-full"
+                className="w-50 h-10"
               />
             ))}
           </div>

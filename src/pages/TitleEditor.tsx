@@ -58,7 +58,7 @@ export function TitleEditor() {
                 value={text}
                 onChange={(e) => handleTextAreaChange(index, e.target.value)}
                 placeholder=""
-                className="w-full"
+                className="w-50 h-10"
               />
             ))}
           </div>
