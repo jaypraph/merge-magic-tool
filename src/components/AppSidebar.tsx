@@ -6,6 +6,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { FileImage, Maximize2, Gauge, Wrench, Merge, Home, Database, Type, FileText, Video } from "lucide-react";
 import { useNavigate } from "react-router-dom";
