@@ -12,6 +12,7 @@ export const VideoEditor = () => {
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [activeFeature, setActiveFeature] = useState("");
   const [isExporting, setIsExporting] = useState(false);
+  const [videoUrl, setVideoUrl] = useState<string>();
   const { createVideoFromImages } = useVideoCreation();
 
   const handleImageUpload = (value: string) => {
@@ -37,13 +38,16 @@ export const VideoEditor = () => {
     }
 
     setIsExporting(true);
+    setVideoUrl(undefined);
+    
     toast({
       title: "Export started",
       description: "Your video is being created. This may take a few seconds.",
     });
 
     try {
-      await createVideoFromImages(uploadedImages);
+      const url = await createVideoFromImages(uploadedImages);
+      setVideoUrl(url);
       toast({
         title: "Export complete",
         description: "Your video has been created successfully!",
@@ -87,6 +91,7 @@ export const VideoEditor = () => {
                 isExporting={isExporting}
                 onExport={handleExport}
                 imagesCount={uploadedImages.length}
+                videoUrl={videoUrl}
               />
             </div>
           </div>
