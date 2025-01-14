@@ -62,10 +62,10 @@ export const VideoEditor = () => {
       })
     );
 
-    // Duration for each image (2 minutes 30 seconds = 150000ms)
-    const imageDuration = 150000;
-    // Transition duration (1 second = 1000ms)
-    const transitionDuration = 1000;
+    // Duration for each image (2.5 seconds = 2500ms)
+    const imageDuration = 2500;
+    // Transition duration (0.5 seconds = 500ms)
+    const transitionDuration = 500;
     
     let startTime = performance.now();
     let currentImageIndex = 0;
@@ -95,8 +95,8 @@ export const VideoEditor = () => {
       drawImageCentered(ctx, currentImage, canvas.width, canvas.height);
 
       // Handle transition to next image
-      if (progress > 0.95 && nextImage) { // Start transition in last 5% of duration
-        const transitionProgress = (progress - 0.95) / 0.05;
+      if (progress > 0.8 && nextImage) { // Start transition in last 20% of duration
+        const transitionProgress = (progress - 0.8) / 0.2;
         ctx.globalAlpha = 1 - transitionProgress;
         drawImageCentered(ctx, currentImage, canvas.width, canvas.height);
         ctx.globalAlpha = transitionProgress;
@@ -154,7 +154,7 @@ export const VideoEditor = () => {
     setIsExporting(true);
     toast({
       title: "Export started",
-      description: "Your video is being created. This may take a few minutes.",
+      description: "Your video is being created. This may take a few seconds.",
     });
 
     try {
@@ -209,7 +209,7 @@ export const VideoEditor = () => {
                 <h2 className="font-semibold mb-2">Video Settings</h2>
                 <ul className="space-y-2 text-sm">
                   <li>• Resolution: 4K (3840x2160)</li>
-                  <li>• Duration per image: 2:30</li>
+                  <li>• Duration per image: 2.5 seconds</li>
                   <li>• Format: MP4</li>
                   <li>• Transition: Smooth fade</li>
                 </ul>
