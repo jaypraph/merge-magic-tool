@@ -6,9 +6,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { FileImage, Maximize2, Gauge, Wrench, Merge, Home, Database, Presentation, Type, FileText } from "lucide-react";
+import { FileImage, Maximize2, Gauge, Wrench, Merge, Home, Database, Type, FileText, Video } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
@@ -28,7 +27,7 @@ export function AppSidebar({ activeFeature, onFeatureSelect }: AppSidebarProps) 
     { id: "wm", icon: Wrench, label: "WM" },
     { id: "mockup", icon: Merge, label: "M" },
     { id: "mockup2", icon: Merge, label: "MS" },
-    { id: "slideshow", icon: Presentation, label: "SL" },
+    { id: "video", icon: Video, label: "VD" },
     { id: "ttl", icon: Type, label: "TTL" },
     { id: "dsc", icon: FileText, label: "DSC" },
   ];
@@ -39,8 +38,8 @@ export function AppSidebar({ activeFeature, onFeatureSelect }: AppSidebarProps) 
       navigate("/");
     } else {
       onFeatureSelect(feature);
-      if (feature === "slideshow") {
-        navigate("/slideshow");
+      if (feature === "video") {
+        navigate("/video");
       } else if (feature === "ttl") {
         navigate("/ttl");
       } else if (feature === "dsc") {

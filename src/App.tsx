@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import Index from "./pages/Index";
-import { SlideshowEditor } from "./pages/SlideshowEditor";
+import { VideoEditor } from "./pages/VideoEditor";
 import { TitleEditor } from "./pages/TitleEditor";
 import { DescriptionEditor } from "./pages/DescriptionEditor";
 
@@ -27,7 +27,7 @@ const App = () => {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/slideshow" element={<SlideshowEditor />} />
+              <Route path="/video" element={<VideoEditor />} />
               <Route path="/ttl" element={<TitleEditor />} />
               <Route path="/dsc" element={<DescriptionEditor />} />
               <Route path="/:feature" element={<Index />} />
