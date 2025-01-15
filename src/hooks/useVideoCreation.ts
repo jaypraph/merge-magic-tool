@@ -1,8 +1,12 @@
 import { useState } from 'react';
-import { toast } from "@/components/ui/use-toast";
+import { createMediaRecorder, drawImageCentered, loadImage } from '@/utils/videoUtils';
 
 export const useVideoCreation = () => {
+  const [isProcessing, setIsProcessing] = useState(false);
+
   const createVideoFromImages = async (images: string[]): Promise<string> => {
+    setIsProcessing(true);
+    
     return new Promise((resolve, reject) => {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
@@ -16,93 +20,63 @@ export const useVideoCreation = () => {
       mediaRecorder.onstop = () => {
         const blob = new Blob(chunks, { type: 'video/mp4' });
         const url = URL.createObjectURL(blob);
+        setIsProcessing(false);
         resolve(url);
       };
 
       mediaRecorder.start();
 
-      const loadedImages = Promise.all(
-        images.map(src => {
-          return new Promise<HTMLImageElement>((resolve) => {
-            const img = new Image();
-            img.onload = () => resolve(img);
-            img.src = src;
-          });
-        })
-      ).then(loadedImages => {
-        const imageDuration = 2500;
-        const transitionDuration = 500;
-        
-        let startTime = performance.now();
-        let currentImageIndex = 0;
+      Promise.all(images.map(loadImage))
+        .then(loadedImages => {
+          const imageDuration = 2500;
+          let startTime = performance.now();
+          let currentImageIndex = 0;
 
-        const animate = async () => {
-          const currentTime = performance.now();
-          const elapsed = currentTime - startTime;
-          
-          if (!ctx) return;
+          const animate = () => {
+            const currentTime = performance.now();
+            const elapsed = currentTime - startTime;
+            
+            if (!ctx) return;
 
-          ctx.fillStyle = 'black';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-          if (currentImageIndex >= loadedImages.length) {
-            mediaRecorder.stop();
-            return;
-          }
+            if (currentImageIndex >= loadedImages.length) {
+              mediaRecorder.stop();
+              return;
+            }
 
-          const currentImage = loadedImages[currentImageIndex];
-          const nextImage = loadedImages[currentImageIndex + 1];
+            const currentImage = loadedImages[currentImageIndex];
+            const nextImage = loadedImages[currentImageIndex + 1];
 
-          const progress = (elapsed % imageDuration) / imageDuration;
+            const progress = (elapsed % imageDuration) / imageDuration;
 
-          drawImageCentered(ctx, currentImage, canvas.width, canvas.height);
-
-          if (progress > 0.8 && nextImage) {
-            const transitionProgress = (progress - 0.8) / 0.2;
-            ctx.globalAlpha = 1 - transitionProgress;
             drawImageCentered(ctx, currentImage, canvas.width, canvas.height);
-            ctx.globalAlpha = transitionProgress;
-            drawImageCentered(ctx, nextImage, canvas.width, canvas.height);
-            ctx.globalAlpha = 1;
-          }
 
-          if (elapsed >= imageDuration) {
-            startTime = currentTime;
-            currentImageIndex++;
-          }
+            if (progress > 0.8 && nextImage) {
+              const transitionProgress = (progress - 0.8) / 0.2;
+              ctx.globalAlpha = 1 - transitionProgress;
+              drawImageCentered(ctx, currentImage, canvas.width, canvas.height);
+              ctx.globalAlpha = transitionProgress;
+              drawImageCentered(ctx, nextImage, canvas.width, canvas.height);
+              ctx.globalAlpha = 1;
+            }
 
-          if (currentImageIndex < loadedImages.length) {
-            requestAnimationFrame(animate);
-          }
-        };
+            if (elapsed >= imageDuration) {
+              startTime = currentTime;
+              currentImageIndex++;
+            }
 
-        animate();
-      }).catch(reject);
+            if (currentImageIndex < loadedImages.length) {
+              requestAnimationFrame(animate);
+            }
+          };
+
+          animate();
+        })
+        .catch(reject);
     });
   };
 
-  const createMediaRecorder = (canvas: HTMLCanvasElement) => {
-    const stream = canvas.captureStream(30);
-    return new MediaRecorder(stream, {
-      mimeType: 'video/webm;codecs=h264',
-      videoBitsPerSecond: 8000000
-    });
-  };
-
-  const drawImageCentered = (
-    ctx: CanvasRenderingContext2D,
-    img: HTMLImageElement,
-    canvasWidth: number,
-    canvasHeight: number
-  ) => {
-    const scale = Math.min(
-      canvasWidth / img.width,
-      canvasHeight / img.height
-    );
-    const x = (canvasWidth - img.width * scale) / 2;
-    const y = (canvasHeight - img.height * scale) / 2;
-    ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-  };
-
-  return { createVideoFromImages };
+  return { createVideoFromImages, isProcessing };
 };
