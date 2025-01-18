@@ -50,7 +50,7 @@ export function TitleEditor() {
           activeFeature={activeFeature}
           onFeatureSelect={setActiveFeature}
         />
-        <div className="p-6 max-w-4xl mx-auto">
+        <div className="p-4 max-w-[90%] mx-auto">
           <div className="space-y-2">
             {textAreas.map((text, index) => (
               <Textarea
@@ -58,7 +58,7 @@ export function TitleEditor() {
                 value={text}
                 onChange={(e) => handleTextAreaChange(index, e.target.value)}
                 placeholder=""
-                className="min-h-[80px] text-sm"
+                className="text-sm h-[38px] min-h-[38px] resize-none py-2 px-3"
               />
             ))}
           </div>
