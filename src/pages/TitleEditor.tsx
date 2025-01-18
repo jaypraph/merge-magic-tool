@@ -58,7 +58,7 @@ export function TitleEditor() {
                 value={text}
                 onChange={(e) => handleTextAreaChange(index, e.target.value)}
                 placeholder=""
-                className="text-sm w-[400px] h-[50px] min-h-[50px] resize-none py-2 px-3"
+                className="text-sm w-[200px] h-[50px] min-h-[50px] resize-none py-2 px-3"
               />
             ))}
           </div>
