@@ -57,7 +57,21 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
           <div className="grid grid-cols-3 gap-4 p-4">
             {/* Keywords Block */}
             <div className="flex flex-col h-full border rounded-lg overflow-hidden">
-              <h2 className="p-4 text-lg font-semibold bg-gray-50 border-b">Keywords</h2>
+              <div className="p-4 bg-gray-50 border-b flex items-center justify-between">
+                <h2 className="text-lg font-semibold">Keywords</h2>
+                <Button 
+                  onClick={() => {
+                    setKeywordsLocked(!keywordsLocked);
+                    toast({
+                      description: keywordsLocked ? "Keywords unlocked" : "Keywords locked",
+                    });
+                  }}
+                  variant={keywordsLocked ? "destructive" : "default"}
+                  size="sm"
+                >
+                  {keywordsLocked ? <Unlock className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
+                </Button>
+              </div>
               <ScrollArea className="flex-1 p-4">
                 <div className="space-y-2">
                   {keywords.map((keyword, index) => (
@@ -74,26 +88,25 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
                   ))}
                 </div>
               </ScrollArea>
-              <div className="p-4 border-t mt-auto">
-                <Button 
-                  onClick={() => {
-                    setKeywordsLocked(!keywordsLocked);
-                    toast({
-                      description: keywordsLocked ? "Keywords unlocked" : "Keywords locked",
-                    });
-                  }}
-                  variant={keywordsLocked ? "destructive" : "default"}
-                  className="w-full"
-                >
-                  {keywordsLocked ? <Unlock className="mr-2" /> : <Lock className="mr-2" />}
-                  {keywordsLocked ? "Unlock" : "Lock"}
-                </Button>
-              </div>
             </div>
 
             {/* Title Block */}
             <div className="flex flex-col h-full border rounded-lg overflow-hidden">
-              <h2 className="p-4 text-lg font-semibold bg-gray-50 border-b">Title</h2>
+              <div className="p-4 bg-gray-50 border-b flex items-center justify-between">
+                <h2 className="text-lg font-semibold">Title</h2>
+                <Button 
+                  onClick={() => {
+                    setTitlesLocked(!titlesLocked);
+                    toast({
+                      description: titlesLocked ? "Titles unlocked" : "Titles locked",
+                    });
+                  }}
+                  variant={titlesLocked ? "destructive" : "default"}
+                  size="sm"
+                >
+                  {titlesLocked ? <Unlock className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
+                </Button>
+              </div>
               <ScrollArea className="flex-1 p-4">
                 <div className="space-y-2">
                   {titleAreas.map((text, index) => (
@@ -108,26 +121,25 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
                   ))}
                 </div>
               </ScrollArea>
-              <div className="p-4 border-t mt-auto">
-                <Button 
-                  onClick={() => {
-                    setTitlesLocked(!titlesLocked);
-                    toast({
-                      description: titlesLocked ? "Titles unlocked" : "Titles locked",
-                    });
-                  }}
-                  variant={titlesLocked ? "destructive" : "default"}
-                  className="w-full"
-                >
-                  {titlesLocked ? <Unlock className="mr-2" /> : <Lock className="mr-2" />}
-                  {titlesLocked ? "Unlock" : "Lock"}
-                </Button>
-              </div>
             </div>
 
             {/* Description Block */}
             <div className="flex flex-col h-full border rounded-lg overflow-hidden">
-              <h2 className="p-4 text-lg font-semibold bg-gray-50 border-b">Description</h2>
+              <div className="p-4 bg-gray-50 border-b flex items-center justify-between">
+                <h2 className="text-lg font-semibold">Description</h2>
+                <Button 
+                  onClick={() => {
+                    setDescriptionsLocked(!descriptionsLocked);
+                    toast({
+                      description: descriptionsLocked ? "Descriptions unlocked" : "Descriptions locked",
+                    });
+                  }}
+                  variant={descriptionsLocked ? "destructive" : "default"}
+                  size="sm"
+                >
+                  {descriptionsLocked ? <Unlock className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
+                </Button>
+              </div>
               <ScrollArea className="flex-1 p-4">
                 <div className="space-y-2">
                   {descriptionAreas.map((text, index) => (
@@ -142,21 +154,6 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
                   ))}
                 </div>
               </ScrollArea>
-              <div className="p-4 border-t mt-auto">
-                <Button 
-                  onClick={() => {
-                    setDescriptionsLocked(!descriptionsLocked);
-                    toast({
-                      description: descriptionsLocked ? "Descriptions unlocked" : "Descriptions locked",
-                    });
-                  }}
-                  variant={descriptionsLocked ? "destructive" : "default"}
-                  className="w-full"
-                >
-                  {descriptionsLocked ? <Unlock className="mr-2" /> : <Lock className="mr-2" />}
-                  {descriptionsLocked ? "Unlock" : "Lock"}
-                </Button>
-              </div>
             </div>
           </div>
         </ScrollArea>
