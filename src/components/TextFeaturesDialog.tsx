@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface TextFeaturesDialogProps {
   open: boolean;
@@ -54,7 +55,7 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
           {/* Block 1 - Keywords */}
           <div className="flex flex-col h-full">
             <h2 className="p-4 text-lg font-semibold border-b border-gray-200 bg-gray-50">Keywords</h2>
-            <div className="flex-1 p-4 overflow-y-auto">
+            <ScrollArea className="flex-1 p-4">
               <div className="space-y-2">
                 {keywords.map((keyword, index) => (
                   <div key={index} className="flex items-center gap-2">
@@ -69,7 +70,7 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
                   </div>
                 ))}
               </div>
-            </div>
+            </ScrollArea>
             <div className="p-4 border-t border-gray-200">
               <Button 
                 onClick={() => {
@@ -89,7 +90,7 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
           {/* Block 2 - Title */}
           <div className="flex flex-col h-full">
             <h2 className="p-4 text-lg font-semibold border-b border-gray-200 bg-gray-50">Title</h2>
-            <div className="flex-1 p-4 overflow-y-auto">
+            <ScrollArea className="flex-1 p-4">
               <div className="space-y-2">
                 {titleAreas.map((text, index) => (
                   <Textarea
@@ -102,7 +103,7 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
                   />
                 ))}
               </div>
-            </div>
+            </ScrollArea>
             <div className="p-4 border-t border-gray-200">
               <Button 
                 onClick={() => {
@@ -122,7 +123,7 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
           {/* Block 3 - Description */}
           <div className="flex flex-col h-full">
             <h2 className="p-4 text-lg font-semibold border-b border-gray-200 bg-gray-50">Description</h2>
-            <div className="flex-1 p-4 overflow-y-auto">
+            <ScrollArea className="flex-1 p-4">
               <div className="space-y-2">
                 {descriptionAreas.map((text, index) => (
                   <Textarea
@@ -135,7 +136,7 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
                   />
                 ))}
               </div>
-            </div>
+            </ScrollArea>
             <div className="p-4 border-t border-gray-200">
               <Button 
                 onClick={() => {
