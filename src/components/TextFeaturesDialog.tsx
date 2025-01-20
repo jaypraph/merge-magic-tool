@@ -51,113 +51,115 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[90vw] h-[90vh]">
+      <DialogContent className="max-w-[90vw] h-[90vh] overflow-hidden">
         <DialogTitle className="sr-only">Text Features</DialogTitle>
-        <div className="grid grid-cols-3 h-full gap-4">
-          {/* Keywords Block */}
-          <div className="flex flex-col h-full border rounded-lg overflow-hidden">
-            <h2 className="p-4 text-lg font-semibold bg-gray-50 border-b">Keywords</h2>
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-2">
-                {keywords.map((keyword, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <span className="w-4 text-xs text-gray-500">{index + 1}.</span>
+        <ScrollArea className="h-full pr-4" style={{ scrollbarGutter: 'stable' }}>
+          <div className="grid grid-cols-3 gap-4 p-4">
+            {/* Keywords Block */}
+            <div className="flex flex-col h-full border rounded-lg overflow-hidden">
+              <h2 className="p-4 text-lg font-semibold bg-gray-50 border-b">Keywords</h2>
+              <ScrollArea className="flex-1 p-4">
+                <div className="space-y-2">
+                  {keywords.map((keyword, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <span className="w-4 text-xs text-gray-500">{index + 1}.</span>
+                      <Textarea
+                        value={keyword}
+                        onChange={(e) => handleKeywordChange(index, e.target.value)}
+                        placeholder=""
+                        className="w-[200px] h-[50px] min-h-[50px] resize-none"
+                        disabled={keywordsLocked}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+              <div className="p-4 border-t mt-auto">
+                <Button 
+                  onClick={() => {
+                    setKeywordsLocked(!keywordsLocked);
+                    toast({
+                      description: keywordsLocked ? "Keywords unlocked" : "Keywords locked",
+                    });
+                  }}
+                  variant={keywordsLocked ? "destructive" : "default"}
+                  className="w-full"
+                >
+                  {keywordsLocked ? <Unlock className="mr-2" /> : <Lock className="mr-2" />}
+                  {keywordsLocked ? "Unlock" : "Lock"}
+                </Button>
+              </div>
+            </div>
+
+            {/* Title Block */}
+            <div className="flex flex-col h-full border rounded-lg overflow-hidden">
+              <h2 className="p-4 text-lg font-semibold bg-gray-50 border-b">Title</h2>
+              <ScrollArea className="flex-1 p-4">
+                <div className="space-y-2">
+                  {titleAreas.map((text, index) => (
                     <Textarea
-                      value={keyword}
-                      onChange={(e) => handleKeywordChange(index, e.target.value)}
+                      key={index}
+                      value={text}
+                      onChange={(e) => handleTitleChange(index, e.target.value)}
                       placeholder=""
                       className="w-[200px] h-[50px] min-h-[50px] resize-none"
-                      disabled={keywordsLocked}
+                      disabled={titlesLocked}
                     />
-                  </div>
-                ))}
+                  ))}
+                </div>
+              </ScrollArea>
+              <div className="p-4 border-t mt-auto">
+                <Button 
+                  onClick={() => {
+                    setTitlesLocked(!titlesLocked);
+                    toast({
+                      description: titlesLocked ? "Titles unlocked" : "Titles locked",
+                    });
+                  }}
+                  variant={titlesLocked ? "destructive" : "default"}
+                  className="w-full"
+                >
+                  {titlesLocked ? <Unlock className="mr-2" /> : <Lock className="mr-2" />}
+                  {titlesLocked ? "Unlock" : "Lock"}
+                </Button>
               </div>
-            </ScrollArea>
-            <div className="p-4 border-t mt-auto">
-              <Button 
-                onClick={() => {
-                  setKeywordsLocked(!keywordsLocked);
-                  toast({
-                    description: keywordsLocked ? "Keywords unlocked" : "Keywords locked",
-                  });
-                }}
-                variant={keywordsLocked ? "destructive" : "default"}
-                className="w-full"
-              >
-                {keywordsLocked ? <Unlock className="mr-2" /> : <Lock className="mr-2" />}
-                {keywordsLocked ? "Unlock" : "Lock"}
-              </Button>
             </div>
-          </div>
 
-          {/* Title Block */}
-          <div className="flex flex-col h-full border rounded-lg overflow-hidden">
-            <h2 className="p-4 text-lg font-semibold bg-gray-50 border-b">Title</h2>
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-2">
-                {titleAreas.map((text, index) => (
-                  <Textarea
-                    key={index}
-                    value={text}
-                    onChange={(e) => handleTitleChange(index, e.target.value)}
-                    placeholder=""
-                    className="w-[200px] h-[50px] min-h-[50px] resize-none"
-                    disabled={titlesLocked}
-                  />
-                ))}
+            {/* Description Block */}
+            <div className="flex flex-col h-full border rounded-lg overflow-hidden">
+              <h2 className="p-4 text-lg font-semibold bg-gray-50 border-b">Description</h2>
+              <ScrollArea className="flex-1 p-4">
+                <div className="space-y-2">
+                  {descriptionAreas.map((text, index) => (
+                    <Textarea
+                      key={index}
+                      value={text}
+                      onChange={(e) => handleDescriptionChange(index, e.target.value)}
+                      placeholder=""
+                      className="w-[200px] h-[50px] min-h-[50px] resize-none"
+                      disabled={descriptionsLocked}
+                    />
+                  ))}
+                </div>
+              </ScrollArea>
+              <div className="p-4 border-t mt-auto">
+                <Button 
+                  onClick={() => {
+                    setDescriptionsLocked(!descriptionsLocked);
+                    toast({
+                      description: descriptionsLocked ? "Descriptions unlocked" : "Descriptions locked",
+                    });
+                  }}
+                  variant={descriptionsLocked ? "destructive" : "default"}
+                  className="w-full"
+                >
+                  {descriptionsLocked ? <Unlock className="mr-2" /> : <Lock className="mr-2" />}
+                  {descriptionsLocked ? "Unlock" : "Lock"}
+                </Button>
               </div>
-            </ScrollArea>
-            <div className="p-4 border-t mt-auto">
-              <Button 
-                onClick={() => {
-                  setTitlesLocked(!titlesLocked);
-                  toast({
-                    description: titlesLocked ? "Titles unlocked" : "Titles locked",
-                  });
-                }}
-                variant={titlesLocked ? "destructive" : "default"}
-                className="w-full"
-              >
-                {titlesLocked ? <Unlock className="mr-2" /> : <Lock className="mr-2" />}
-                {titlesLocked ? "Unlock" : "Lock"}
-              </Button>
             </div>
           </div>
-
-          {/* Description Block */}
-          <div className="flex flex-col h-full border rounded-lg overflow-hidden">
-            <h2 className="p-4 text-lg font-semibold bg-gray-50 border-b">Description</h2>
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-2">
-                {descriptionAreas.map((text, index) => (
-                  <Textarea
-                    key={index}
-                    value={text}
-                    onChange={(e) => handleDescriptionChange(index, e.target.value)}
-                    placeholder=""
-                    className="w-[200px] h-[50px] min-h-[50px] resize-none"
-                    disabled={descriptionsLocked}
-                  />
-                ))}
-              </div>
-            </ScrollArea>
-            <div className="p-4 border-t mt-auto">
-              <Button 
-                onClick={() => {
-                  setDescriptionsLocked(!descriptionsLocked);
-                  toast({
-                    description: descriptionsLocked ? "Descriptions unlocked" : "Descriptions locked",
-                  });
-                }}
-                variant={descriptionsLocked ? "destructive" : "default"}
-                className="w-full"
-              >
-                {descriptionsLocked ? <Unlock className="mr-2" /> : <Lock className="mr-2" />}
-                {descriptionsLocked ? "Unlock" : "Lock"}
-              </Button>
-            </div>
-          </div>
-        </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
