@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
+import { Lock, Unlock } from "lucide-react";
 
 interface KeywordInputDialogProps {
   open: boolean;
@@ -14,10 +15,11 @@ interface KeywordInputDialogProps {
 export function KeywordInputDialog({ open, onOpenChange, selectedKeyword }: KeywordInputDialogProps) {
   const [keywords, setKeywords] = useState<string[]>(Array(13).fill(''));
   const [bulkKeywords, setBulkKeywords] = useState('');
+  const [isLocked, setIsLocked] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    if (selectedKeyword) {
+    if (selectedKeyword && !isLocked) {
       const emptyIndex = keywords.findIndex(k => k === '');
       if (emptyIndex !== -1) {
         const newKeywords = [...keywords];
@@ -26,7 +28,7 @@ export function KeywordInputDialog({ open, onOpenChange, selectedKeyword }: Keyw
         showKeywordCounter(emptyIndex + 1);
       }
     }
-  }, [selectedKeyword]);
+  }, [selectedKeyword, isLocked]);
 
   const showKeywordCounter = (number: number) => {
     const cursor = document.createElement('div');
@@ -56,6 +58,7 @@ export function KeywordInputDialog({ open, onOpenChange, selectedKeyword }: Keyw
   };
 
   const handleKeywordChange = (index: number, value: string) => {
+    if (isLocked) return;
     if (value.length <= 20) {
       const newKeywords = [...keywords];
       newKeywords[index] = value;
@@ -64,6 +67,7 @@ export function KeywordInputDialog({ open, onOpenChange, selectedKeyword }: Keyw
   };
 
   const handleDelete = (index: number) => {
+    if (isLocked) return;
     const newKeywords = [...keywords];
     newKeywords[index] = '';
     setKeywords(newKeywords);
@@ -76,6 +80,7 @@ export function KeywordInputDialog({ open, onOpenChange, selectedKeyword }: Keyw
   };
 
   const handleClearAll = () => {
+    if (isLocked) return;
     setKeywords(Array(13).fill(''));
     setBulkKeywords('');
     toast({
@@ -103,6 +108,7 @@ export function KeywordInputDialog({ open, onOpenChange, selectedKeyword }: Keyw
   };
 
   const handleFill13 = () => {
+    if (isLocked) return;
     const keywordArray = bulkKeywords
       .split(',')
       .map(k => k.trim())
@@ -134,13 +140,28 @@ export function KeywordInputDialog({ open, onOpenChange, selectedKeyword }: Keyw
       <DialogContent className="max-w-md">
         <DialogHeader className="flex flex-row items-center justify-between">
           <DialogTitle>Keyword Input</DialogTitle>
-          <Button 
-            variant="destructive" 
-            size="sm"
-            onClick={handleClearAll}
-          >
-            Clear All
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button 
+              onClick={() => {
+                setIsLocked(!isLocked);
+                toast({
+                  description: isLocked ? "Keywords unlocked" : "Keywords locked",
+                });
+              }}
+              variant={isLocked ? "destructive" : "default"}
+              size="sm"
+            >
+              {isLocked ? <Unlock className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
+            </Button>
+            <Button 
+              variant="destructive" 
+              size="sm"
+              onClick={handleClearAll}
+              disabled={isLocked}
+            >
+              Clear All
+            </Button>
+          </div>
         </DialogHeader>
         <DialogDescription>
           Enter up to 13 keywords below
@@ -155,10 +176,12 @@ export function KeywordInputDialog({ open, onOpenChange, selectedKeyword }: Keyw
                 placeholder={`Keyword ${index + 1}`}
                 maxLength={20}
                 className="text-sm"
+                disabled={isLocked}
               />
               <Button
                 onClick={() => handleDelete(index)}
                 className="rounded-full w-6 h-6 p-0 bg-black hover:bg-gray-800 text-xs"
+                disabled={isLocked}
               >
                 D
               </Button>
@@ -171,11 +194,13 @@ export function KeywordInputDialog({ open, onOpenChange, selectedKeyword }: Keyw
               onChange={(e) => setBulkKeywords(e.target.value)}
               placeholder="Paste up to 13 keywords, separated by commas"
               className="min-h-[80px]"
+              disabled={isLocked}
             />
             <div className="flex justify-between gap-2">
               <Button
                 onClick={handleFill13}
                 className="flex-1 bg-blue-500 hover:bg-blue-600"
+                disabled={isLocked}
               >
                 FILL13
               </Button>
