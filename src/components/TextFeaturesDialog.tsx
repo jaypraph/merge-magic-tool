@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Lock, Unlock } from "lucide-react";
 import { keywordTransferEvent } from "./keywords/KeywordInputDialog";
+import { titleTransferEvent } from "./title/TitleInputDialog";
 
 interface TextFeaturesDialogProps {
   open: boolean;
@@ -63,9 +64,24 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
       setKeywords(newKeywords);
     };
 
+    const handleTitleTransfer = (event: Event) => {
+      const customEvent = event as CustomEvent<{ titles: string[] }>;
+      const transferredTitles = customEvent.detail.titles;
+      const newTitles = Array(4).fill('');
+      transferredTitles.forEach((title, index) => {
+        if (index < 4) {
+          newTitles[index] = title;
+        }
+      });
+      setTitleAreas(newTitles);
+    };
+
     document.addEventListener('transferKeywords', handleKeywordTransfer);
+    document.addEventListener('transferTitles', handleTitleTransfer);
+    
     return () => {
       document.removeEventListener('transferKeywords', handleKeywordTransfer);
+      document.removeEventListener('transferTitles', handleTitleTransfer);
     };
   }, []);
 
