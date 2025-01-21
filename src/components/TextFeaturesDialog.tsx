@@ -1,10 +1,11 @@
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Lock, Unlock } from "lucide-react";
+import { keywordTransferEvent } from "./keywords/KeywordInputDialog";
 
 interface TextFeaturesDialogProps {
   open: boolean;
@@ -48,6 +49,25 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
     newDescriptions[index] = value;
     setDescriptionAreas(newDescriptions);
   };
+
+  useEffect(() => {
+    const handleKeywordTransfer = (event: Event) => {
+      const customEvent = event as CustomEvent<{ keywords: string[] }>;
+      const transferredKeywords = customEvent.detail.keywords;
+      const newKeywords = Array(13).fill('');
+      transferredKeywords.forEach((keyword, index) => {
+        if (index < 13) {
+          newKeywords[index] = keyword;
+        }
+      });
+      setKeywords(newKeywords);
+    };
+
+    document.addEventListener('transferKeywords', handleKeywordTransfer);
+    return () => {
+      document.removeEventListener('transferKeywords', handleKeywordTransfer);
+    };
+  }, []);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

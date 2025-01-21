@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Lock, Unlock } from "lucide-react";
 
 interface KeywordInputDialogProps {
@@ -12,23 +12,16 @@ interface KeywordInputDialogProps {
   selectedKeyword?: string;
 }
 
+// Create a global event for keyword transfer
+export const keywordTransferEvent = new CustomEvent('transferKeywords', {
+  detail: { keywords: [] as string[] }
+}) as CustomEvent<{ keywords: string[] }>;
+
 export function KeywordInputDialog({ open, onOpenChange, selectedKeyword }: KeywordInputDialogProps) {
   const [keywords, setKeywords] = useState<string[]>(Array(13).fill(''));
   const [bulkKeywords, setBulkKeywords] = useState('');
   const [isLocked, setIsLocked] = useState(false);
   const { toast } = useToast();
-
-  useEffect(() => {
-    if (selectedKeyword && !isLocked) {
-      const emptyIndex = keywords.findIndex(k => k === '');
-      if (emptyIndex !== -1) {
-        const newKeywords = [...keywords];
-        newKeywords[emptyIndex] = selectedKeyword;
-        setKeywords(newKeywords);
-        showKeywordCounter(emptyIndex + 1);
-      }
-    }
-  }, [selectedKeyword, isLocked]);
 
   const showKeywordCounter = (number: number) => {
     const cursor = document.createElement('div');
@@ -72,7 +65,6 @@ export function KeywordInputDialog({ open, onOpenChange, selectedKeyword }: Keyw
     newKeywords[index] = '';
     setKeywords(newKeywords);
     
-    // Update counter for remaining keywords
     const filledCount = newKeywords.filter(k => k !== '').length;
     if (filledCount > 0) {
       showKeywordCounter(filledCount);
@@ -135,6 +127,27 @@ export function KeywordInputDialog({ open, onOpenChange, selectedKeyword }: Keyw
     });
   };
 
+  useEffect(() => {
+    if (selectedKeyword && !isLocked) {
+      const emptyIndex = keywords.findIndex(k => k === '');
+      if (emptyIndex !== -1) {
+        const newKeywords = [...keywords];
+        newKeywords[emptyIndex] = selectedKeyword;
+        setKeywords(newKeywords);
+        showKeywordCounter(emptyIndex + 1);
+      }
+    }
+  }, [selectedKeyword, isLocked]);
+
+  const transferKeywords = () => {
+    const nonEmptyKeywords = keywords.filter(k => k.trim() !== '');
+    keywordTransferEvent.detail.keywords = nonEmptyKeywords;
+    document.dispatchEvent(keywordTransferEvent);
+    toast({
+      description: "Keywords transferred to Text Features!",
+    });
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
@@ -144,6 +157,9 @@ export function KeywordInputDialog({ open, onOpenChange, selectedKeyword }: Keyw
             <Button 
               onClick={() => {
                 setIsLocked(!isLocked);
+                if (!isLocked) {
+                  transferKeywords();
+                }
                 toast({
                   description: isLocked ? "Keywords unlocked" : "Keywords locked",
                 });
