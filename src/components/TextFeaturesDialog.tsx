@@ -14,9 +14,15 @@ interface TextFeaturesDialogProps {
 }
 
 export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogProps) {
-  // Keywords state
-  const [keywords, setKeywords] = useState<string[]>(Array(13).fill(''));
-  const [keywordsLocked, setKeywordsLocked] = useState(false);
+  // Keywords state with localStorage persistence
+  const [keywords, setKeywords] = useState<string[]>(() => {
+    const savedKeywords = localStorage.getItem('textFeatures.keywords');
+    return savedKeywords ? JSON.parse(savedKeywords) : Array(13).fill('');
+  });
+  
+  const [keywordsLocked, setKeywordsLocked] = useState(() => {
+    return localStorage.getItem('textFeatures.keywordsLocked') === 'true';
+  });
   
   // Title state
   const [titleAreas, setTitleAreas] = useState<string[]>(Array(4).fill(''));
@@ -27,6 +33,15 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
   const [descriptionsLocked, setDescriptionsLocked] = useState(false);
   
   const { toast } = useToast();
+
+  // Persist keywords and lock state to localStorage
+  useEffect(() => {
+    localStorage.setItem('textFeatures.keywords', JSON.stringify(keywords));
+  }, [keywords]);
+
+  useEffect(() => {
+    localStorage.setItem('textFeatures.keywordsLocked', keywordsLocked.toString());
+  }, [keywordsLocked]);
 
   const handleKeywordChange = (index: number, value: string) => {
     if (keywordsLocked) return;
