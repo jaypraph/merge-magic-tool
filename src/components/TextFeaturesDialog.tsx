@@ -106,8 +106,6 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
         });
         setTitleAreas(newTitles);
         setTitlesLocked(true);
-        localStorage.setItem('textFeatures.titles', JSON.stringify(newTitles));
-        localStorage.setItem('textFeatures.titlesLocked', 'true');
       }
     };
 

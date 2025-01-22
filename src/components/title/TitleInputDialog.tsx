@@ -10,10 +10,6 @@ interface TitleInputDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export const titleTransferEvent = new CustomEvent('transferTitles', {
-  detail: { titles: [] as string[] }
-}) as CustomEvent<{ titles: string[] }>;
-
 export function TitleInputDialog({ open, onOpenChange }: TitleInputDialogProps) {
   const [titles, setTitles] = useState<string[]>(() => {
     const savedTitles = localStorage.getItem('titleInput.titles');
@@ -40,14 +36,17 @@ export function TitleInputDialog({ open, onOpenChange }: TitleInputDialogProps) 
     localStorage.setItem('titleInput.isLocked', newLockedState.toString());
     
     if (newLockedState) {
-      // Create a new event instance with the current titles
+      // Filter out empty titles before transfer
+      const nonEmptyTitles = titles.filter(title => title.trim() !== '');
+      
+      // Create and dispatch the transfer event
       const transferEvent = new CustomEvent('transferTitles', {
-        detail: { titles: titles }
+        detail: { titles: nonEmptyTitles }
       });
       document.dispatchEvent(transferEvent);
       
-      // Also save to localStorage for TextFeatures to access
-      localStorage.setItem('textFeatures.titles', JSON.stringify(titles));
+      // Save to localStorage for TextFeatures
+      localStorage.setItem('textFeatures.titles', JSON.stringify(nonEmptyTitles));
       localStorage.setItem('textFeatures.titlesLocked', 'true');
       
       toast({
