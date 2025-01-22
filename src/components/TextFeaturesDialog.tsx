@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Lock, Unlock } from "lucide-react";
-import { keywordTransferEvent } from "./keywords/KeywordInputDialog";
-import { titleTransferEvent } from "./title/TitleInputDialog";
 
 interface TextFeaturesDialogProps {
   open: boolean;
@@ -108,6 +106,8 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
         });
         setTitleAreas(newTitles);
         setTitlesLocked(true);
+        localStorage.setItem('textFeatures.titles', JSON.stringify(newTitles));
+        localStorage.setItem('textFeatures.titlesLocked', 'true');
       }
     };
 

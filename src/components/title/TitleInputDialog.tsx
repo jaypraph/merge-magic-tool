@@ -10,14 +10,20 @@ interface TitleInputDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-// Create a global event for title transfer
 export const titleTransferEvent = new CustomEvent('transferTitles', {
   detail: { titles: [] as string[] }
 }) as CustomEvent<{ titles: string[] }>;
 
 export function TitleInputDialog({ open, onOpenChange }: TitleInputDialogProps) {
-  const [titles, setTitles] = useState<string[]>(Array(4).fill(''));
-  const [isLocked, setIsLocked] = useState(false);
+  const [titles, setTitles] = useState<string[]>(() => {
+    const savedTitles = localStorage.getItem('titleInput.titles');
+    return savedTitles ? JSON.parse(savedTitles) : Array(4).fill('');
+  });
+  
+  const [isLocked, setIsLocked] = useState(() => {
+    return localStorage.getItem('titleInput.isLocked') === 'true';
+  });
+  
   const { toast } = useToast();
 
   const handleTitleChange = (index: number, value: string) => {
@@ -25,16 +31,24 @@ export function TitleInputDialog({ open, onOpenChange }: TitleInputDialogProps) 
     const newTitles = [...titles];
     newTitles[index] = value;
     setTitles(newTitles);
+    localStorage.setItem('titleInput.titles', JSON.stringify(newTitles));
   };
 
   const handleLockToggle = () => {
-    setIsLocked(!isLocked);
-    if (!isLocked) {
-      // Create a new event instance each time to ensure the latest titles are transferred
+    const newLockedState = !isLocked;
+    setIsLocked(newLockedState);
+    localStorage.setItem('titleInput.isLocked', newLockedState.toString());
+    
+    if (newLockedState) {
+      // Create a new event instance with the current titles
       const transferEvent = new CustomEvent('transferTitles', {
         detail: { titles: titles }
       });
       document.dispatchEvent(transferEvent);
+      
+      // Also save to localStorage for TextFeatures to access
+      localStorage.setItem('textFeatures.titles', JSON.stringify(titles));
+      localStorage.setItem('textFeatures.titlesLocked', 'true');
       
       toast({
         description: "Titles locked and transferred to Text Features",
@@ -48,7 +62,9 @@ export function TitleInputDialog({ open, onOpenChange }: TitleInputDialogProps) 
 
   const handleClear = () => {
     if (isLocked) return;
-    setTitles(Array(4).fill(''));
+    const emptyTitles = Array(4).fill('');
+    setTitles(emptyTitles);
+    localStorage.setItem('titleInput.titles', JSON.stringify(emptyTitles));
     toast({
       description: "All titles cleared!",
     });
