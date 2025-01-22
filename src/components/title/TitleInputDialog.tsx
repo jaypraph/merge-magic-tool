@@ -30,13 +30,20 @@ export function TitleInputDialog({ open, onOpenChange }: TitleInputDialogProps) 
   const handleLockToggle = () => {
     setIsLocked(!isLocked);
     if (!isLocked) {
-      const nonEmptyTitles = titles.filter(t => t.trim() !== '');
-      titleTransferEvent.detail.titles = nonEmptyTitles;
-      document.dispatchEvent(titleTransferEvent);
+      // Create a new event instance each time to ensure the latest titles are transferred
+      const transferEvent = new CustomEvent('transferTitles', {
+        detail: { titles: titles }
+      });
+      document.dispatchEvent(transferEvent);
+      
+      toast({
+        description: "Titles locked and transferred to Text Features",
+      });
+    } else {
+      toast({
+        description: "Titles unlocked",
+      });
     }
-    toast({
-      description: isLocked ? "Titles unlocked" : "Titles locked",
-    });
   };
 
   const handleClear = () => {

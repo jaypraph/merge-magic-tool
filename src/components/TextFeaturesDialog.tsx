@@ -24,9 +24,15 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
     return localStorage.getItem('textFeatures.keywordsLocked') === 'true';
   });
   
-  // Title state
-  const [titleAreas, setTitleAreas] = useState<string[]>(Array(4).fill(''));
-  const [titlesLocked, setTitlesLocked] = useState(false);
+  // Title state with localStorage persistence
+  const [titleAreas, setTitleAreas] = useState<string[]>(() => {
+    const savedTitles = localStorage.getItem('textFeatures.titles');
+    return savedTitles ? JSON.parse(savedTitles) : Array(4).fill('');
+  });
+  
+  const [titlesLocked, setTitlesLocked] = useState(() => {
+    return localStorage.getItem('textFeatures.titlesLocked') === 'true';
+  });
   
   // Description state
   const [descriptionAreas, setDescriptionAreas] = useState<string[]>(Array(4).fill(''));
@@ -42,6 +48,15 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
   useEffect(() => {
     localStorage.setItem('textFeatures.keywordsLocked', keywordsLocked.toString());
   }, [keywordsLocked]);
+
+  // Persist titles and lock state to localStorage
+  useEffect(() => {
+    localStorage.setItem('textFeatures.titles', JSON.stringify(titleAreas));
+  }, [titleAreas]);
+
+  useEffect(() => {
+    localStorage.setItem('textFeatures.titlesLocked', titlesLocked.toString());
+  }, [titlesLocked]);
 
   const handleKeywordChange = (index: number, value: string) => {
     if (keywordsLocked) return;
@@ -69,26 +84,31 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
   useEffect(() => {
     const handleKeywordTransfer = (event: Event) => {
       const customEvent = event as CustomEvent<{ keywords: string[] }>;
-      const transferredKeywords = customEvent.detail.keywords;
-      const newKeywords = Array(13).fill('');
-      transferredKeywords.forEach((keyword, index) => {
-        if (index < 13) {
-          newKeywords[index] = keyword;
-        }
-      });
-      setKeywords(newKeywords);
+      if (!keywordsLocked) {
+        const transferredKeywords = customEvent.detail.keywords;
+        const newKeywords = Array(13).fill('');
+        transferredKeywords.forEach((keyword, index) => {
+          if (index < 13) {
+            newKeywords[index] = keyword;
+          }
+        });
+        setKeywords(newKeywords);
+      }
     };
 
     const handleTitleTransfer = (event: Event) => {
       const customEvent = event as CustomEvent<{ titles: string[] }>;
-      const transferredTitles = customEvent.detail.titles;
-      const newTitles = Array(4).fill('');
-      transferredTitles.forEach((title, index) => {
-        if (index < 4) {
-          newTitles[index] = title;
-        }
-      });
-      setTitleAreas(newTitles);
+      if (!titlesLocked) {
+        const transferredTitles = customEvent.detail.titles;
+        const newTitles = Array(4).fill('');
+        transferredTitles.forEach((title, index) => {
+          if (index < 4) {
+            newTitles[index] = title;
+          }
+        });
+        setTitleAreas(newTitles);
+        setTitlesLocked(true);
+      }
     };
 
     document.addEventListener('transferKeywords', handleKeywordTransfer);
@@ -98,7 +118,7 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
       document.removeEventListener('transferKeywords', handleKeywordTransfer);
       document.removeEventListener('transferTitles', handleTitleTransfer);
     };
-  }, []);
+  }, [keywordsLocked, titlesLocked]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
