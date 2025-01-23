@@ -36,21 +36,12 @@ export function TitleInputDialog({ open, onOpenChange }: TitleInputDialogProps) 
     localStorage.setItem('titleInput.isLocked', newLockedState.toString());
     
     if (newLockedState) {
-      // Filter out empty titles and transfer them
-      const titlesToTransfer = titles.filter(title => title.trim() !== '');
-      
-      // Save to localStorage for TextFeatures
-      localStorage.setItem('textFeatures.titles', JSON.stringify(titlesToTransfer));
+      // Copy titles to TextFeatures
+      localStorage.setItem('textFeatures.titles', JSON.stringify(titles));
       localStorage.setItem('textFeatures.titlesLocked', 'true');
       
-      // Create and dispatch the transfer event
-      const transferEvent = new CustomEvent('transferTitles', {
-        detail: { titles: titlesToTransfer }
-      });
-      document.dispatchEvent(transferEvent);
-      
       toast({
-        description: "Titles locked and transferred to Text Features",
+        description: "Titles locked",
       });
     } else {
       toast({

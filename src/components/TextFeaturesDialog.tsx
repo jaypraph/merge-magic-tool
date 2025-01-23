@@ -56,6 +56,16 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
     localStorage.setItem('textFeatures.titlesLocked', titlesLocked.toString());
   }, [titlesLocked]);
 
+  // Update titles when dialog opens
+  useEffect(() => {
+    if (open) {
+      const savedTitles = localStorage.getItem('textFeatures.titles');
+      if (savedTitles) {
+        setTitleAreas(JSON.parse(savedTitles));
+      }
+    }
+  }, [open]);
+
   const handleKeywordChange = (index: number, value: string) => {
     if (keywordsLocked) return;
     if (value.length <= 20) {
@@ -78,45 +88,6 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
     newDescriptions[index] = value;
     setDescriptionAreas(newDescriptions);
   };
-
-  useEffect(() => {
-    const handleKeywordTransfer = (event: Event) => {
-      const customEvent = event as CustomEvent<{ keywords: string[] }>;
-      if (!keywordsLocked) {
-        const transferredKeywords = customEvent.detail.keywords;
-        const newKeywords = Array(13).fill('');
-        transferredKeywords.forEach((keyword, index) => {
-          if (index < 13) {
-            newKeywords[index] = keyword;
-          }
-        });
-        setKeywords(newKeywords);
-      }
-    };
-
-    const handleTitleTransfer = (event: Event) => {
-      const customEvent = event as CustomEvent<{ titles: string[] }>;
-      if (!titlesLocked) {
-        const transferredTitles = customEvent.detail.titles;
-        const newTitles = Array(4).fill('');
-        transferredTitles.forEach((title, index) => {
-          if (index < 4) {
-            newTitles[index] = title;
-          }
-        });
-        setTitleAreas(newTitles);
-        setTitlesLocked(true);
-      }
-    };
-
-    document.addEventListener('transferKeywords', handleKeywordTransfer);
-    document.addEventListener('transferTitles', handleTitleTransfer);
-    
-    return () => {
-      document.removeEventListener('transferKeywords', handleKeywordTransfer);
-      document.removeEventListener('transferTitles', handleTitleTransfer);
-    };
-  }, [keywordsLocked, titlesLocked]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
