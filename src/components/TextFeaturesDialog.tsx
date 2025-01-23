@@ -12,7 +12,6 @@ interface TextFeaturesDialogProps {
 }
 
 export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogProps) {
-  // Keywords state with localStorage persistence
   const [keywords, setKeywords] = useState<string[]>(() => {
     const savedKeywords = localStorage.getItem('textFeatures.keywords');
     return savedKeywords ? JSON.parse(savedKeywords) : Array(13).fill('');
@@ -22,7 +21,6 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
     return localStorage.getItem('textFeatures.keywordsLocked') === 'true';
   });
   
-  // Title state with localStorage persistence
   const [titleAreas, setTitleAreas] = useState<string[]>(() => {
     const savedTitles = localStorage.getItem('textFeatures.titles');
     return savedTitles ? JSON.parse(savedTitles) : Array(4).fill('');
@@ -32,13 +30,12 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
     return localStorage.getItem('textFeatures.titlesLocked') === 'true';
   });
   
-  // Description state
   const [descriptionAreas, setDescriptionAreas] = useState<string[]>(Array(4).fill(''));
   const [descriptionsLocked, setDescriptionsLocked] = useState(false);
   
   const { toast } = useToast();
 
-  // Persist keywords and lock state to localStorage
+  // Persist states to localStorage
   useEffect(() => {
     localStorage.setItem('textFeatures.keywords', JSON.stringify(keywords));
   }, [keywords]);
@@ -47,7 +44,6 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
     localStorage.setItem('textFeatures.keywordsLocked', keywordsLocked.toString());
   }, [keywordsLocked]);
 
-  // Persist titles and lock state to localStorage
   useEffect(() => {
     localStorage.setItem('textFeatures.titles', JSON.stringify(titleAreas));
   }, [titleAreas]);
@@ -56,7 +52,7 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
     localStorage.setItem('textFeatures.titlesLocked', titlesLocked.toString());
   }, [titlesLocked]);
 
-  // Update titles when dialog opens
+  // Load titles when dialog opens
   useEffect(() => {
     if (open) {
       const savedTitles = localStorage.getItem('textFeatures.titles');

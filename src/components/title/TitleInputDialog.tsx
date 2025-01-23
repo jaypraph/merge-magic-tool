@@ -1,9 +1,9 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TitleDialogHeader } from "./TitleDialogHeader";
 import { TitleInput } from "./TitleInput";
+import { useTitleStore } from "@/hooks/useTitleStore";
 
 interface TitleInputDialogProps {
   open: boolean;
@@ -11,15 +11,7 @@ interface TitleInputDialogProps {
 }
 
 export function TitleInputDialog({ open, onOpenChange }: TitleInputDialogProps) {
-  const [titles, setTitles] = useState<string[]>(() => {
-    const savedTitles = localStorage.getItem('titleInput.titles');
-    return savedTitles ? JSON.parse(savedTitles) : Array(4).fill('');
-  });
-  
-  const [isLocked, setIsLocked] = useState(() => {
-    return localStorage.getItem('titleInput.isLocked') === 'true';
-  });
-  
+  const { titles, isLocked, setTitles, setIsLocked } = useTitleStore();
   const { toast } = useToast();
 
   const handleTitleChange = (index: number, value: string) => {
@@ -27,13 +19,11 @@ export function TitleInputDialog({ open, onOpenChange }: TitleInputDialogProps) 
     const newTitles = [...titles];
     newTitles[index] = value;
     setTitles(newTitles);
-    localStorage.setItem('titleInput.titles', JSON.stringify(newTitles));
   };
 
   const handleLockToggle = () => {
     const newLockedState = !isLocked;
     setIsLocked(newLockedState);
-    localStorage.setItem('titleInput.isLocked', newLockedState.toString());
     
     if (newLockedState) {
       // Copy titles to TextFeatures
@@ -41,7 +31,7 @@ export function TitleInputDialog({ open, onOpenChange }: TitleInputDialogProps) 
       localStorage.setItem('textFeatures.titlesLocked', 'true');
       
       toast({
-        description: "Titles locked",
+        description: "Titles locked and copied to Text Features",
       });
     } else {
       toast({
@@ -52,9 +42,7 @@ export function TitleInputDialog({ open, onOpenChange }: TitleInputDialogProps) 
 
   const handleClear = () => {
     if (isLocked) return;
-    const emptyTitles = Array(4).fill('');
-    setTitles(emptyTitles);
-    localStorage.setItem('titleInput.titles', JSON.stringify(emptyTitles));
+    setTitles(Array(4).fill(''));
     toast({
       description: "All titles cleared!",
     });
