@@ -11,7 +11,7 @@ interface TitleInputDialogProps {
 }
 
 export function TitleInputDialog({ open, onOpenChange }: TitleInputDialogProps) {
-  const { titles, isLocked, setTitles, setIsLocked } = useTitleStore();
+  const { titles, isLocked, setTitles, setIsLocked, clearTitles } = useTitleStore();
   const { toast } = useToast();
 
   const handleTitleChange = (index: number, value: string) => {
@@ -22,27 +22,15 @@ export function TitleInputDialog({ open, onOpenChange }: TitleInputDialogProps) 
   };
 
   const handleLockToggle = () => {
-    const newLockedState = !isLocked;
-    setIsLocked(newLockedState);
-    
-    if (newLockedState) {
-      // Copy titles to TextFeatures
-      localStorage.setItem('textFeatures.titles', JSON.stringify(titles));
-      localStorage.setItem('textFeatures.titlesLocked', 'true');
-      
-      toast({
-        description: "Titles locked and copied to Text Features",
-      });
-    } else {
-      toast({
-        description: "Titles unlocked",
-      });
-    }
+    setIsLocked(!isLocked);
+    toast({
+      description: isLocked ? "Titles unlocked" : "Titles locked and copied to Text Features",
+    });
   };
 
   const handleClear = () => {
     if (isLocked) return;
-    setTitles(Array(4).fill(''));
+    clearTitles();
     toast({
       description: "All titles cleared!",
     });

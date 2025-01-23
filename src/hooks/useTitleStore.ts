@@ -1,43 +1,25 @@
-import { useState, useEffect } from 'react';
+import { create } from 'zustand';
 
-interface UseTitleStore {
+interface TitleState {
   titles: string[];
   isLocked: boolean;
   setTitles: (titles: string[]) => void;
   setIsLocked: (locked: boolean) => void;
-  loadTitles: () => void;
+  clearTitles: () => void;
 }
 
-export const useTitleStore = (): UseTitleStore => {
-  const [titles, setTitles] = useState<string[]>(() => {
-    const saved = localStorage.getItem('titleInput.titles');
-    return saved ? JSON.parse(saved) : Array(4).fill('');
-  });
-
-  const [isLocked, setIsLocked] = useState(() => {
-    return localStorage.getItem('titleInput.isLocked') === 'true';
-  });
-
-  useEffect(() => {
-    localStorage.setItem('titleInput.titles', JSON.stringify(titles));
-  }, [titles]);
-
-  useEffect(() => {
-    localStorage.setItem('titleInput.isLocked', isLocked.toString());
-  }, [isLocked]);
-
-  const loadTitles = () => {
-    const saved = localStorage.getItem('textFeatures.titles');
-    if (saved) {
-      setTitles(JSON.parse(saved));
+export const useTitleStore = create<TitleState>((set) => ({
+  titles: Array(4).fill(''),
+  isLocked: false,
+  setTitles: (titles) => set({ titles }),
+  setIsLocked: (isLocked) => {
+    set({ isLocked });
+    if (isLocked) {
+      // When locking, save titles to localStorage for TXT dialog
+      const currentState = useTitleStore.getState();
+      localStorage.setItem('textFeatures.titles', JSON.stringify(currentState.titles));
+      localStorage.setItem('textFeatures.titlesLocked', 'true');
     }
-  };
-
-  return {
-    titles,
-    isLocked,
-    setTitles,
-    setIsLocked,
-    loadTitles
-  };
-};
+  },
+  clearTitles: () => set({ titles: Array(4).fill('') })
+}));

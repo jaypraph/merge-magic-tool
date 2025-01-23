@@ -44,20 +44,13 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
     localStorage.setItem('textFeatures.keywordsLocked', keywordsLocked.toString());
   }, [keywordsLocked]);
 
-  useEffect(() => {
-    localStorage.setItem('textFeatures.titles', JSON.stringify(titleAreas));
-  }, [titleAreas]);
-
-  useEffect(() => {
-    localStorage.setItem('textFeatures.titlesLocked', titlesLocked.toString());
-  }, [titlesLocked]);
-
   // Load titles when dialog opens
   useEffect(() => {
     if (open) {
       const savedTitles = localStorage.getItem('textFeatures.titles');
       if (savedTitles) {
         setTitleAreas(JSON.parse(savedTitles));
+        setTitlesLocked(localStorage.getItem('textFeatures.titlesLocked') === 'true');
       }
     }
   }, [open]);
