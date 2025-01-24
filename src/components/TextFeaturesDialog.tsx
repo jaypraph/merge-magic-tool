@@ -29,9 +29,15 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
   });
   const [titlesLocked, setTitlesLocked] = useState(false);
   
-  // Description state
-  const [descriptionAreas, setDescriptionAreas] = useState<string[]>(Array(4).fill(''));
-  const [descriptionsLocked, setDescriptionsLocked] = useState(false);
+  // Description state with localStorage persistence
+  const [descriptionAreas, setDescriptionAreas] = useState<string[]>(() => {
+    const savedDescriptions = localStorage.getItem('textFeatures.descriptions');
+    return savedDescriptions ? JSON.parse(savedDescriptions) : Array(4).fill('');
+  });
+  
+  const [descriptionsLocked, setDescriptionsLocked] = useState(() => {
+    return localStorage.getItem('textFeatures.descriptionsLocked') === 'true';
+  });
   
   const { toast } = useToast();
 
@@ -43,6 +49,24 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
   useEffect(() => {
     localStorage.setItem('textFeatures.keywordsLocked', keywordsLocked.toString());
   }, [keywordsLocked]);
+
+  // Persist titles and lock state to localStorage
+  useEffect(() => {
+    localStorage.setItem('textFeatures.titles', JSON.stringify(titleAreas));
+  }, [titleAreas]);
+
+  useEffect(() => {
+    localStorage.setItem('textFeatures.titlesLocked', titlesLocked.toString());
+  }, [titlesLocked]);
+
+  // Persist descriptions and lock state to localStorage
+  useEffect(() => {
+    localStorage.setItem('textFeatures.descriptions', JSON.stringify(descriptionAreas));
+  }, [descriptionAreas]);
+
+  useEffect(() => {
+    localStorage.setItem('textFeatures.descriptionsLocked', descriptionsLocked.toString());
+  }, [descriptionsLocked]);
 
   const handleKeywordChange = (index: number, value: string) => {
     if (keywordsLocked) return;
@@ -96,12 +120,30 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
       });
     };
 
+    const handleDescriptionTransfer = (event: Event) => {
+      const customEvent = event as CustomEvent<{ descriptions: string[] }>;
+      const transferredDescriptions = customEvent.detail.descriptions;
+      const newDescriptions = Array(4).fill('');
+      transferredDescriptions.forEach((description, index) => {
+        if (index < 4) {
+          newDescriptions[index] = description;
+        }
+      });
+      setDescriptionAreas(newDescriptions);
+      setDescriptionsLocked(true);
+      toast({
+        description: "Descriptions transferred and locked",
+      });
+    };
+
     document.addEventListener('transferKeywords', handleKeywordTransfer);
     document.addEventListener('transferTitles', handleTitleTransfer);
+    document.addEventListener('transferDescriptions', handleDescriptionTransfer);
     
     return () => {
       document.removeEventListener('transferKeywords', handleKeywordTransfer);
       document.removeEventListener('transferTitles', handleTitleTransfer);
+      document.removeEventListener('transferDescriptions', handleDescriptionTransfer);
     };
   }, [toast]);
 

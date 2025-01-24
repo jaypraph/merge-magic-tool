@@ -3,43 +3,57 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import { Download } from "lucide-react";
+import { Download, Lock, Unlock } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+// Create a global event for description transfer
+export const descriptionTransferEvent = new CustomEvent('transferDescriptions', {
+  detail: { descriptions: [] as string[] }
+}) as CustomEvent<{ descriptions: string[] }>;
 
 export function DescriptionEditor() {
   const [textAreas, setTextAreas] = useState(["", "", "", ""]);
   const [output, setOutput] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeFeature, setActiveFeature] = useState("dsc");
-
-  const editableParts = ["Blue Fantasy Island", "Oil Painting", "Medieval City", "Japanese Art"];
-  const sentenceTemplate = `JPG file for | Tv Frame Art | Blue Fantasy Island, Oil Painting, Medieval City, Japanese Art. Designed specifically for the Samsung TV Frame with dimensions of 3840x2160 pixels; not intended for printing purposes.
-
-Download this painting specifically designed for TV Frame. This digital file, optimized for screen display, comes in a high-resolution JPG format with dimensions of 3840x2160 pixels, suitable for any 16:9 ratio displays. Please note that this file is intended for digital use only and is not suitable for physical printing. Keep in mind that colors may vary based on your screen display settings.
-
-Upon purchase, you'll receive an instant download link. No physical items will be shipped. To receive assistance in adding this file to your TV, please visit: https://www.samsung.com/us/support/answer/ANS00076727/`;
+  const [isLocked, setIsLocked] = useState(false);
+  const { toast } = useToast();
 
   const handleTextAreaChange = (index: number, value: string) => {
+    if (isLocked) return;
     const newTextAreas = [...textAreas];
     newTextAreas[index] = value;
     setTextAreas(newTextAreas);
   };
 
-  const handleDone = () => {
-    let updatedSentence = sentenceTemplate;
-
-    editableParts.forEach((part, index) => {
-      const userInput = textAreas[index].trim();
-      if (userInput !== "") {
-        updatedSentence = updatedSentence.replace(part, userInput);
-      }
+  const handleLockToggle = () => {
+    setIsLocked(!isLocked);
+    if (!isLocked) {
+      // Filter out empty descriptions and transfer them
+      const nonEmptyDescriptions = textAreas.filter(description => description.trim() !== '');
+      descriptionTransferEvent.detail.descriptions = nonEmptyDescriptions;
+      document.dispatchEvent(descriptionTransferEvent);
+      
+      // Save to localStorage
+      localStorage.setItem('textFeatures.descriptions', JSON.stringify(nonEmptyDescriptions));
+    }
+    toast({
+      description: isLocked ? "Descriptions unlocked" : "Descriptions locked and transferred to Text Features",
     });
-
-    setOutput(updatedSentence);
   };
 
   const handleClear = () => {
+    if (isLocked) return;
     setTextAreas(["", "", "", ""]);
     setOutput("");
+    toast({
+      description: "All descriptions cleared",
+    });
+  };
+
+  const handleDone = () => {
+    const descriptions = textAreas.filter(text => text.trim() !== "");
+    setOutput(descriptions.join('\n\n'));
   };
 
   const handleDownload = () => {
@@ -64,6 +78,22 @@ Upon purchase, you'll receive an instant download link. No physical items will b
           onFeatureSelect={setActiveFeature}
         />
         <div className="p-4 max-w-[90%] mx-auto">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold">Description Editor</h2>
+            <div className="flex gap-2">
+              <Button 
+                onClick={handleLockToggle}
+                variant={isLocked ? "destructive" : "default"}
+                size="sm"
+              >
+                {isLocked ? <Unlock className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
+              </Button>
+              <Button variant="outline" onClick={handleClear} size="sm">
+                Clear All
+              </Button>
+            </div>
+          </div>
+
           <div className="space-y-2">
             {textAreas.map((text, index) => (
               <Textarea
@@ -71,25 +101,27 @@ Upon purchase, you'll receive an instant download link. No physical items will b
                 value={text}
                 onChange={(e) => handleTextAreaChange(index, e.target.value)}
                 placeholder=""
-                className="text-sm w-[200px] h-[50px] min-h-[50px] resize-none py-2 px-3"
+                className="w-[200px] h-[50px] min-h-[50px] resize-none"
+                disabled={isLocked}
               />
             ))}
           </div>
 
           <div className="flex gap-4 mt-6">
             <Button onClick={handleDone}>Done</Button>
-            <Button variant="destructive" onClick={handleClear}>Clear All</Button>
-          </div>
-
-          {output && (
-            <div className="mt-6 space-y-4">
-              <div className="p-4 bg-muted rounded-lg">
-                {output}
-              </div>
+            {output && (
               <Button onClick={handleDownload} variant="outline">
                 <Download className="mr-2 h-4 w-4" />
                 Download Description
               </Button>
+            )}
+          </div>
+
+          {output && (
+            <div className="mt-6">
+              <div className="p-4 bg-muted rounded-lg whitespace-pre-wrap">
+                {output}
+              </div>
             </div>
           )}
         </div>
