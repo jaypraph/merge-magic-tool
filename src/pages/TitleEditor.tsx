@@ -6,6 +6,11 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { Download, Lock, Unlock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+// Create a global event for title transfer
+export const titleTransferEvent = new CustomEvent('transferTitles', {
+  detail: { titles: [] as string[] }
+}) as CustomEvent<{ titles: string[] }>;
+
 export function TitleEditor() {
   const [textAreas, setTextAreas] = useState(["", "", "", ""]);
   const [output, setOutput] = useState("");
@@ -24,22 +29,17 @@ export function TitleEditor() {
   const handleLockToggle = () => {
     setIsLocked(!isLocked);
     if (!isLocked) {
-      // Create and dispatch the title transfer event
-      const titleTransferEvent = new CustomEvent('transferTitles', {
-        detail: { titles: textAreas.filter(title => title.trim() !== '') }
-      });
+      // Filter out empty titles and transfer them
+      const nonEmptyTitles = textAreas.filter(title => title.trim() !== '');
+      titleTransferEvent.detail.titles = nonEmptyTitles;
       document.dispatchEvent(titleTransferEvent);
+      
+      // Save to localStorage
+      localStorage.setItem('textFeatures.titles', JSON.stringify(nonEmptyTitles));
     }
     toast({
-      description: isLocked ? "Titles unlocked" : "Titles locked",
+      description: isLocked ? "Titles unlocked" : "Titles locked and transferred to Text Features",
     });
-  };
-
-  const handleDone = () => {
-    const newParts = textAreas.filter(text => text.trim() !== "");
-    const remainingParts = ", Tv Frame Art, Television Picture Frame, Canvas, Samsung Frame Tv";
-    const newSentence = `${newParts.join(', ')}${newParts.length > 0 ? ',' : ''}${remainingParts}`;
-    setOutput(newSentence);
   };
 
   const handleClear = () => {
@@ -49,6 +49,13 @@ export function TitleEditor() {
     toast({
       description: "All titles cleared",
     });
+  };
+
+  const handleDone = () => {
+    const newParts = textAreas.filter(text => text.trim() !== "");
+    const remainingParts = ", Tv Frame Art, Television Picture Frame, Canvas, Samsung Frame Tv";
+    const newSentence = `${newParts.join(', ')}${newParts.length > 0 ? ',' : ''}${remainingParts}`;
+    setOutput(newSentence);
   };
 
   const handleDownload = () => {
