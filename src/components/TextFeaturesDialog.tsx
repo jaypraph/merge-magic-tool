@@ -24,8 +24,11 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
     return localStorage.getItem('textFeatures.keywordsLocked') === 'true';
   });
   
-  // Title state
-  const [titleAreas, setTitleAreas] = useState<string[]>(Array(4).fill(''));
+  // Title state with localStorage persistence
+  const [titleAreas, setTitleAreas] = useState<string[]>(() => {
+    const savedTitles = localStorage.getItem('textFeatures.titles');
+    return savedTitles ? JSON.parse(savedTitles) : Array(4).fill('');
+  });
   const [titlesLocked, setTitlesLocked] = useState(false);
   
   // Description state
@@ -89,6 +92,10 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
         }
       });
       setTitleAreas(newTitles);
+      setTitlesLocked(true);
+      toast({
+        description: "Titles transferred and locked",
+      });
     };
 
     document.addEventListener('transferKeywords', handleKeywordTransfer);
@@ -98,7 +105,7 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
       document.removeEventListener('transferKeywords', handleKeywordTransfer);
       document.removeEventListener('transferTitles', handleTitleTransfer);
     };
-  }, []);
+  }, [toast]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
