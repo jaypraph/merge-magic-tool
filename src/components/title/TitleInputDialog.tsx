@@ -1,17 +1,23 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TitleDialogHeader } from "./TitleDialogHeader";
 import { TitleInput } from "./TitleInput";
-import { useTitleStore } from "@/hooks/useTitleStore";
 
 interface TitleInputDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
+// Create a global event for title transfer
+export const titleTransferEvent = new CustomEvent('transferTitles', {
+  detail: { titles: [] as string[] }
+}) as CustomEvent<{ titles: string[] }>;
+
 export function TitleInputDialog({ open, onOpenChange }: TitleInputDialogProps) {
-  const { titles, isLocked, setTitles, setIsLocked, clearTitles } = useTitleStore();
+  const [titles, setTitles] = useState<string[]>(Array(4).fill(''));
+  const [isLocked, setIsLocked] = useState(false);
   const { toast } = useToast();
 
   const handleTitleChange = (index: number, value: string) => {
@@ -23,14 +29,19 @@ export function TitleInputDialog({ open, onOpenChange }: TitleInputDialogProps) 
 
   const handleLockToggle = () => {
     setIsLocked(!isLocked);
+    if (!isLocked) {
+      const nonEmptyTitles = titles.filter(t => t.trim() !== '');
+      titleTransferEvent.detail.titles = nonEmptyTitles;
+      document.dispatchEvent(titleTransferEvent);
+    }
     toast({
-      description: isLocked ? "Titles unlocked" : "Titles locked and copied to Text Features",
+      description: isLocked ? "Titles unlocked" : "Titles locked",
     });
   };
 
   const handleClear = () => {
     if (isLocked) return;
-    clearTitles();
+    setTitles(Array(4).fill(''));
     toast({
       description: "All titles cleared!",
     });

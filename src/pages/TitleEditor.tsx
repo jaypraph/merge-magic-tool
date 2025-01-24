@@ -29,15 +29,10 @@ export function TitleEditor() {
         detail: { titles: textAreas.filter(title => title.trim() !== '') }
       });
       document.dispatchEvent(titleTransferEvent);
-      
-      toast({
-        description: "Titles locked and transferred to Text Features",
-      });
-    } else {
-      toast({
-        description: "Titles unlocked",
-      });
     }
+    toast({
+      description: isLocked ? "Titles unlocked" : "Titles locked",
+    });
   };
 
   const handleDone = () => {
