@@ -92,6 +92,37 @@ export function TitleEditor() {
     }
   };
 
+  const handleDone = () => {
+    const nonEmptyTitles = textAreas.filter(t => t.trim() !== '');
+    if (nonEmptyTitles.length > 0) {
+      setOutput(nonEmptyTitles.join('\n'));
+      toast({
+        description: "Titles processed successfully!",
+      });
+    } else {
+      toast({
+        description: "Please enter at least one title",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDownload = () => {
+    if (!output) return;
+    const blob = new Blob([output], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'titles.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast({
+      description: "Titles downloaded successfully!",
+    });
+  };
+
   return (
     <SidebarProvider defaultOpen={false} open={sidebarOpen} onOpenChange={setSidebarOpen}>
       <div className="min-h-screen w-full bg-transparent text-slate-900">
