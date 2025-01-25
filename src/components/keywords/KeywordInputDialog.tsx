@@ -141,8 +141,10 @@ export function KeywordInputDialog({ open, onOpenChange, selectedKeyword }: Keyw
 
   const transferKeywords = () => {
     const nonEmptyKeywords = keywords.filter(k => k.trim() !== '');
-    keywordTransferEvent.detail.keywords = nonEmptyKeywords;
-    document.dispatchEvent(keywordTransferEvent);
+    const transferEvent = new CustomEvent('transferKeywords', {
+      detail: { keywords: nonEmptyKeywords }
+    });
+    document.dispatchEvent(transferEvent);
     toast({
       description: "Keywords transferred to Text Features!",
     });

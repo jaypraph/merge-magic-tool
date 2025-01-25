@@ -33,6 +33,32 @@ export function useTextFeatures() {
 
   const { toast } = useToast();
 
+  // Add event listener for keyword transfer
+  useEffect(() => {
+    const handleKeywordTransfer = (event: CustomEvent<{ keywords: string[] }>) => {
+      if (!keywordsLocked) {
+        const newKeywords = [...event.detail.keywords];
+        while (newKeywords.length < 13) {
+          newKeywords.push('');
+        }
+        setKeywords(newKeywords);
+        toast({
+          description: "Keywords transferred successfully!",
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          description: "Keywords are locked. Unlock them first to transfer new keywords.",
+        });
+      }
+    };
+
+    document.addEventListener('transferKeywords', handleKeywordTransfer as EventListener);
+    return () => {
+      document.removeEventListener('transferKeywords', handleKeywordTransfer as EventListener);
+    };
+  }, [keywordsLocked, toast]);
+
   // Persist states to localStorage
   useEffect(() => {
     localStorage.setItem('textFeatures.syncEnabled', syncEnabled.toString());
