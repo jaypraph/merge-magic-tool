@@ -13,8 +13,8 @@ interface TextFeaturesDialogProps {
 }
 
 export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogProps) {
-  const [isEnabled, setIsEnabled] = useState(() => {
-    return localStorage.getItem('textFeatures.enabled') !== 'false';
+  const [syncEnabled, setSyncEnabled] = useState(() => {
+    return localStorage.getItem('textFeatures.syncEnabled') === 'true';
   });
 
   // Keywords state with localStorage persistence
@@ -46,10 +46,17 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
   
   const { toast } = useToast();
 
-  // Persist enabled state to localStorage
+  // Persist sync state to localStorage
   useEffect(() => {
-    localStorage.setItem('textFeatures.enabled', isEnabled.toString());
-  }, [isEnabled]);
+    localStorage.setItem('textFeatures.syncEnabled', syncEnabled.toString());
+  }, [syncEnabled]);
+
+  // Sync titles to descriptions when sync is enabled
+  useEffect(() => {
+    if (syncEnabled && !descriptionsLocked) {
+      setDescriptionAreas(titleAreas);
+    }
+  }, [syncEnabled, titleAreas, descriptionsLocked]);
 
   // Persist keywords and lock state to localStorage
   useEffect(() => {
@@ -158,9 +165,9 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
   }, [toast]);
 
   const handleToggle = (enabled: boolean) => {
-    setIsEnabled(enabled);
+    setSyncEnabled(enabled);
     toast({
-      description: enabled ? "Text features enabled" : "Text features disabled",
+      description: enabled ? "Title-Description sync enabled" : "Title-Description sync disabled",
     });
   };
 
@@ -171,46 +178,44 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
         <DialogDescription className="sr-only">
           Manage your keywords, titles, and descriptions
         </DialogDescription>
-        <TextFeaturesHeader isEnabled={isEnabled} onToggle={handleToggle} />
-        {isEnabled && (
-          <ScrollArea className="h-full pr-4" style={{ scrollbarGutter: 'stable' }}>
-            <div className="grid grid-cols-3 gap-4 p-4">
-              <KeywordsSection
-                keywords={keywords}
-                isLocked={keywordsLocked}
-                onKeywordChange={handleKeywordChange}
-                onLockToggle={() => {
-                  setKeywordsLocked(!keywordsLocked);
-                  toast({
-                    description: keywordsLocked ? "Keywords unlocked" : "Keywords locked",
-                  });
-                }}
-              />
-              <TitleSection
-                titles={titleAreas}
-                isLocked={titlesLocked}
-                onTitleChange={handleTitleChange}
-                onLockToggle={() => {
-                  setTitlesLocked(!titlesLocked);
-                  toast({
-                    description: titlesLocked ? "Titles unlocked" : "Titles locked",
-                  });
-                }}
-              />
-              <DescriptionSection
-                descriptions={descriptionAreas}
-                isLocked={descriptionsLocked}
-                onDescriptionChange={handleDescriptionChange}
-                onLockToggle={() => {
-                  setDescriptionsLocked(!descriptionsLocked);
-                  toast({
-                    description: descriptionsLocked ? "Descriptions unlocked" : "Descriptions locked",
-                  });
-                }}
-              />
-            </div>
-          </ScrollArea>
-        )}
+        <TextFeaturesHeader isEnabled={syncEnabled} onToggle={handleToggle} />
+        <ScrollArea className="h-full pr-4" style={{ scrollbarGutter: 'stable' }}>
+          <div className="grid grid-cols-3 gap-4 p-4">
+            <KeywordsSection
+              keywords={keywords}
+              isLocked={keywordsLocked}
+              onKeywordChange={handleKeywordChange}
+              onLockToggle={() => {
+                setKeywordsLocked(!keywordsLocked);
+                toast({
+                  description: keywordsLocked ? "Keywords unlocked" : "Keywords locked",
+                });
+              }}
+            />
+            <TitleSection
+              titles={titleAreas}
+              isLocked={titlesLocked}
+              onTitleChange={handleTitleChange}
+              onLockToggle={() => {
+                setTitlesLocked(!titlesLocked);
+                toast({
+                  description: titlesLocked ? "Titles unlocked" : "Titles locked",
+                });
+              }}
+            />
+            <DescriptionSection
+              descriptions={descriptionAreas}
+              isLocked={descriptionsLocked}
+              onDescriptionChange={handleDescriptionChange}
+              onLockToggle={() => {
+                setDescriptionsLocked(!descriptionsLocked);
+                toast({
+                  description: descriptionsLocked ? "Descriptions unlocked" : "Descriptions locked",
+                });
+              }}
+            />
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
