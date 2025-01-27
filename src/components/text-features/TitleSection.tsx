@@ -1,6 +1,6 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Textarea } from "@/components/ui/textarea";
 import { LockButton } from "./LockButton";
+import { TitleInput } from "./TitleInput";
 
 interface TitleSectionProps {
   titles: string[];
@@ -24,13 +24,11 @@ export function TitleSection({
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-2">
           {titles.map((title, index) => (
-            <Textarea
+            <TitleInput
               key={index}
               value={title}
-              onChange={(e) => onTitleChange(index, e.target.value)}
-              placeholder=""
-              className="w-[200px] h-[50px] min-h-[50px] resize-none"
-              disabled={isLocked}
+              isLocked={isLocked}
+              onChange={(value) => onTitleChange(index, value)}
             />
           ))}
         </div>

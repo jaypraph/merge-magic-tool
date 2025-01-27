@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+const TITLE_SUFFIX = " Tv Frame Art, Television picture frame, Canvas, samsung frame tv,";
+
 interface DownloadSectionProps {
   keywords: string[];
   titles: string[];
@@ -35,7 +37,7 @@ export function DownloadSection({
     if (titlesLocked && titles.some(t => t.trim() !== '')) {
       content += '=== TITLES ===\n';
       titles.filter(t => t.trim() !== '').forEach(title => {
-        content += `${title}\n`;
+        content += `${title},${TITLE_SUFFIX}\n`;
       });
       content += '\n';
     }
