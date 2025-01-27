@@ -36,9 +36,13 @@ export function DownloadSection({
 
     if (titlesLocked && titles.some(t => t.trim() !== '')) {
       content += '=== TITLES ===\n';
-      titles.filter(t => t.trim() !== '').forEach(title => {
-        content += `${title},${TITLE_SUFFIX}\n`;
-      });
+      // Combine all non-empty titles into a single line with commas
+      const combinedTitle = titles
+        .filter(t => t.trim() !== '')
+        .join(', ');
+      if (combinedTitle) {
+        content += `${combinedTitle},${TITLE_SUFFIX}\n`;
+      }
       content += '\n';
     }
 
