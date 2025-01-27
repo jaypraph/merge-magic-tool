@@ -3,6 +3,13 @@ import { Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const TITLE_SUFFIX = " Tv Frame Art, Television picture frame, Canvas, samsung frame tv,";
+const DESCRIPTION_PREFIX = "JPG file for | Tv Frame Art | ";
+const DESCRIPTION_MIDDLE = " Designed specifically for the Samsung TV Frame with dimensions of 3840x2160 pixels; not intended for printing purposes.";
+const DESCRIPTION_SUFFIX = `
+
+Download this painting specifically designed for TV Frame. This digital file, optimized for screen display, comes in a high-resolution JPG format with dimensions of 3840x2160 pixels, suitable for any 16:9 ratio displays. Please note that this file is intended for digital use only and is not suitable for physical printing. Keep in mind that colors may vary based on your screen display settings.
+
+Upon purchase, you'll receive an instant download link. No physical items will be shipped. To receive assistance in adding this file to your TV, please visit: https://www.samsung.com/us/support/answer/ANS00076727/`;
 
 interface DownloadSectionProps {
   keywords: string[];
@@ -41,16 +48,20 @@ export function DownloadSection({
         .filter(t => t.trim() !== '')
         .join(', ');
       if (combinedTitle) {
-        content += `${combinedTitle},${TITLE_SUFFIX}\n`;
+        content += `${combinedTitle}${TITLE_SUFFIX}\n`;
       }
       content += '\n';
     }
 
     if (descriptionsLocked && descriptions.some(d => d.trim() !== '')) {
       content += '=== DESCRIPTIONS ===\n';
-      descriptions.filter(d => d.trim() !== '').forEach(description => {
-        content += `${description}\n`;
-      });
+      // Combine all non-empty descriptions into the required format
+      const combinedDescriptions = descriptions
+        .filter(d => d.trim() !== '')
+        .join(', ');
+      if (combinedDescriptions) {
+        content += `${DESCRIPTION_PREFIX}${combinedDescriptions}${DESCRIPTION_MIDDLE}${DESCRIPTION_SUFFIX}\n`;
+      }
     }
 
     if (content.trim() === '') {
