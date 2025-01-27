@@ -28,6 +28,7 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
     setDescriptionAreas,
     descriptionsLocked,
     setDescriptionsLocked,
+    clearAll,
     toast
   } = useTextFeatures();
 
@@ -68,7 +69,11 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
         <DialogDescription className="sr-only">
           Manage your keywords, titles, and descriptions
         </DialogDescription>
-        <TextFeaturesHeader isEnabled={syncEnabled} onToggle={handleToggle} />
+        <TextFeaturesHeader 
+          isEnabled={syncEnabled} 
+          onToggle={handleToggle}
+          onClearAll={clearAll}
+        />
         <ScrollArea className="h-full pr-4" style={{ scrollbarGutter: 'stable' }}>
           <div className="grid grid-cols-3 gap-4 p-4">
             <KeywordsSection

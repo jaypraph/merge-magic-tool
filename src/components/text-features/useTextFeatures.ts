@@ -33,6 +33,21 @@ export function useTextFeatures() {
 
   const { toast } = useToast();
 
+  const clearAll = () => {
+    if (!keywordsLocked) {
+      setKeywords(Array(13).fill(''));
+    }
+    if (!titlesLocked) {
+      setTitleAreas(Array(4).fill(''));
+    }
+    if (!descriptionsLocked) {
+      setDescriptionAreas(Array(4).fill(''));
+    }
+    toast({
+      description: "All unlocked text areas have been cleared!",
+    });
+  };
+
   // Add event listener for keyword transfer
   useEffect(() => {
     const handleKeywordTransfer = (event: CustomEvent<{ keywords: string[] }>) => {
@@ -105,6 +120,7 @@ export function useTextFeatures() {
     setDescriptionAreas,
     descriptionsLocked,
     setDescriptionsLocked,
+    clearAll,
     toast
   };
 }

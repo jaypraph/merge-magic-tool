@@ -1,22 +1,39 @@
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
 
 interface TextFeaturesHeaderProps {
   isEnabled: boolean;
   onToggle: (enabled: boolean) => void;
+  onClearAll: () => void;
 }
 
-export function TextFeaturesHeader({ isEnabled, onToggle }: TextFeaturesHeaderProps) {
+export function TextFeaturesHeader({ 
+  isEnabled, 
+  onToggle,
+  onClearAll 
+}: TextFeaturesHeaderProps) {
   return (
     <div className="flex items-center justify-between p-4 border-b">
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center gap-2">
         <Switch
-          id="sync-mode"
           checked={isEnabled}
           onCheckedChange={onToggle}
+          className="data-[state=checked]:bg-blue-500"
         />
-        <Label htmlFor="sync-mode">Title-Description Sync</Label>
+        <span className="text-sm text-gray-500">
+          Title-Description Sync
+        </span>
       </div>
+      <Button
+        variant="destructive"
+        size="sm"
+        onClick={onClearAll}
+        className="gap-2"
+      >
+        <Trash2 className="h-4 w-4" />
+        Clear All
+      </Button>
     </div>
   );
 }
