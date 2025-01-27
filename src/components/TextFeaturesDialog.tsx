@@ -29,6 +29,8 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
     descriptionsLocked,
     setDescriptionsLocked,
     clearAll,
+    isAnyUnlocked,
+    handleLockAll,
     toast
   } = useTextFeatures();
 
@@ -73,6 +75,8 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
           isEnabled={syncEnabled} 
           onToggle={handleToggle}
           onClearAll={clearAll}
+          isAnyUnlocked={isAnyUnlocked}
+          onLockAll={handleLockAll}
         />
         <ScrollArea className="h-full pr-4" style={{ scrollbarGutter: 'stable' }}>
           <div className="grid grid-cols-3 gap-4 p-4">

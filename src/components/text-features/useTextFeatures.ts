@@ -20,7 +20,9 @@ export function useTextFeatures() {
     return savedTitles ? JSON.parse(savedTitles) : Array(4).fill('');
   });
   
-  const [titlesLocked, setTitlesLocked] = useState(false);
+  const [titlesLocked, setTitlesLocked] = useState(() => {
+    return localStorage.getItem('textFeatures.titlesLocked') === 'true';
+  });
   
   const [descriptionAreas, setDescriptionAreas] = useState<string[]>(() => {
     const savedDescriptions = localStorage.getItem('textFeatures.descriptions');
@@ -32,6 +34,26 @@ export function useTextFeatures() {
   });
 
   const { toast } = useToast();
+
+  const isAnyUnlocked = !keywordsLocked || !titlesLocked || !descriptionsLocked;
+
+  const handleLockAll = () => {
+    if (isAnyUnlocked) {
+      setKeywordsLocked(true);
+      setTitlesLocked(true);
+      setDescriptionsLocked(true);
+      toast({
+        description: "All sections locked",
+      });
+    } else {
+      setKeywordsLocked(false);
+      setTitlesLocked(false);
+      setDescriptionsLocked(false);
+      toast({
+        description: "All sections unlocked",
+      });
+    }
+  };
 
   const clearAll = () => {
     if (!keywordsLocked) {
@@ -121,6 +143,8 @@ export function useTextFeatures() {
     descriptionsLocked,
     setDescriptionsLocked,
     clearAll,
+    isAnyUnlocked,
+    handleLockAll,
     toast
   };
 }

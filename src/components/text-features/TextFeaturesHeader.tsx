@@ -1,29 +1,40 @@
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
+import { LockAllButton } from "./LockAllButton";
 
 interface TextFeaturesHeaderProps {
   isEnabled: boolean;
   onToggle: (enabled: boolean) => void;
   onClearAll: () => void;
+  isAnyUnlocked: boolean;
+  onLockAll: () => void;
 }
 
 export function TextFeaturesHeader({ 
   isEnabled, 
   onToggle,
-  onClearAll 
+  onClearAll,
+  isAnyUnlocked,
+  onLockAll
 }: TextFeaturesHeaderProps) {
   return (
     <div className="flex items-center justify-between p-4 border-b">
-      <div className="flex items-center gap-2">
-        <Switch
-          checked={isEnabled}
-          onCheckedChange={onToggle}
-          className="data-[state=checked]:bg-blue-500"
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <Switch
+            checked={isEnabled}
+            onCheckedChange={onToggle}
+            className="data-[state=checked]:bg-blue-500"
+          />
+          <span className="text-sm text-gray-500">
+            Title-Description Sync
+          </span>
+        </div>
+        <LockAllButton 
+          isAnyUnlocked={isAnyUnlocked} 
+          onToggle={onLockAll}
         />
-        <span className="text-sm text-gray-500">
-          Title-Description Sync
-        </span>
       </div>
       <Button
         variant="destructive"
