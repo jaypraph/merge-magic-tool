@@ -6,6 +6,8 @@ import { DescriptionSection } from "./text-features/DescriptionSection";
 import { TextFeaturesHeader } from "./text-features/TextFeaturesHeader";
 import { DownloadSection } from "./text-features/DownloadSection";
 import { useTextFeatures } from "./text-features/useTextFeatures";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 interface TextFeaturesDialogProps {
   open: boolean;
@@ -64,6 +66,42 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
     });
   };
 
+  const handleAdd2Go = () => {
+    if (!keywordsLocked || !titlesLocked || !descriptionsLocked) {
+      toast({
+        description: "All sections must be locked before adding to GO",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Get non-empty keywords
+    const nonEmptyKeywords = keywords.filter(k => k.trim() !== '');
+    
+    // Get combined title
+    const combinedTitle = titleAreas
+      .filter(t => t.trim() !== '')
+      .join(', ') + " Tv Frame Art, Television picture frame, Canvas, samsung frame tv,";
+
+    // Get combined description
+    const combinedDescription = `JPG file for | Tv Frame Art | ${descriptionAreas
+      .filter(d => d.trim() !== '')
+      .join(', ')} Designed specifically for the Samsung TV Frame with dimensions of 3840x2160 pixels; not intended for printing purposes.`;
+
+    // Dispatch event to add files to GO pipeline
+    const event = new CustomEvent('addTextFiles', {
+      detail: {
+        keywords: nonEmptyKeywords,
+        title: combinedTitle,
+        description: combinedDescription
+      }
+    });
+    document.dispatchEvent(event);
+
+    // Close the dialog
+    onOpenChange(false);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[90vw] h-[90vh] overflow-hidden">
@@ -115,14 +153,23 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
             />
           </div>
         </ScrollArea>
-        <DownloadSection
-          keywords={keywords}
-          titles={titleAreas}
-          descriptions={descriptionAreas}
-          keywordsLocked={keywordsLocked}
-          titlesLocked={titlesLocked}
-          descriptionsLocked={descriptionsLocked}
-        />
+        <div className="absolute bottom-4 right-4 flex gap-2">
+          <Button
+            onClick={handleAdd2Go}
+            variant="outline"
+            className="gap-2 bg-blue-500 text-white hover:bg-blue-600"
+          >
+            ADD2GO
+          </Button>
+          <DownloadSection
+            keywords={keywords}
+            titles={titleAreas}
+            descriptions={descriptionAreas}
+            keywordsLocked={keywordsLocked}
+            titlesLocked={titlesLocked}
+            descriptionsLocked={descriptionsLocked}
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );

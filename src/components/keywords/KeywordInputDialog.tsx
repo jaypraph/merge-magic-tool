@@ -52,9 +52,11 @@ export function KeywordInputDialog({ open, onOpenChange, selectedKeyword }: Keyw
 
   const handleKeywordChange = (index: number, value: string) => {
     if (isLocked) return;
-    if (value.length <= 20) {
+    // Add comma if not already present and not empty
+    const formattedValue = value.trim() && !value.endsWith(',') ? `${value},` : value;
+    if (formattedValue.length <= 20) {
       const newKeywords = [...keywords];
-      newKeywords[index] = value;
+      newKeywords[index] = formattedValue;
       setKeywords(newKeywords);
     }
   };

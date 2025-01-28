@@ -17,6 +17,23 @@ interface ImageProcessorProps {
 export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorProps) => {
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [textFiles, setTextFiles] = useState<{
+    keywords?: string;
+    title?: string;
+    description?: string;
+  }>({});
+
+  // Add this function to handle text files
+  const addTextFiles = (keywords: string[], title: string, description: string) => {
+    setTextFiles({
+      keywords: keywords.join('\n'),
+      title,
+      description
+    });
+    toast({
+      description: "Text files added to GO pipeline!",
+    });
+  };
 
   const handleProcessImage = async () => {
     if (!uploadedImage) {
@@ -44,6 +61,17 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
         zip.file(fileName, image.split('base64,')[1], {base64: true});
       });
 
+      // Add text files if they exist
+      if (textFiles.keywords) {
+        zip.file("keywords.txt", textFiles.keywords);
+      }
+      if (textFiles.title) {
+        zip.file("title.txt", textFiles.title);
+      }
+      if (textFiles.description) {
+        zip.file("description.txt", textFiles.description);
+      }
+
       // Generate and download the ZIP file
       const content = await zip.generateAsync({type: "blob"});
       const url = URL.createObjectURL(content);
@@ -62,12 +90,12 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
 
       toast({
         title: "Success!",
-        description: "All images have been processed and downloaded as ZIP file.",
+        description: "All files have been processed and downloaded as ZIP file.",
       });
     } catch (error) {
       toast({
         title: "Error",
-        description: "An error occurred while processing the images",
+        description: "An error occurred while processing the files",
         variant: "destructive",
       });
       console.error(error);
@@ -102,3 +130,16 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
     </div>
   );
 };
+
+// Export the addTextFiles function to be used by other components
+export const textFilesEvent = new CustomEvent('addTextFiles', {
+  detail: { 
+    keywords: [] as string[],
+    title: '',
+    description: ''
+  }
+}) as CustomEvent<{ 
+  keywords: string[];
+  title: string;
+  description: string;
+}>;
