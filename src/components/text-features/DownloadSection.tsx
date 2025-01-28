@@ -36,7 +36,9 @@ export function DownloadSection({
     if (keywordsLocked && keywords.some(k => k.trim() !== '')) {
       content += '=== KEYWORDS ===\n';
       keywords.filter(k => k.trim() !== '').forEach(keyword => {
-        content += `${keyword}\n`;
+        // Ensure each keyword ends with a comma
+        const formattedKeyword = keyword.trim();
+        content += formattedKeyword + (formattedKeyword.endsWith(',') ? '\n' : ',\n');
       });
       content += '\n';
     }

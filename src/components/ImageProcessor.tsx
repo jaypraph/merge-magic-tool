@@ -25,8 +25,14 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
   }>({});
 
   const handleTextFiles = (keywords: string[], title: string, description: string) => {
+    // Ensure each keyword ends with a comma
+    const formattedKeywords = keywords.map(k => {
+      const trimmed = k.trim();
+      return trimmed.endsWith(',') ? trimmed : `${trimmed},`;
+    }).join('\n');
+
     setTextFiles({
-      keywords: keywords.join('\n'),
+      keywords: formattedKeywords,
       title,
       description
     });
