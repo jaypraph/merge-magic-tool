@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import JSZip from "jszip";
 import { processImage } from "@/utils/imageProcessingPipeline";
@@ -8,6 +7,8 @@ import {
   triggerColorfulStars, 
   triggerModernFireworks 
 } from "@/utils/celebrationEffects";
+import { ProcessingButtons } from "./image-processor/ProcessingButtons";
+import { ProcessingIndicator } from "./image-processor/ProcessingIndicator";
 
 interface ImageProcessorProps {
   uploadedImage: string;
@@ -23,8 +24,7 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
     description?: string;
   }>({});
 
-  // Add this function to handle text files
-  const addTextFiles = (keywords: string[], title: string, description: string) => {
+  const handleTextFiles = (keywords: string[], title: string, description: string) => {
     setTextFiles({
       keywords: keywords.join('\n'),
       title,
@@ -49,10 +49,8 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
       setIsProcessing(true);
       const zip = new JSZip();
       
-      // Process images through the pipeline
       const result = await processImage(uploadedImage);
       
-      // Add processed images to ZIP with specific names
       result.images.forEach((image, index) => {
         const fileName = index === 0 ? "mtrx-1.jpg" : 
                         index === 1 ? "wm-1.jpg" :
@@ -61,7 +59,6 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
         zip.file(fileName, image.split('base64,')[1], {base64: true});
       });
 
-      // Add text files if they exist
       if (textFiles.keywords) {
         zip.file("keywords.txt", textFiles.keywords);
       }
@@ -72,7 +69,6 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
         zip.file("description.txt", textFiles.description);
       }
 
-      // Generate and download the ZIP file
       const content = await zip.generateAsync({type: "blob"});
       const url = URL.createObjectURL(content);
       const a = document.createElement("a");
@@ -83,7 +79,6 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      // Trigger all celebration effects
       triggerColorfulStars();
       triggerModernFireworks();
       triggerClassicFireworks();
@@ -104,42 +99,22 @@ export const ImageProcessor = ({ uploadedImage, onUploadClick }: ImageProcessorP
     }
   };
 
+  // Add event listener for text files
+  document.addEventListener('addTextFiles', ((event: CustomEvent<{ 
+    keywords: string[];
+    title: string;
+    description: string;
+  }>) => {
+    handleTextFiles(event.detail.keywords, event.detail.title, event.detail.description);
+  }) as EventListener);
+
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="flex justify-center gap-4">
-        <Button
-          onClick={onUploadClick}
-          className="w-12 h-12 rounded-full bg-[#ea384c] hover:bg-[#ea384c]/90 transition-all duration-200 shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none text-black text-2xl font-light tracking-wider"
-        >
-          U
-        </Button>
-        <Button
-          onClick={handleProcessImage}
-          className="w-12 h-12 rounded-full bg-green-500 hover:bg-green-600 transition-all duration-200 shadow-[0_4px_0_0_rgba(0,0,0,0.5)] hover:translate-y-[2px] hover:shadow-none text-white text-2xl font-light tracking-wider"
-        >
-          G
-        </Button>
-      </div>
-      {isProcessing && (
-        <div className="flex gap-2">
-          <div className="w-2 h-2 rounded-full bg-blue-500 animate-[bounce_1s_infinite_0ms]"></div>
-          <div className="w-2 h-2 rounded-full bg-blue-500 animate-[bounce_1s_infinite_200ms]"></div>
-          <div className="w-2 h-2 rounded-full bg-blue-500 animate-[bounce_1s_infinite_400ms]"></div>
-        </div>
-      )}
+      <ProcessingButtons 
+        onUploadClick={onUploadClick}
+        onProcessClick={handleProcessImage}
+      />
+      <ProcessingIndicator isProcessing={isProcessing} />
     </div>
   );
 };
-
-// Export the addTextFiles function to be used by other components
-export const textFilesEvent = new CustomEvent('addTextFiles', {
-  detail: { 
-    keywords: [] as string[],
-    title: '',
-    description: ''
-  }
-}) as CustomEvent<{ 
-  keywords: string[];
-  title: string;
-  description: string;
-}>;

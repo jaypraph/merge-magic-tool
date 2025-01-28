@@ -9,6 +9,7 @@ interface TextFeaturesHeaderProps {
   onClearAll: () => void;
   isAnyUnlocked: boolean;
   onLockAll: () => void;
+  onAdd2Go: () => void;
 }
 
 export function TextFeaturesHeader({ 
@@ -16,7 +17,8 @@ export function TextFeaturesHeader({
   onToggle,
   onClearAll,
   isAnyUnlocked,
-  onLockAll
+  onLockAll,
+  onAdd2Go
 }: TextFeaturesHeaderProps) {
   return (
     <div className="flex items-center justify-between p-4 border-b">
@@ -35,6 +37,13 @@ export function TextFeaturesHeader({
           isAnyUnlocked={isAnyUnlocked} 
           onToggle={onLockAll}
         />
+        <Button
+          onClick={onAdd2Go}
+          variant="outline"
+          className="gap-2 bg-blue-500 text-white hover:bg-blue-600"
+        >
+          ADD2GO
+        </Button>
       </div>
       <Button
         variant="destructive"

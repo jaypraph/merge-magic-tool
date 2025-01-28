@@ -115,6 +115,7 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
           onClearAll={clearAll}
           isAnyUnlocked={isAnyUnlocked}
           onLockAll={handleLockAll}
+          onAdd2Go={handleAdd2Go}
         />
         <ScrollArea className="h-full pr-4" style={{ scrollbarGutter: 'stable' }}>
           <div className="grid grid-cols-3 gap-4 p-4">
@@ -153,14 +154,7 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
             />
           </div>
         </ScrollArea>
-        <div className="absolute bottom-4 right-4 flex gap-2">
-          <Button
-            onClick={handleAdd2Go}
-            variant="outline"
-            className="gap-2 bg-blue-500 text-white hover:bg-blue-600"
-          >
-            ADD2GO
-          </Button>
+        <div className="absolute bottom-4 right-4">
           <DownloadSection
             keywords={keywords}
             titles={titleAreas}
