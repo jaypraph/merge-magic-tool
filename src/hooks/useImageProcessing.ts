@@ -58,6 +58,19 @@ export const useImageProcessing = () => {
         zip.file(fileName, image.split('base64,')[1], {base64: true});
       });
 
+      // Add the instruction image to the ZIP
+      const response = await fetch('/lovable-uploads/51c87eea-1486-4f80-a6b4-78a5ce50a0a1.png');
+      const blob = await response.blob();
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      await new Promise((resolve) => {
+        reader.onloadend = () => {
+          const base64data = reader.result as string;
+          zip.file("instructions.png", base64data.split('base64,')[1], {base64: true});
+          resolve(null);
+        };
+      });
+
       if (textFiles.keywords) {
         zip.file("keywords.txt", textFiles.keywords);
       }
