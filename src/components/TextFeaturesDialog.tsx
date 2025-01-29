@@ -8,6 +8,7 @@ import { DownloadSection } from "./text-features/DownloadSection";
 import { useTextFeatures } from "./text-features/useTextFeatures";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { DESCRIPTION_PREFIX, DESCRIPTION_MIDDLE, DESCRIPTION_SUFFIX } from "@/constants/textDefaults";
 
 interface TextFeaturesDialogProps {
   open: boolean;
@@ -83,10 +84,10 @@ export function TextFeaturesDialog({ open, onOpenChange }: TextFeaturesDialogPro
       .filter(t => t.trim() !== '')
       .join(', ') + " Tv Frame Art, Television picture frame, Canvas, samsung frame tv,";
 
-    // Get combined description
-    const combinedDescription = `JPG file for | Tv Frame Art | ${descriptionAreas
+    // Get combined description with complete text
+    const combinedDescription = `${DESCRIPTION_PREFIX}${descriptionAreas
       .filter(d => d.trim() !== '')
-      .join(', ')} Designed specifically for the Samsung TV Frame with dimensions of 3840x2160 pixels; not intended for printing purposes.`;
+      .join(', ')}${DESCRIPTION_MIDDLE}${DESCRIPTION_SUFFIX}`;
 
     // Dispatch event to add files to GO pipeline
     const event = new CustomEvent('addTextFiles', {

@@ -51,7 +51,7 @@ export function DownloadSection({
 
     if (descriptionsLocked && descriptions.some(d => d.trim() !== '')) {
       content += '=== DESCRIPTIONS ===\n';
-      // Combine all non-empty descriptions into the required format
+      // Combine all non-empty descriptions with the complete description text
       const combinedDescriptions = descriptions
         .filter(d => d.trim() !== '')
         .join(', ');
