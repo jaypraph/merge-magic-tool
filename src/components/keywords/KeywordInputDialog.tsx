@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Lock, Unlock } from "lucide-react";
+import { KeywordInputField } from './keyword-input/KeywordInputField';
+import { BulkKeywordInput } from './keyword-input/BulkKeywordInput';
+import { DialogHeader } from './keyword-input/DialogHeader';
 
 interface KeywordInputDialogProps {
   open: boolean;
@@ -12,7 +12,6 @@ interface KeywordInputDialogProps {
   selectedKeyword?: string;
 }
 
-// Create a global event for keyword transfer
 export const keywordTransferEvent = new CustomEvent('transferKeywords', {
   detail: { keywords: [] as string[] }
 }) as CustomEvent<{ keywords: string[] }>;
@@ -52,7 +51,6 @@ export function KeywordInputDialog({ open, onOpenChange, selectedKeyword }: Keyw
 
   const handleKeywordChange = (index: number, value: string) => {
     if (isLocked) return;
-    // Add comma if not already present and not empty
     const formattedValue = value.trim() && !value.endsWith(',') ? `${value},` : value;
     if (formattedValue.length <= 20) {
       const newKeywords = [...keywords];
@@ -129,6 +127,16 @@ export function KeywordInputDialog({ open, onOpenChange, selectedKeyword }: Keyw
     });
   };
 
+  const handleLockToggle = () => {
+    setIsLocked(!isLocked);
+    if (!isLocked) {
+      transferKeywords();
+    }
+    toast({
+      description: isLocked ? "Keywords unlocked" : "Keywords locked",
+    });
+  };
+
   useEffect(() => {
     if (selectedKeyword && !isLocked) {
       const emptyIndex = keywords.findIndex(k => k === '');
@@ -155,77 +163,32 @@ export function KeywordInputDialog({ open, onOpenChange, selectedKeyword }: Keyw
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
-        <DialogHeader className="flex flex-row items-center justify-between">
-          <DialogTitle>Keyword Input</DialogTitle>
-          <div className="flex items-center gap-2">
-            <Button 
-              onClick={() => {
-                setIsLocked(!isLocked);
-                if (!isLocked) {
-                  transferKeywords();
-                }
-                toast({
-                  description: isLocked ? "Keywords unlocked" : "Keywords locked",
-                });
-              }}
-              variant={isLocked ? "destructive" : "default"}
-              size="sm"
-            >
-              {isLocked ? <Unlock className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
-            </Button>
-            <Button 
-              variant="destructive" 
-              size="sm"
-              onClick={handleClearAll}
-              disabled={isLocked}
-            >
-              Clear All
-            </Button>
-          </div>
-        </DialogHeader>
+        <DialogHeader 
+          isLocked={isLocked}
+          onLockToggle={handleLockToggle}
+          onClearAll={handleClearAll}
+        />
         <DialogDescription>
           Enter up to 13 keywords below
         </DialogDescription>
         <div className="space-y-2 max-h-[60vh] overflow-y-auto">
           {keywords.map((keyword, index) => (
-            <div key={index} className="flex items-center gap-2">
-              <span className="w-4 text-xs text-gray-500">{index + 1}.</span>
-              <Input
-                value={keyword}
-                onChange={(e) => handleKeywordChange(index, e.target.value)}
-                placeholder={`Keyword ${index + 1}`}
-                maxLength={20}
-                className="text-sm"
-                disabled={isLocked}
-              />
-              <Button
-                onClick={() => handleDelete(index)}
-                className="rounded-full w-6 h-6 p-0 bg-black hover:bg-gray-800 text-xs"
-                disabled={isLocked}
-              >
-                D
-              </Button>
-            </div>
+            <KeywordInputField
+              key={index}
+              index={index}
+              keyword={keyword}
+              onChange={handleKeywordChange}
+              onDelete={handleDelete}
+              isLocked={isLocked}
+            />
           ))}
           
-          <div className="mt-4 space-y-2">
-            <Textarea
-              value={bulkKeywords}
-              onChange={(e) => setBulkKeywords(e.target.value)}
-              placeholder="Paste up to 13 keywords, separated by commas"
-              className="min-h-[80px]"
-              disabled={isLocked}
-            />
-            <div className="flex justify-between gap-2">
-              <Button
-                onClick={handleFill13}
-                className="flex-1 bg-blue-500 hover:bg-blue-600"
-                disabled={isLocked}
-              >
-                FILL13
-              </Button>
-            </div>
-          </div>
+          <BulkKeywordInput
+            value={bulkKeywords}
+            onChange={setBulkKeywords}
+            onFill={handleFill13}
+            isLocked={isLocked}
+          />
 
           <Button
             onClick={handleCopy}
