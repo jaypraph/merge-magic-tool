@@ -1,6 +1,9 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { LockButton } from "./LockButton";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface KeywordsSectionProps {
   keywords: string[];
@@ -15,6 +18,37 @@ export function KeywordsSection({
   onKeywordChange, 
   onLockToggle 
 }: KeywordsSectionProps) {
+  const [bulkKeywords, setBulkKeywords] = useState('');
+  const { toast } = useToast();
+
+  const handleFill13 = () => {
+    if (isLocked) return;
+    
+    const keywordArray = bulkKeywords
+      .split(',')
+      .map(k => k.trim())
+      .filter(k => k !== '')
+      .slice(0, 13);
+
+    if (keywordArray.length > 13) {
+      toast({
+        variant: "destructive",
+        description: "Maximum 13 keywords allowed",
+      });
+      return;
+    }
+
+    keywordArray.forEach((keyword, index) => {
+      if (keyword.length <= 20) {
+        onKeywordChange(index, keyword);
+      }
+    });
+
+    toast({
+      description: `${keywordArray.length} keywords filled!`,
+    });
+  };
+
   return (
     <div className="flex flex-col h-full border rounded-lg overflow-hidden">
       <div className="p-4 bg-gray-50 border-b flex items-center justify-between">
@@ -35,6 +69,23 @@ export function KeywordsSection({
               />
             </div>
           ))}
+          
+          <div className="mt-4 space-y-2">
+            <Textarea
+              value={bulkKeywords}
+              onChange={(e) => setBulkKeywords(e.target.value)}
+              placeholder="Paste up to 13 keywords, separated by commas"
+              className="min-h-[80px]"
+              disabled={isLocked}
+            />
+            <Button
+              onClick={handleFill13}
+              className="w-full bg-blue-500 hover:bg-blue-600"
+              disabled={isLocked}
+            >
+              FILL13
+            </Button>
+          </div>
         </div>
       </ScrollArea>
     </div>
